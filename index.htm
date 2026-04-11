@@ -333,7 +333,7 @@ h1, h2 {
     var inEl  = dark ? bgDark  : bgLight;
 
     // Step 1: fade out current bg (fast)
-    outEl.style.transition = 'opacity 0.4s ease';
+    outEl.style.transition = 'opacity 0.33s ease';
     outEl.style.opacity = '0';
 
     setTimeout(function () {
@@ -346,7 +346,7 @@ h1, h2 {
       inEl.style.transition = 'opacity 2s ease';
       inEl.style.opacity = '1';
 
-      setTimeout(function () { switching = false; }, 2000);
+      setTimeout(function () { switching = false; }, 2330);
     }, 400);
   }
 
