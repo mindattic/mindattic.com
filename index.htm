@@ -1,3 +1,4 @@
+﻿<!-- Last Updated: 2026-04-12T06:53:17Z -->
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
@@ -264,6 +265,17 @@ h1, h2 {
   color: var(--accent);
 }
 
+@keyframes theme-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+#theme-toggle.spinning {
+  animation: theme-spin 0.55s linear infinite;
+  pointer-events: none;
+  cursor: default;
+}
+
 </style>
 </head>
 <body>
@@ -328,6 +340,7 @@ h1, h2 {
   function apply(dark) {
     if (switching) return;
     switching = true;
+    btn.classList.add('spinning');
 
     var outEl = dark ? bgLight : bgDark;
     var inEl  = dark ? bgDark  : bgLight;
@@ -346,7 +359,7 @@ h1, h2 {
       inEl.style.transition = 'opacity 2s ease';
       inEl.style.opacity = '1';
 
-      setTimeout(function () { switching = false; }, 2330);
+      setTimeout(function () { switching = false; btn.classList.remove('spinning'); }, 2330);
     }, 400);
   }
 

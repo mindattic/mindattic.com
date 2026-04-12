@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Edit(*index.htm*)",
+            "command": "$f='D:/Projects/MindAttic/mindattic.com/index.htm'; if (Test-Path $f) { $d=(Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ'); $s=\"<!-- Last Updated: $d -->\"; $c=Get-Content -Raw $f; if ($c -match '(?s)^<!--\\s*Last Updated:.*?-->(\\r?\\n)') { $c=$c -replace '(?s)^<!--\\s*Last Updated:.*?-->(\\r?\\n)',\"$s`$1\" } else { $c=\"$s`r`n$c\" }; [System.IO.File]::WriteAllText($f,$c,[System.Text.Encoding]::UTF8) }",
+            "shell": "powershell",
+            "statusMessage": "Updating last-updated timestamp..."
+          },
+          {
+            "type": "command",
+            "if": "Write(*index.htm*)",
+            "command": "$f='D:/Projects/MindAttic/mindattic.com/index.htm'; if (Test-Path $f) { $d=(Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ'); $s=\"<!-- Last Updated: $d -->\"; $c=Get-Content -Raw $f; if ($c -match '(?s)^<!--\\s*Last Updated:.*?-->(\\r?\\n)') { $c=$c -replace '(?s)^<!--\\s*Last Updated:.*?-->(\\r?\\n)',\"$s`$1\" } else { $c=\"$s`r`n$c\" }; [System.IO.File]::WriteAllText($f,$c,[System.Text.Encoding]::UTF8) }",
+            "shell": "powershell",
+            "statusMessage": "Updating last-updated timestamp..."
+          }
+        ]
+      }
+    ]
+  }
+}
