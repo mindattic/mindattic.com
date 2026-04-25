@@ -1,4 +1,4 @@
-﻿<!-- Last Updated: 2026-04-25T03:54:35Z -->
+﻿<!-- Last Updated: 2026-04-25T04:09:55Z -->
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
@@ -271,6 +271,10 @@ h1, h2 {
   #content .project::before { animation: none; opacity: 0; }
 }
 
+@media (orientation: portrait) {
+  #content .project::before { display: none; }
+}
+
 /* ── LOGO ASSETS ── */
 
 .logo,
@@ -375,7 +379,7 @@ h1, h2 {
       <span class="desc">Autonomous AI trading system (C#/.NET 10) with custom DSL (IdiotScript), genetic algorithm optimizer, and neural network weight learning. Dual ML methods self-calibrate per-ticker indicator weights. Live IBKR order execution with comprehensive backtesting. Built on Ahab (multi-strategy platform) and Gappy (live gap-trading).</span>
     </div>
     <div class="project">
-      <a href="https://github.com/mindattic/LLMThinkTank" target="_blank" rel="noopener">LLMThinkTank</a>
+      <a href="https://github.com/mindattic/ThinkTank" target="_blank" rel="noopener">ThinkTank</a>
       <span class="desc">Cross-platform .NET 10 Blazor desktop app pitting AI models against each other in structured, multi-participant conversations. ChatGPT, Claude, Gemini, and DeepSeek debate with customizable personalities, parallel conversation tabs, real-time user injection, and AI-generated personality templates.</span>
     </div>
     <div class="project">
@@ -391,8 +395,8 @@ h1, h2 {
       <span class="desc">Artificial Intelligence (AI) adaptive learning platform (C#/.NET Blazor). Retrieval-Augmented Generation (RAG) pipeline with Locality-Sensitive Hashing (LSH)/SimHash matching, force-layout knowledge graphs, and an evolving textbook that retroactively layers new knowledge into earlier chapters. Adaptive quizzes, live news, progress tracking.</span>
     </div>
     <div class="project">
-      <a href="https://ryandebraal.com" target="_blank" rel="noopener">ryandebraal.com</a>
-      <span class="desc">Hand-authored single-file web application &mdash; pure HTML/CSS/JS, zero dependencies, zero build step, zero toolchain. A deliberate engineering exercise in framework-free, view-source-readable code that matches modern stacks at this scale without inheriting their dependency rot.</span>
+      <a href="https://github.com/mindattic/ryandebraal.com" target="_blank" rel="noopener">ryandebraal.com</a>
+      <span class="desc">Hand-authored single-file web application &mdash; pure HTML/CSS/JS, zero dependencies, zero build step, zero toolchain. A deliberate engineering exercise in framework-free, view-source-readable code that matches modern stacks at this scale without inheriting their dependency rot. <a href="https://www.ryandebraal.com" target="_blank" rel="noopener">Live demo</a>.</span>
     </div>
     <div class="project">
       <a href="https://github.com/mindattic/StreetSamurai" target="_blank" rel="noopener">StreetSamurai</a>
@@ -567,7 +571,7 @@ h1, h2 {
 
   function startSweep(slot) {
     slotBusy[slot] = true;
-    var dur = 800 + qrand() * 2400;       // 0.8–3.2s sweep
+    var dur = 924 + qrand() * 2276;       // 0.924–3.2s sweep
     var varName = '--shine-progress-' + (slot + 1);
     var start = null;
     function step(now) {
@@ -589,7 +593,7 @@ h1, h2 {
     for (var s = 0; s < SHINE_SLOTS; s++) {
       if (!slotBusy[s]) { startSweep(s); break; }
     }
-    var nextDelay = 250 + qrand() * 1900; // 0.25–2.15s between spawns
+    var nextDelay = 281 + qrand() * 2140; // 0.281–2.421s between spawns (-20% frequency)
     setTimeout(spawnLoop, nextDelay);
   }
   spawnLoop();
