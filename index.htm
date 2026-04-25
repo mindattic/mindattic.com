@@ -1,4 +1,4 @@
-﻿<!-- Last Updated: 2026-04-25T04:09:55Z -->
+﻿<!-- Last Updated: 2026-04-25T04:21:57Z -->
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
@@ -571,7 +571,7 @@ h1, h2 {
 
   function startSweep(slot) {
     slotBusy[slot] = true;
-    var dur = 924 + qrand() * 2276;       // 0.924–3.2s sweep
+    var dur = 970 + qrand() * 2230;       // 0.97–3.2s sweep (max speed -5%)
     var varName = '--shine-progress-' + (slot + 1);
     var start = null;
     function step(now) {
@@ -593,7 +593,7 @@ h1, h2 {
     for (var s = 0; s < SHINE_SLOTS; s++) {
       if (!slotBusy[s]) { startSweep(s); break; }
     }
-    var nextDelay = 281 + qrand() * 2140; // 0.281–2.421s between spawns (-20% frequency)
+    var nextDelay = 270 + qrand() * 2055; // 0.270–2.325s between spawns
     setTimeout(spawnLoop, nextDelay);
   }
   spawnLoop();
