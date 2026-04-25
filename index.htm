@@ -1,4 +1,4 @@
-﻿<!-- Last Updated: 2026-04-12T07:08:35Z -->
+﻿<!-- Last Updated: 2026-04-25T03:54:35Z -->
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
@@ -203,6 +203,74 @@ h1, h2 {
   color: #cc0022;
 }
 
+#content .projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: stretch;
+}
+
+#content .project {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg2);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+#content .projects-grid {
+  --shine-grad: linear-gradient(115deg, transparent 0%, transparent 18%, rgba(255, 255, 255, 0.002) 24%, rgba(255, 255, 255, 0.008) 32%, rgba(255, 255, 255, 0.025) 40%, rgba(255, 255, 255, 0.07) 47%, rgba(255, 255, 255, 0.13) 50%, rgba(255, 255, 255, 0.07) 53%, rgba(255, 255, 255, 0.025) 60%, rgba(255, 255, 255, 0.008) 68%, rgba(255, 255, 255, 0.002) 76%, transparent 82%, transparent 100%);
+}
+
+#content .project::before {
+  content: '';
+  position: absolute;
+  top: calc(-1 * var(--shine-y, 0px));
+  left: calc(-1 * var(--shine-x, 0px));
+  width: var(--grid-w, 100%);
+  height: var(--grid-h, 100%);
+  pointer-events: none;
+  background:
+    var(--shine-grad) calc(-150% + 400% * var(--shine-progress-1, 0)) 0 / 35% 100% no-repeat,
+    var(--shine-grad) calc(-150% + 400% * var(--shine-progress-2, 0)) 0 / 35% 100% no-repeat,
+    var(--shine-grad) calc(-150% + 400% * var(--shine-progress-3, 0)) 0 / 35% 100% no-repeat,
+    var(--shine-grad) calc(-150% + 400% * var(--shine-progress-4, 0)) 0 / 35% 100% no-repeat;
+  z-index: 0;
+}
+
+#content .project > * {
+  position: relative;
+  z-index: 1;
+}
+
+#content .project a {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+#content .project .desc {
+  display: block;
+  color: var(--text3);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+#content .project .desc a {
+  display: inline;
+  font-weight: 400;
+  margin-bottom: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #content .project::before { animation: none; opacity: 0; }
+}
+
 /* ── LOGO ASSETS ── */
 
 .logo,
@@ -289,9 +357,51 @@ h1, h2 {
   <a href="https://github.com/mindattic" target="_blank" rel="noopener">github.com/mindattic</a>
 
   <h2>Projects</h2>
-  <a href="https://mindattic.com/taxratecollector" target="_blank" rel="noopener">TaxRateCollector</a>
+  <div class="projects-grid">
+    <div class="project">
+      <a href="https://github.com/mindattic/FractionsOfAPenny" target="_blank" rel="noopener">FractionsOfAPenny</a>
+      <span class="desc">Leaked-credential prevalence scanner for public GitHub repositories &mdash; M.S. Information Security thesis research artifact. Targets Anthropic, OpenAI, and Google LLM API keys. Records SHA-256 metadata only; raw keys are never persisted, logged, serialized, or returned. Python and C# with responsible-disclosure pipeline.</span>
+    </div>
+    <div class="project">
+      <a href="https://github.com/mindattic/Ciao-ChatGpt-Bonjour-Claude" target="_blank" rel="noopener">Ciao-ChatGpt-Bonjour-Claude</a>
+      <span class="desc">JavaScript migration tool exporting full ChatGPT conversation history into Claude Projects via the Anthropic API.</span>
+    </div>
+    <div class="project">
+      <a href="https://github.com/mindattic/GridGame2026" target="_blank" rel="noopener">GridGame2026</a>
+      <span class="desc">Original grid-based strategy game in Unity with custom ShaderLab shaders and self-authored world lore. Active development since 2025.</span>
+    </div>
+    <div class="project">
+      <a href="https://github.com/mindattic/IdiotProof" target="_blank" rel="noopener">IdiotProof</a>
+      <span class="desc">Autonomous AI trading system (C#/.NET 10) with custom DSL (IdiotScript), genetic algorithm optimizer, and neural network weight learning. Dual ML methods self-calibrate per-ticker indicator weights. Live IBKR order execution with comprehensive backtesting. Built on Ahab (multi-strategy platform) and Gappy (live gap-trading).</span>
+    </div>
+    <div class="project">
+      <a href="https://github.com/mindattic/LLMThinkTank" target="_blank" rel="noopener">LLMThinkTank</a>
+      <span class="desc">Cross-platform .NET 10 Blazor desktop app pitting AI models against each other in structured, multi-participant conversations. ChatGPT, Claude, Gemini, and DeepSeek debate with customizable personalities, parallel conversation tabs, real-time user injection, and AI-generated personality templates.</span>
+    </div>
+    <div class="project">
+      <a href="https://github.com/mindattic/MindAttic.Legion" target="_blank" rel="noopener">MindAttic.Legion</a>
+      <span class="desc">C#/.NET 10 library for orchestrating groups of LLMs as a 'legion' &mdash; voting, polls, scoring, proofreading, and persona-driven multi-voter workflows across OpenAI, Anthropic, Google, and DeepSeek. Bundles a 1000-persona library and unified credentials.</span>
+    </div>
+    <div class="project">
+      <a href="https://github.com/mindattic/TaxRateCollector" target="_blank" rel="noopener">TaxRateCollector</a>
+      <span class="desc">Blazor Server application (C#/.NET 10, EF Core 10, SQL Server, NUnit 4) for evidence-backed surveillance of US sales &amp; use tax rates across 14,000+ jurisdictions. Daily scraping, SHA-256 content hashing for provenance, change-detection diffing, real-time tax calculation engine. Raw source documents stored alongside every rate.</span>
+    </div>
+    <div class="project">
+      <a href="https://github.com/mindattic/Tutor" target="_blank" rel="noopener">Tutor</a>
+      <span class="desc">Artificial Intelligence (AI) adaptive learning platform (C#/.NET Blazor). Retrieval-Augmented Generation (RAG) pipeline with Locality-Sensitive Hashing (LSH)/SimHash matching, force-layout knowledge graphs, and an evolving textbook that retroactively layers new knowledge into earlier chapters. Adaptive quizzes, live news, progress tracking.</span>
+    </div>
+    <div class="project">
+      <a href="https://ryandebraal.com" target="_blank" rel="noopener">ryandebraal.com</a>
+      <span class="desc">Hand-authored single-file web application &mdash; pure HTML/CSS/JS, zero dependencies, zero build step, zero toolchain. A deliberate engineering exercise in framework-free, view-source-readable code that matches modern stacks at this scale without inheriting their dependency rot.</span>
+    </div>
+    <div class="project">
+      <a href="https://github.com/mindattic/StreetSamurai" target="_blank" rel="noopener">StreetSamurai</a>
+      <span class="desc">Cyberpunk literary fiction engine (C#/.NET 10 Blazor Server) authoring novel-length prose in Meridian 88, a 500km Great Lakes corporate sprawl in 2200. 1,056+ canonical entities, QuikGraph relationship network, six-facet psychology engine, autonomous Story Director, freelancer contract economy, multi-LLM router, ElevenLabs TTS. Death is permanent. <a href="https://streetsamurai.azurewebsites.net" target="_blank" rel="noopener">Live demo</a>.</span>
+    </div>
+  </div>
+
+  <h2>Philanthropy</h2>
   <a href="https://mindatticcares.com" target="_blank" rel="noopener">MindAttic Cares</a>
-  <a href="https://streetsamurai.azurewebsites.net/" target="_blank" rel="noopener">StreetSamurai</a>
 </div>
 
 <footer id="site-footer">
@@ -359,7 +469,7 @@ h1, h2 {
 
   var saved = null;
   try { saved = localStorage.getItem('theme'); } catch (e) {}
-  initTheme(saved === 'dark');
+  initTheme(saved !== 'light');
 
   btn.addEventListener('click', function () {
     apply(!isDark());
@@ -376,6 +486,113 @@ h1, h2 {
 
   pinFooter();
   window.addEventListener('resize', pinFooter);
+}());
+
+(function () {
+  var grid = document.querySelector('.projects-grid');
+  var items = document.querySelectorAll('.projects-grid .project');
+  if (!grid || !items.length) return;
+
+  function equalize() {
+    for (var i = 0; i < items.length; i++) items[i].style.minHeight = '';
+    var max = 0;
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].offsetHeight > max) max = items[i].offsetHeight;
+    }
+    for (var i = 0; i < items.length; i++) items[i].style.minHeight = max + 'px';
+  }
+
+  function setShineCoords() {
+    var gridRect = grid.getBoundingClientRect();
+    var gw = gridRect.width;
+    var gh = gridRect.height;
+    for (var i = 0; i < items.length; i++) {
+      var rect = items[i].getBoundingClientRect();
+      items[i].style.setProperty('--shine-x', (rect.left - gridRect.left) + 'px');
+      items[i].style.setProperty('--shine-y', (rect.top - gridRect.top) + 'px');
+      items[i].style.setProperty('--grid-w', gw + 'px');
+      items[i].style.setProperty('--grid-h', gh + 'px');
+    }
+  }
+
+  function refresh() {
+    equalize();
+    setShineCoords();
+  }
+
+  refresh();
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(refresh);
+  }
+
+  var t;
+  window.addEventListener('resize', function () {
+    clearTimeout(t);
+    t = setTimeout(refresh, 100);
+  });
+
+  // Carmack's Fast Inverse Square Root (Quake III Arena), ported to JS via
+  // a Float32 / Int32 buffer view to perform the bit-level reinterpretation.
+  var qbuf = new ArrayBuffer(4);
+  var qf32 = new Float32Array(qbuf);
+  var qi32 = new Int32Array(qbuf);
+  function qrsqrt(x) {
+    qf32[0] = x;
+    qi32[0] = 0x5f3759df - (qi32[0] >> 1);
+    var y = qf32[0];
+    return y * (1.5 - (x * 0.5 * y * y));
+  }
+
+  // LCG seeded with the Quake magic constant; output mixed through qrsqrt
+  // for chaotic distribution.
+  var qseed = (Date.now() ^ 0x5f3759df) >>> 0;
+  function qrand() {
+    qseed = (Math.imul(qseed, 1103515245) + 12345) >>> 0;
+    var t = (qseed >>> 8) / 16777216 + 1.0;
+    var v = qrsqrt(t);
+    var n = Math.imul(Math.floor(v * 1048576), 73856093) >>> 0;
+    return (n % 1000000) / 1000000;
+  }
+
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return;
+  }
+
+  var SHINE_SLOTS = 4;
+  var slotBusy = [];
+  for (var s = 0; s < SHINE_SLOTS; s++) {
+    slotBusy.push(false);
+    grid.style.setProperty('--shine-progress-' + (s + 1), '0');
+  }
+
+  function startSweep(slot) {
+    slotBusy[slot] = true;
+    var dur = 800 + qrand() * 2400;       // 0.8–3.2s sweep
+    var varName = '--shine-progress-' + (slot + 1);
+    var start = null;
+    function step(now) {
+      if (start === null) start = now;
+      var p = (now - start) / dur;
+      if (p >= 1) {
+        grid.style.setProperty(varName, '0');
+        slotBusy[slot] = false;
+        return;
+      }
+      var eased = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      grid.style.setProperty(varName, eased);
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function spawnLoop() {
+    for (var s = 0; s < SHINE_SLOTS; s++) {
+      if (!slotBusy[s]) { startSweep(s); break; }
+    }
+    var nextDelay = 250 + qrand() * 1900; // 0.25–2.15s between spawns
+    setTimeout(spawnLoop, nextDelay);
+  }
+  spawnLoop();
 }());
 </script>
 </body>
