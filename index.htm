@@ -1,13 +1,102 @@
-﻿<!-- Last Updated: 2026-04-26T02:44:16Z -->
+﻿<!-- Last Updated: 2026-04-26T19:27:03Z -->
+<!--
+  ════════════════════════════════════════════════════════════════════════════
+  ║  Hey. You opened View Source.  I see you, and I appreciate it.           ║
+  ║                                                                          ║
+  ║   __  __ _           _    _   _   _   _                                  ║
+  ║  |  \/  (_)_ __   __| |  / \ | |_| |_(_) ___                             ║
+  ║  | |\/| | | '_ \ / _` | / _ \| __| __| |/ __|                            ║
+  ║  | |  | | | | | | (_| |/ ___ \ |_| |_| | (__                             ║
+  ║  |_|  |_|_|_| |_|\__,_/_/   \_\__|\__|_|\___|                            ║
+  ║                                                                          ║
+  ╠══════════════════════════════════════════════════════════════════════════╣
+  ║  You found the workshop floor of mindattic.com.                          ║
+  ║  One file. No build step. No framework. No CDN. No npm install.          ║
+  ║  Just markup, styles, and a sprinkle of script — the way the platform    ║
+  ║  hands them to you.                                                      ║
+  ╠══════════════════════════════════════════════════════════════════════════╣
+  ║                                                                          ║
+  ║  WHY ONE FILE?                                                           ║
+  ║                                                                          ║
+  ║  Because the page is small enough that the cost of a build pipeline      ║
+  ║  outweighs its benefits.  No bundler, no transpiler, no dist/ folder     ║
+  ║  to ship.  Edit, save, refresh.  The fonts are inlined as base64         ║
+  ║  woff2 so the first paint is one HTTP request.  The book covers and      ║
+  ║  logo are inlined the same way.  No tracking pixels, no analytics,       ║
+  ║  no third-party fonts, no JavaScript frameworks.                         ║
+  ║                                                                          ║
+  ║  The tradeoff is that this file is large.  At a certain scale you        ║
+  ║  would absolutely want a build step — code splitting, tree shaking,      ║
+  ║  asset hashing — but for a single-page index this is genuinely the       ║
+  ║  smallest amount of moving parts that gets the job done.                 ║
+  ║                                                                          ║
+  ╠══════════════════════════════════════════════════════════════════════════╣
+  ║                                                                          ║
+  ║  TABLE OF CONTENTS                                                       ║
+  ║  ─────────────────────────────────────────────────────────────────────   ║
+  ║  § 1  Fonts ............... Two base64-inlined typefaces                 ║
+  ║  § 2  Theme tokens ........ CSS custom properties for light/dark         ║
+  ║  § 3  Background .......... Soft abstract painting that crossfades       ║
+  ║  § 4  Accessibility ....... Skip link, visually-hidden, focus rings      ║
+  ║  § 5  Reset ............... Box-sizing + minimal normalization           ║
+  ║  § 6  Site header ......... Logo + wordmark                              ║
+  ║  § 7  Content ............. Portfolio, projects grid (with shine), books║
+  ║  § 8  Logo assets ......... Sized helpers for the inlined logo           ║
+  ║  § 9  Footer .............. Pinned-when-short copyright line             ║
+  ║  § 10 Theme toggle ........ The sun/moon button (top right)              ║
+  ║  § 11 Body ................ The DOM, in the order you read it           ║
+  ║  § 12 Scripts ............. Four small IIFEs, no globals                 ║
+  ║                                                                          ║
+  ╠══════════════════════════════════════════════════════════════════════════╣
+  ║                                                                          ║
+  ║  A NOTE ON COMMENTS                                                      ║
+  ║                                                                          ║
+  ║  These comments exist because someone read this far.  That someone       ║
+  ║  is you.  Code without explanation is a puzzle; code with explanation    ║
+  ║  is a conversation.  I'd rather have the conversation.                   ║
+  ║                                                                          ║
+  ║  If you spot something that could be done better, the GitHub mirror      ║
+  ║  is linked from the portfolio section below.  Pull requests welcome.     ║
+  ║                                                                          ║
+  ╚══════════════════════════════════════════════════════════════════════════╝
+-->
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MindAttic</title>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     §  STYLESHEET
+     ─────────────────────────────────────────────────────────────────────
+     All styles live inline.  No external <link rel="stylesheet">, no
+     build-time CSS modules, no preprocessor.  The only "framework" used
+     here is the browser itself.
+
+     Order matters: tokens (themes) are declared before the rules that
+     consume them, and resets come before component styles so cascade
+     specificity works in our favor without !important.
+     ═══════════════════════════════════════════════════════════════════ -->
 <style>
 
-/* ── FONT ── */
+/* ──────────────────────────────────────────────────────────────────────
+   §  1   FONTS
+   ──────────────────────────────────────────────────────────────────────
+   Two faces ship with the page:
+
+     1.  'Attic'   — a custom display face used only for the wordmark.
+     2.  'Outfit'  — Google's variable sans-serif, weights 100–900,
+                     used everywhere else.
+
+   Both are inlined as base64 woff2.  That trades a bigger HTML payload
+   for zero font requests on first paint, which means no flash of
+   unstyled text, no Google Fonts request, no third-party DNS lookup,
+   no privacy footnote.  Fonts arrive with the document or not at all.
+
+   Each base64 blob below is one continuous string — the line is long
+   on purpose.  Don't be alarmed; soft-wrap is your friend.
+   ──────────────────────────────────────────────────────────────────── */
 
 @font-face {
   font-family: 'Attic';
@@ -34,7 +123,28 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* ── THEMES ── */
+/* ──────────────────────────────────────────────────────────────────────
+   §  2   THEME TOKENS
+   ──────────────────────────────────────────────────────────────────────
+   Every color the site uses lives here as a CSS custom property.
+
+   The pattern:
+     :root                    → the light palette (default).
+     [data-theme="dark"]      → an override applied via JS when the user
+                                 picks the moon, or via the prefers-color
+                                 -scheme media query when they haven't.
+
+   Why custom properties instead of a class swap?
+     • One source of truth.  Components reference --accent, not #1b4f8c.
+     • Live retheming.  The toggle only flips one attribute; cascade
+       does the rest.  No re-render, no JS-set inline styles to clean up.
+     • Future-proofing.  Adding a third theme (sepia? high-contrast?)
+       means adding one block, not auditing every selector.
+
+   Naming convention: --bg/--bg2/--bg3 walk from the page background
+   inward (deeper surfaces get higher numbers).  --text/--text2/--text3
+   walk from primary copy out toward muted captions the same way.
+   ──────────────────────────────────────────────────────────────────── */
 
 :root {
   --bg: #fff;
@@ -66,6 +176,11 @@
   --rule: #3d6fa3;
 }
 
+/* The selector below reads as: "if the OS prefers dark and the user
+   has not explicitly chosen light, mirror the dark palette."  This is
+   the polite default — we respect the system, but a user who flipped
+   the toggle to light gets to keep light, even after a reload, because
+   the explicit data-theme="light" attribute wins the :not() check. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #000;
@@ -81,7 +196,24 @@
   }
 }
 
-/* ── BACKGROUND ── */
+/* ──────────────────────────────────────────────────────────────────────
+   §  3   BACKGROUND
+   ──────────────────────────────────────────────────────────────────────
+   Two fixed-position layers, one for each palette, stacked behind all
+   content with z-index: -1.  Only one is visible at a time; the theme
+   toggle crossfades opacity between them so the colors shift as if a
+   light moved across a painting rather than as if a switch flipped.
+
+   Why two elements instead of one with a swapped background-image?
+   Browsers don't transition `background-image`.  They DO transition
+   `opacity`.  Two layers + an opacity dance is the lightest-weight way
+   to crossfade without dropping a frame or repainting from scratch.
+
+   The image URLs come from theme tokens (--bg-abstract-light and
+   --bg-abstract-dark, both inlined as base64 PNGs up in § 2).  This
+   keeps the painting choice with the rest of the palette so a future
+   theme can drop in its own backdrop without touching this section.
+   ──────────────────────────────────────────────────────────────────── */
 
 #bg-light,
 #bg-dark {
@@ -106,7 +238,35 @@
   background-image: var(--bg-abstract-dark);
 }
 
-/* ── ACCESSIBILITY ── */
+/* ──────────────────────────────────────────────────────────────────────
+   §  4   ACCESSIBILITY
+   ──────────────────────────────────────────────────────────────────────
+   Three patterns live here:
+
+     .skip-link        — a "skip to main content" anchor that sits off-
+                          screen (top: -40px) until it gains keyboard
+                          focus, at which point it slides into view.
+                          Keyboard users get a one-tab way past the
+                          repeating header.  Pointer users never see it.
+
+     .visually-hidden  — the standard A11Y trick to hide an element
+                          from sighted users while keeping it in the
+                          accessibility tree.  Used below by the JS
+                          that appends "(opens in new tab)" to every
+                          target="_blank" link, so screen readers know
+                          before they click.
+
+     :focus-visible    — restores a clearly visible focus outline.
+                          Browsers vary; this guarantees one consistent
+                          ring in the accent color.  We override the
+                          UA default rather than disable it — disabling
+                          focus styles is one of the fastest ways to
+                          make a site unusable.
+
+   If you remove any of these, please replace them with something
+   equivalent.  These are the bare-minimum keyboard-and-screen-reader
+   guarantees this page makes.
+   ──────────────────────────────────────────────────────────────────── */
 
 .skip-link {
   position: absolute;
@@ -150,7 +310,24 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
-/* ── RESET ── */
+/* ──────────────────────────────────────────────────────────────────────
+   §  5   RESET
+   ──────────────────────────────────────────────────────────────────────
+   Not Eric Meyer's reset, not normalize.css.  Just three lines that
+   the rest of the file actually depends on:
+
+     box-sizing: border-box   — so widths include padding and border.
+                                 The single most useful reset rule.
+     margin / padding: 0      — so vertical rhythm comes from the
+                                 components, not from accidental
+                                 user-agent stylesheet defaults.
+
+   Below the universal reset, html/body get just enough setup to look
+   intentional: anti-aliased text, smooth in-page scrolling, the
+   primary typeface, and a min-height so the body fills the viewport
+   even when the document is short (which keeps the footer pin code
+   in § 12 honest).
+   ──────────────────────────────────────────────────────────────────── */
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -181,7 +358,20 @@ a:hover {
   color: var(--accent2);
 }
 
-/* ── SITE HEADER ── */
+/* ──────────────────────────────────────────────────────────────────────
+   §  6   SITE HEADER
+   ──────────────────────────────────────────────────────────────────────
+   The logo + wordmark strip at the top of the page.  Layout is a
+   simple flexbox: logo on the left, wordmark to its right, gap of
+   12px between them.  Padding (24/32) matches the content section
+   below so the two read as one column.
+
+   The wordmark uses 'Attic' (the custom face from § 1) — that's the
+   only place the custom font appears.  Forcing pure black/white via
+   #site-name overrides instead of --text is deliberate: the wordmark
+   is a brand element, not body copy, and it should always sit at
+   maximum contrast no matter what surface the theme uses.
+   ──────────────────────────────────────────────────────────────────── */
 
 #site-header {
   display: flex;
@@ -214,7 +404,39 @@ a:hover {
   color: #fff;
 }
 
-/* ── CONTENT ── */
+/* ──────────────────────────────────────────────────────────────────────
+   §  7   CONTENT
+   ──────────────────────────────────────────────────────────────────────
+   The big one.  This block styles every visible region inside <main>:
+
+     • Section headings and links
+     • The .books-grid (book covers, embossed with a 3D look)
+     • The .projects-grid (cards with a moving "shine" effect)
+
+   The shine is the most interesting bit, so it gets a tour:
+
+     1.  Each .project card has a ::before pseudo-element painted
+         across the *entire grid bounding box* (--grid-w/--grid-h are
+         set per-card in JS so each card's pseudo can paint past its
+         own edges and onto its neighbors).
+     2.  --shine-grad is a horizontal gradient with a bright streak
+         in the middle, transparent on the ends.  We layer it FOUR
+         times into the same background, each translated by its own
+         --shine-progress-N variable.
+     3.  JS animates those four progress vars independently.  When a
+         streak finishes its sweep, the slot is "free" again and a
+         new sweep can be scheduled.  Up to four streaks can be on
+         screen at once, but they spawn at random intervals so they
+         never look mechanical.
+     4.  Light theme uses brighter streak alphas because white-on-
+         white needs more punch than white-on-dark.  Hence the
+         override block right below the main rule.
+
+   Two media queries at the end of this section turn the effect off
+   for users who asked for less motion (`prefers-reduced-motion`) and
+   for portrait/mobile viewports where the layout collapses to a
+   single column and the cross-card shine loses its meaning.
+   ──────────────────────────────────────────────────────────────────── */
 
 #content {
   padding: 24px 32px;
@@ -363,7 +585,19 @@ h1, h2 {
   #content .project::before { display: none; }
 }
 
-/* ── LOGO ASSETS ── */
+/* ──────────────────────────────────────────────────────────────────────
+   §  8   LOGO ASSETS
+   ──────────────────────────────────────────────────────────────────────
+   Two helper classes for the inlined logo PNG (defined back in § 2):
+
+     .logo       —  320×320 hero variant.
+     .logo-tiny  —   16× 16 favicon-sized variant.
+
+   Both pull from the same data URL, so changing the artwork in one
+   place updates every appearance.  The tiny version isn't currently
+   referenced in the body; it's kept here as a ready-to-use hook
+   (favicons, inline list bullets, future use).
+   ──────────────────────────────────────────────────────────────────── */
 
 .logo,
 .logo-tiny {
@@ -385,7 +619,15 @@ h1, h2 {
   height: 16px;
 }
 
-/* ── FOOTER ── */
+/* ──────────────────────────────────────────────────────────────────────
+   §  9   FOOTER
+   ──────────────────────────────────────────────────────────────────────
+   A single-line copyright, dim-on-purpose so it never competes with
+   content for attention.  The .pinned modifier is added by JS in § 12
+   when the document is shorter than the viewport — that way short
+   pages still feel "complete" instead of leaving a blank gap below
+   the content.  On long pages the footer flows normally, no gimmicks.
+   ──────────────────────────────────────────────────────────────────── */
 
 #site-footer {
   text-align: center;
@@ -401,7 +643,21 @@ h1, h2 {
   right: 0;
 }
 
-/* ── THEME TOGGLE ── */
+/* ──────────────────────────────────────────────────────────────────────
+   §  10  THEME TOGGLE
+   ──────────────────────────────────────────────────────────────────────
+   The sun/moon button at the top right.  Pure CSS for resting and
+   hover states; the .switching class is set by JS during a theme
+   change so the button refuses re-clicks while the crossfade is in
+   flight (mid-transition double-clicks would desync the two
+   background layers).
+
+   You'll find a more elaborate companion in the JS section: a
+   conic-gradient progress ring that sweeps the button's border over
+   the duration of the crossfade.  That ring is painted via inline
+   styles so it doesn't survive a click — when .switching is removed,
+   the inline styles are cleared and the rule below takes over again.
+   ──────────────────────────────────────────────────────────────────── */
 
 #theme-toggle {
   position: fixed;
@@ -434,11 +690,38 @@ h1, h2 {
 </head>
 <body>
 
+<!-- ═══════════════════════════════════════════════════════════════════════
+     §  11  BODY
+     ─────────────────────────────────────────────────────────────────────
+     Reading order from top to bottom, exactly as the DOM ships:
+
+       a.skip-link        — keyboard shortcut to jump past the header.
+       #bg-light/#bg-dark — the two crossfading backdrop layers.
+       #theme-toggle      — the sun/moon button (pinned top-right).
+       <header>           — the wordmark strip.
+       <main>             — Portfolio links, Projects grid, Books grid.
+       <footer>           — Copyright, optionally pinned by JS.
+
+     ARIA roles (banner, main, contentinfo) are explicit even though
+     the HTML5 elements imply them, because some screen readers still
+     prefer the explicit form.  Belt + suspenders.
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<!-- The skip link is the very first focusable element, so the first
+     Tab keystroke after page load lands here.  Press Enter and you
+     jump straight to <main>, bypassing the header.  Critical for
+     anyone navigating without a mouse. -->
 <a class="skip-link" href="#content">Skip to main content</a>
 
+<!-- The two background layers.  aria-hidden because they're purely
+     decorative — assistive tech should ignore them.  Only one is
+     opaque at a time; the JS in § 12 crossfades between them. -->
 <div id="bg-light" aria-hidden="true"></div>
 <div id="bg-dark" aria-hidden="true"></div>
 
+<!-- Theme toggle.  Initial glyph is ☀ (sun, U+2600); JS swaps it to
+     ☾ (moon, U+263E) when dark mode is active.  aria-pressed flips
+     in lockstep so screen readers announce the current state. -->
 <button id="theme-toggle" type="button" title="Toggle theme" aria-label="Toggle light/dark theme" aria-pressed="false"><span aria-hidden="true">&#x2600;</span></button>
 
 <header id="site-header" role="banner">
@@ -446,6 +729,9 @@ h1, h2 {
 </header>
 
 <main id="content" role="main">
+  <!-- Portfolio: a few hand-picked outbound links.  Kept short on
+       purpose — this is the elevator-pitch row, not the index of
+       everything ever shipped. -->
   <h2>Portfolio</h2>
   <a href="https://ryandebraal.com" target="_blank" rel="noopener noreferrer">ryandebraal.com</a>
   <br>
@@ -453,6 +739,14 @@ h1, h2 {
   <br>
   <a href="https://mindatticcares.com" target="_blank" rel="noopener noreferrer">MindAttic Cares</a>
 
+  <!-- Software Development: the project showcase grid.  Each card is
+       a .project block with a heading link and a paragraph .desc.
+       The CSS in § 7 equalizes their heights and paints the moving
+       shine; the JS in § 12 schedules the sweeps.
+
+       Adding a project = paste another <div class="project"> block.
+       Order is roughly chronological / by-recency, but feel free to
+       prioritize whatever you want to read first. -->
   <h2>Software Development</h2>
   <div class="projects-grid">
     <div class="project">
@@ -497,6 +791,12 @@ h1, h2 {
     </div>
   </div>
 
+  <!-- Creative: published books.  Each cover is base64-inlined as
+       JPEG (one of those very long lines just below).  The CSS gives
+       them a subtle 3D hover lift — see #content .book img in § 7.
+       Inline base64 means zero image requests and no hot-link
+       breakage if the host moves; the cost is HTML weight, which is
+       a fair trade at this small a count. -->
   <h2>Creative</h2>
   <div class="books-grid">
     <a class="book" href="https://ryandebraal.com/mosaic/" target="_blank" rel="noopener noreferrer"><img src="data:image/jpeg;base64,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" alt="Mosaic" title="Mosaic"></a>
@@ -509,22 +809,70 @@ h1, h2 {
   </div>
 </main>
 
+<!-- The footer.  document.write() is used here for a one-shot,
+     pre-DOMContentLoaded year stamp — no need for a global handler
+     when the value is needed exactly once at parse time.  In any
+     other context document.write would be a code smell; this is the
+     one legitimate use that survived the modern era. -->
 <footer id="site-footer" role="contentinfo">
   <span>&copy; <script>document.write(new Date().getFullYear())</script> MindAttic LLC</span>
 </footer>
 
 <script>
+/* ═══════════════════════════════════════════════════════════════════════
+   §  12  SCRIPTS
+   ─────────────────────────────────────────────────────────────────────
+   Four small IIFEs.  Each owns one feature, exposes nothing, and ends
+   with `}());`.  No shared state, no globals, no framework — if any
+   one of them fails to run the others keep working.
+
+     A.  Theme toggle ............ Crossfades light/dark, persists
+                                    the choice in localStorage, and
+                                    paints a conic-gradient progress
+                                    ring on the toggle button while
+                                    the transition is in flight.
+
+     B.  Footer pin .............. Pins the footer to the bottom of
+                                    the viewport when the document
+                                    is shorter than the window.
+
+     C.  Projects grid shine ..... Equalizes card heights, sets up
+                                    the per-card shine coordinate
+                                    system, and runs four parallel
+                                    sweep animations driven by a
+                                    Carmack-style fast inverse sqrt
+                                    PRNG (overkill, but fun).
+
+     D.  External link hint ...... Appends a screen-reader-only
+                                    "(opens in new tab)" suffix to
+                                    every target="_blank" link so
+                                    assistive tech announces the
+                                    behavior before the user clicks.
+
+   Style notes: ES5 var, no arrow functions, no const/let.  This
+   file targets every browser that ships in 2026 without Babel — and
+   that includes the older WebViews on devices people actually use.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── A. Theme toggle ──────────────────────────────────────────────── */
 (function () {
   var btn = document.getElementById('theme-toggle');
   var html = document.documentElement;
 
+  // The two backdrop layers we'll crossfade between.
   var bgLight = document.getElementById('bg-light');
   var bgDark  = document.getElementById('bg-dark');
 
+  // Truth lives on the <html> element's data-theme attribute.
+  // Single-source-of-truth means anyone (CSS, JS, DevTools) can read
+  // the current theme by looking at one place.
   function isDark() {
     return html.getAttribute('data-theme') === 'dark';
   }
 
+  // Update the button glyph + ARIA state in lockstep.  The glyph is
+  // a Unicode codepoint, not an SVG, so it inherits the button's
+  // text color automatically — one less style to wire up.
   function setBtnIcon(dark) {
     var icon = btn.querySelector('span') || btn;
     icon.textContent = dark ? '☾' : '☀';
@@ -532,12 +880,19 @@ h1, h2 {
     btn.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
   }
 
-  // Fade in on page load
+  // Initial paint on page load.  Important: we set both layers to
+  // opacity 0 first, then fade in the active one.  This avoids the
+  // momentary flash where both layers would be visible at once if
+  // we relied on a CSS default of opacity:1.
+  //
+  // The double rAF is intentional — one frame for the browser to
+  // commit the opacity:0 with transition:none, another to apply the
+  // transition rule before the opacity:1 takes effect.  Without it,
+  // the browser may collapse all three writes into a single style
+  // recalc and the fade never animates.
   function initTheme(dark) {
-    // Set theme colors instantly
     html.setAttribute('data-theme', dark ? 'dark' : 'light');
     setBtnIcon(dark);
-    // Start both at 0, then fade in the correct one
     bgLight.style.transition = 'none';
     bgDark.style.transition  = 'none';
     bgLight.style.opacity = '0';
@@ -551,6 +906,14 @@ h1, h2 {
     });
   }
 
+  // Paints a conic-gradient progress ring around the toggle button
+  // for the duration of the crossfade.  We compose two backgrounds:
+  //   • a flat fill in --bg2, clipped to the padding box, so the
+  //     button face stays visible.
+  //   • a conic-gradient with a fill ratio of `pct`, clipped to the
+  //     border box, so only the 2px border ring shows the gradient.
+  // Two layers + two clip targets + transparent border = ring effect
+  // without any extra DOM.  rAF keeps it buttery on 60+ Hz displays.
   function startBorderLoader(duration) {
     var start = performance.now();
     function clearLoader() {
@@ -579,7 +942,17 @@ h1, h2 {
     requestAnimationFrame(step);
   }
 
-  // Sequenced toggle: fade out → swap colors → fade in
+  // The choreographed theme switch:
+  //   1.  fade out the current bg (fast, ~330ms)
+  //   2.  swap the data-theme attribute (instant — drives all
+  //       theme-token-based color shifts in CSS)
+  //   3.  fade in the new bg (slow, ~2000ms — gives the eye time
+  //       to register the palette change as a deliberate moment)
+  //
+  // The `switching` lock prevents a double-click mid-animation from
+  // desynchronizing the two background layers.  Total budget is
+  // 400ms (out) + 2330ms (in) ≈ 2.73s — matched by the progress
+  // ring's `startBorderLoader(2730)` call below.
   var switching = false;
   function apply(dark) {
     if (switching) return;
@@ -617,6 +990,14 @@ h1, h2 {
     }, 400);
   }
 
+  // Read the user's previous choice.  The localStorage call is
+  // wrapped in a try/catch because it throws in:
+  //   • Safari private mode (older versions)
+  //   • Sites embedded as iframes with storage disabled
+  //   • Browsers where the user has nuked all storage manually
+  // We treat any failure as "no saved preference" and fall through
+  // to the default, which is dark — matching the brand and the
+  // `prefers-color-scheme` media query in § 2.
   var saved = null;
   try { saved = localStorage.getItem('theme'); } catch (e) {}
   initTheme(saved !== 'light');
@@ -626,7 +1007,16 @@ h1, h2 {
   });
 }());
 
+/* ── B. Footer pin ────────────────────────────────────────────────── */
 (function () {
+  // If the document is shorter than the viewport, pin the footer to
+  // the bottom so the page doesn't end with awkward dead space.  As
+  // soon as content overflows we let the footer flow normally — a
+  // pinned footer over scrollable content would cover the last line.
+  //
+  // Re-running on resize handles two cases at once:
+  //   • The user resizes the window past the scroll threshold.
+  //   • A late-loading font reflows the page below the viewport.
   var footer = document.getElementById('site-footer');
 
   function pinFooter() {
@@ -638,11 +1028,19 @@ h1, h2 {
   window.addEventListener('resize', pinFooter);
 }());
 
+/* ── C. Projects grid: equal heights + travelling shine ─────────────── */
 (function () {
   var grid = document.querySelector('.projects-grid');
   var items = document.querySelectorAll('.projects-grid .project');
   if (!grid || !items.length) return;
 
+  // Equalizes card heights by measuring the tallest card and forcing
+  // every card to match.  Three passes are needed:
+  //   1.  Clear any previous min-height so cards can re-shrink.
+  //   2.  Measure (single read pass — no layout thrash).
+  //   3.  Apply the new min-height in one go.
+  // We don't use CSS Grid `align-items: stretch` because each card
+  // already has its own internal flex layout we want to preserve.
   function equalize() {
     for (var i = 0; i < items.length; i++) items[i].style.minHeight = '';
     var max = 0;
@@ -652,6 +1050,14 @@ h1, h2 {
     for (var i = 0; i < items.length; i++) items[i].style.minHeight = max + 'px';
   }
 
+  // Each card needs to know two things to paint the shine correctly:
+  //   • Its own offset within the grid (--shine-x / --shine-y), so
+  //     the streak appears in the right place relative to the grid.
+  //   • The grid's overall dimensions (--grid-w / --grid-h), so the
+  //     streak can be sized to span the whole grid and pass smoothly
+  //     from one card to the next without seams.
+  // We compute these from getBoundingClientRect so they reflect the
+  // post-layout truth, including any zoom or device-pixel quirks.
   function setShineCoords() {
     var gridRect = grid.getBoundingClientRect();
     var gw = gridRect.width;
@@ -670,19 +1076,40 @@ h1, h2 {
     setShineCoords();
   }
 
+  // First measurement happens immediately, then again once the
+  // custom font finishes loading (its metrics shift line heights and
+  // therefore card heights).  document.fonts.ready resolves once
+  // every face declared in CSS has loaded — we await it instead of
+  // guessing a timeout.
   refresh();
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(refresh);
   }
 
+  // Debounced resize handler: 100ms after the last resize event, we
+  // re-equalize and re-measure.  Without the debounce, dragging a
+  // window edge would call refresh() on every pixel of motion.
   var t;
   window.addEventListener('resize', function () {
     clearTimeout(t);
     t = setTimeout(refresh, 100);
   });
 
-  // Carmack's Fast Inverse Square Root (Quake III Arena), ported to JS via
-  // a Float32 / Int32 buffer view to perform the bit-level reinterpretation.
+  // ─── A pinch of unnecessary fun ────────────────────────────────
+  // The shine animation needs random durations and random delays so
+  // it doesn't look mechanical.  Math.random() would have been fine
+  // — but where's the joy in that?
+  //
+  // Below: John Carmack's Fast Inverse Square Root from Quake III,
+  // famous for the magic constant 0x5f3759df, ported to JavaScript
+  // via a shared ArrayBuffer that lets us reinterpret the bits of a
+  // float as an integer (and back).  We pair it with a tiny linear
+  // congruential generator and mix the two together.  The result is
+  // a deterministic, fast, and pleasingly chaotic source of [0,1)
+  // numbers — and a small love letter to game-dev history.
+  //
+  // If you want to swap this for Math.random(), nothing here will
+  // notice.  Keep it because it's there.
   var qbuf = new ArrayBuffer(4);
   var qf32 = new Float32Array(qbuf);
   var qi32 = new Int32Array(qbuf);
@@ -704,10 +1131,18 @@ h1, h2 {
     return (n % 1000000) / 1000000;
   }
 
+  // Bail out of the animation entirely if the user has asked the OS
+  // for reduced motion.  We've already done equalize/setShineCoords,
+  // so the layout is correct — we just don't schedule any sweeps.
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     return;
   }
 
+  // Four parallel "slots" — meaning up to four streaks can be on the
+  // grid simultaneously.  Each slot drives one of the four gradient
+  // layers in the CSS background (--shine-progress-1..4).  When a
+  // slot finishes its sweep, it resets to 0 and becomes available
+  // for the next spawn.
   var SHINE_SLOTS = 4;
   var slotBusy = [];
   for (var s = 0; s < SHINE_SLOTS; s++) {
@@ -715,6 +1150,11 @@ h1, h2 {
     grid.style.setProperty('--shine-progress-' + (s + 1), '0');
   }
 
+  // One sweep: drive --shine-progress-N from 0 to 1 over `dur` ms,
+  // then reset to 0 and free the slot.  The easing is the standard
+  // ease-in-out-quad formula — accelerates, holds the middle, then
+  // decelerates.  Linear interpolation looked too constant; this
+  // breathes.
   function startSweep(slot) {
     slotBusy[slot] = true;
     var dur = 1397 + qrand() * 2230;      // 1.397–3.627s sweep (max speed -20% again)
@@ -735,6 +1175,11 @@ h1, h2 {
     requestAnimationFrame(step);
   }
 
+  // The spawn loop ticks at a randomized interval and tries to start
+  // a sweep on the first available slot.  When all four slots are
+  // busy, the tick is a no-op — the next tick will try again.  The
+  // varied delay is what keeps the rhythm from feeling robotic; you
+  // never know when the next streak will appear.
   function spawnLoop() {
     for (var s = 0; s < SHINE_SLOTS; s++) {
       if (!slotBusy[s]) { startSweep(s); break; }
@@ -745,7 +1190,22 @@ h1, h2 {
   spawnLoop();
 }());
 
+/* ── D. External link hint (screen-reader only) ─────────────────────── */
 (function () {
+  // For every anchor that opens in a new tab, append a hidden span
+  // that screen readers will announce as "(opens in new tab)" right
+  // after the link text.  Sighted users see no change.
+  //
+  // We do this in JS rather than hand-typing the suffix in HTML for
+  // two reasons:
+  //   1.  It's centrally enforced — you can't forget it on a new
+  //       link, the script picks it up automatically.
+  //   2.  It uses .visually-hidden (defined in § 4) so the same
+  //       a11y class controls every screen-reader-only string in
+  //       the project.  One pattern, one place.
+  //
+  // The querySelector guard ensures the hint isn't appended twice if
+  // the script is somehow run more than once.
   var links = document.querySelectorAll('a[target="_blank"]');
   for (var i = 0; i < links.length; i++) {
     var link = links[i];
@@ -757,6 +1217,15 @@ h1, h2 {
     }
   }
 }());
+
+/* ───────────────────────────────────────────────────────────────────────
+   That's the whole site.  No service worker, no analytics, no auto-
+   updating widgets, no "skeleton" loading state — just markup, styles,
+   and a sprinkle of script, in that order, served from one file.
+
+   Thanks for reading.  Seriously.  If you got this far you are exactly
+   the kind of person these comments were written for.
+   ─────────────────────────────────────────────────────────────────── */
 </script>
 </body>
 </html>
