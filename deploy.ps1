@@ -28,6 +28,18 @@ $useSsl     = [bool]$cfg.FtpUseSsl
 $usePassive = [bool]$cfg.FtpPassive
 
 # ---------------------------------------------------------------------------
+# Sync from MindAttic.Shared into index.htm marker block (if available)
+# ---------------------------------------------------------------------------
+$syncScript = "$PSScriptRoot\..\MindAttic.Shared\sync\sync-mindattic-com.ps1"
+if (Test-Path $syncScript) {
+    Write-Host "Syncing MindAttic.Shared front-page bundle..."
+    & powershell -NoProfile -ExecutionPolicy Bypass -File $syncScript -TargetIndex "$PSScriptRoot\index.htm"
+    if ($LASTEXITCODE -ne 0) { Write-Error "MindAttic.Shared sync failed."; exit 1 }
+} else {
+    Write-Host "Note: MindAttic.Shared sync script not found at $syncScript (skipping)."
+}
+
+# ---------------------------------------------------------------------------
 # Stamp index.htm
 # ---------------------------------------------------------------------------
 $indexFile = "$PSScriptRoot\index.htm"
