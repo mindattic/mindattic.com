@@ -28,15 +28,45 @@ $useSsl     = [bool]$cfg.FtpUseSsl
 $usePassive = [bool]$cfg.FtpPassive
 
 # ---------------------------------------------------------------------------
-# Sync from MindAttic.Shared into index.htm marker block (if available)
+# Pull latest MindAttic.Shared from origin, then sync into index.htm
 # ---------------------------------------------------------------------------
-$syncScript = "$PSScriptRoot\..\MindAttic.Shared\sync\sync-mindattic-com.ps1"
+$sharedRoot = "$PSScriptRoot\..\MindAttic.Shared"
+$syncScript = "$sharedRoot\sync\sync-mindattic-com.ps1"
+
+if (Test-Path "$sharedRoot\.git") {
+    Write-Host "Pulling MindAttic.Shared..."
+    $ErrorActionPreference = "Continue"
+    $pullOut = & git -C $sharedRoot pull --no-edit --no-rebase 2>&1
+    $pullExit = $LASTEXITCODE
+    $ErrorActionPreference = "Stop"
+    if ($pullExit -ne 0) {
+        Write-Host "Warning: git pull failed (exit $pullExit). Proceeding with whatever is checked out locally." -ForegroundColor Yellow
+        Write-Host $pullOut -ForegroundColor Yellow
+    }
+} else {
+    Write-Host "Note: MindAttic.Shared is not a git repo at $sharedRoot (skipping pull)."
+}
+
 if (Test-Path $syncScript) {
     Write-Host "Syncing MindAttic.Shared front-page bundle..."
     & powershell -NoProfile -ExecutionPolicy Bypass -File $syncScript -TargetIndex "$PSScriptRoot\index.htm"
     if ($LASTEXITCODE -ne 0) { Write-Error "MindAttic.Shared sync failed."; exit 1 }
 } else {
     Write-Host "Note: MindAttic.Shared sync script not found at $syncScript (skipping)."
+}
+
+# ---------------------------------------------------------------------------
+# Pull project tile descriptions from GitHub (best-effort)
+# ---------------------------------------------------------------------------
+$fetchScript = "$PSScriptRoot\fetch-descriptions.ps1"
+if (Test-Path $fetchScript) {
+    Write-Host "Fetching GitHub repo descriptions..."
+    & powershell -NoProfile -ExecutionPolicy Bypass -File $fetchScript
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Note: fetch-descriptions.ps1 exited $LASTEXITCODE (continuing)." -ForegroundColor Yellow
+    }
+} else {
+    Write-Host "Note: fetch-descriptions.ps1 not found (skipping)."
 }
 
 # ---------------------------------------------------------------------------
