@@ -28,15 +28,15 @@ $useSsl     = [bool]$cfg.FtpUseSsl
 $usePassive = [bool]$cfg.FtpPassive
 
 # ---------------------------------------------------------------------------
-# Pull latest MindAttic.Shared from origin, then sync into index.htm
+# Pull latest MindAttic.Content from origin, then sync into index.htm
 # ---------------------------------------------------------------------------
-$sharedRoot = "$PSScriptRoot\..\MindAttic.Shared"
-$syncScript = "$sharedRoot\sync\sync-mindattic-com.ps1"
+$contentRoot = "$PSScriptRoot\..\MindAttic.Content"
+$syncScript = "$contentRoot\sync\sync-mindattic-com.ps1"
 
-if (Test-Path "$sharedRoot\.git") {
-    Write-Host "Pulling MindAttic.Shared..."
+if (Test-Path "$contentRoot\.git") {
+    Write-Host "Pulling MindAttic.Content..."
     $ErrorActionPreference = "Continue"
-    $pullOut = & git -C $sharedRoot pull --no-edit --no-rebase 2>&1
+    $pullOut = & git -C $contentRoot pull --no-edit --no-rebase 2>&1
     $pullExit = $LASTEXITCODE
     $ErrorActionPreference = "Stop"
     if ($pullExit -ne 0) {
@@ -44,15 +44,15 @@ if (Test-Path "$sharedRoot\.git") {
         Write-Host $pullOut -ForegroundColor Yellow
     }
 } else {
-    Write-Host "Note: MindAttic.Shared is not a git repo at $sharedRoot (skipping pull)."
+    Write-Host "Note: MindAttic.Content is not a git repo at $contentRoot (skipping pull)."
 }
 
 if (Test-Path $syncScript) {
-    Write-Host "Syncing MindAttic.Shared front-page bundle..."
+    Write-Host "Syncing MindAttic.Content front-page bundle..."
     & powershell -NoProfile -ExecutionPolicy Bypass -File $syncScript -TargetIndex "$PSScriptRoot\index.htm"
-    if ($LASTEXITCODE -ne 0) { Write-Error "MindAttic.Shared sync failed."; exit 1 }
+    if ($LASTEXITCODE -ne 0) { Write-Error "MindAttic.Content sync failed."; exit 1 }
 } else {
-    Write-Host "Note: MindAttic.Shared sync script not found at $syncScript (skipping)."
+    Write-Host "Note: MindAttic.Content sync script not found at $syncScript (skipping)."
 }
 
 # ---------------------------------------------------------------------------
