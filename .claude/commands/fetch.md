@@ -1,4 +1,4 @@
-Regenerate the Software Development board-grid on the front page from public mindattic repos on GitHub.
+Regenerate the Software board-grid on the front page from public mindattic repos on GitHub. The Hardware section is hand-maintained and is not touched — repos featured there are listed in the script's `-IgnoreRepos` parameter (default: `Claudia`) so they aren't duplicated back into Software.
 
 Run:
 

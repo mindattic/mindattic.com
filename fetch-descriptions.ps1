@@ -1,11 +1,16 @@
-# fetch-descriptions.ps1 - regenerate the Software Development board-grid
-# from public mindattic repos.
+# fetch-descriptions.ps1 - regenerate the Software AND Hardware board-grids
+# on index.htm from public mindattic repos, partitioned by GitHub topic.
 #
-# Source of truth: GitHub. Public visibility decides whether a repo
-# appears on the site; description and homepage URL drive its content.
+# Source of truth: GitHub repo topics + descriptions.
+#   - Topic 'software' -> goes in <h2>Software</h2> grid (tile ids prefixed sd-)
+#   - Topic 'hardware' -> goes in <h2>Hardware</h2> grid (tile ids prefixed hw-)
+#   - Public repos with neither topic are NOT shown on the homepage.
+#
 # To feature a repo:    make it public, set a description (and optionally
-#                       a homepage URL for the Live Demo button).
-# To hide a repo:       make it private.
+#                       a homepage URL for the "Open" button), and add the
+#                       'software' or 'hardware' topic:
+#                         gh repo edit mindattic/<name> --add-topic software
+# To hide a repo:       remove the topic, or make it private.
 # To refresh the site:  run /fetch (or /deploy, which calls this first).
 #
 # What this script does:
@@ -90,7 +95,7 @@ try {
 Write-Host "Fetching public $Owner repos..." -ForegroundColor Cyan
 
 $ErrorActionPreference = "Continue"
-$json = & gh repo list $Owner --visibility public --limit 100 --json name,description,homepageUrl 2>$null
+$json = & gh repo list $Owner --visibility public --limit 100 --json name,description,homepageUrl,repositoryTopics 2>$null
 $listExit = $LASTEXITCODE
 $ErrorActionPreference = "Stop"
 
@@ -99,16 +104,38 @@ if ($listExit -ne 0 -or [string]::IsNullOrWhiteSpace($json)) {
     exit 1
 }
 
-$repos = $json | ConvertFrom-Json
+$allRepos = $json | ConvertFrom-Json
 
 # Skip the site repo itself (it shouldn't be a tile on its own homepage).
 $selfRepo = "$Owner.com"
-$repos = @($repos | Where-Object { $_.name -ne $selfRepo })
+$allRepos = @($allRepos | Where-Object { $_.name -ne $selfRepo })
 
-# Alphabetize case-insensitively.
-$repos = @($repos | Sort-Object @{Expression={$_.name.ToLowerInvariant()}})
+# Partition by repo topic. Repos with neither 'software' nor 'hardware' do
+# not appear on the homepage at all - tagging is the opt-in.
+function Test-HasTopic {
+    param($Repo, [string]$Topic)
+    if (-not $Repo.repositoryTopics) { return $false }
+    foreach ($t in $Repo.repositoryTopics) {
+        if ($t.name -and $t.name.ToLowerInvariant() -eq $Topic) { return $true }
+    }
+    return $false
+}
 
-Write-Host "Found $($repos.Count) public repo(s) to include (excluding $selfRepo)." -ForegroundColor Cyan
+$softwareRepos = @($allRepos | Where-Object { Test-HasTopic -Repo $_ -Topic 'software' } |
+    Sort-Object @{Expression={$_.name.ToLowerInvariant()}})
+$hardwareRepos = @($allRepos | Where-Object { Test-HasTopic -Repo $_ -Topic 'hardware' } |
+    Sort-Object @{Expression={$_.name.ToLowerInvariant()}})
+
+$untagged = @($allRepos | Where-Object {
+    -not (Test-HasTopic -Repo $_ -Topic 'software') -and
+    -not (Test-HasTopic -Repo $_ -Topic 'hardware')
+})
+
+Write-Host ("Software: {0} repo(s) | Hardware: {1} repo(s) | Untagged (not shown): {2}" -f `
+    $softwareRepos.Count, $hardwareRepos.Count, $untagged.Count) -ForegroundColor Cyan
+if ($untagged.Count -gt 0) {
+    foreach ($u in $untagged) { Write-Host ("  (skip) {0}" -f $u.name) -ForegroundColor DarkGray }
+}
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -124,19 +151,20 @@ function ConvertTo-HtmlText {
     return $t
 }
 
-# Build a stable HTML element id from a repo name.
+# Build a stable HTML element id from a repo name. Prefix distinguishes
+# sections: sd- for Software, hw- for Hardware.
 function Get-TileId {
-    param([string]$Name)
+    param([string]$Name, [string]$Prefix = 'sd')
     $n = $Name.ToLowerInvariant() -replace '[^a-z0-9]', ''
-    return "sd-$n"
+    return "$Prefix-$n"
 }
 
 # Build the markup for one tile (button + toggleable desc panel).
 function New-TileHtml {
-    param($Repo, [string]$Owner, [string]$Nl)
+    param($Repo, [string]$Owner, [string]$Nl, [string]$Prefix = 'sd')
 
     $name = $Repo.name
-    $id = Get-TileId $name
+    $id = Get-TileId -Name $name -Prefix $Prefix
     $ghUrl = "https://github.com/$Owner/$name"
 
     $desc = $Repo.description
@@ -151,7 +179,7 @@ function New-TileHtml {
     if (-not [string]::IsNullOrWhiteSpace($Repo.homepageUrl)) {
         $liveUrl = $Repo.homepageUrl
         $liveAttr = " data-live=`"$liveUrl`""
-        $liveBtn = "            <a class=`"board-tile-btn`" href=`"$liveUrl`" target=`"_blank`" rel=`"noopener noreferrer`">Demo</a>$Nl"
+        $liveBtn = "            <a class=`"board-tile-btn`" href=`"$liveUrl`" target=`"_blank`" rel=`"noopener noreferrer`">Open</a>$Nl"
     }
 
     $sb = [System.Text.StringBuilder]::new()
@@ -313,42 +341,50 @@ if ($content.IndexOf("`r`n") -ge 0) {
 }
 
 # ---------------------------------------------------------------------------
-# Build the new <div class="board-grid">...</div>
+# Build a `<div class="board-grid">...</div>` block from a repo list.
 # ---------------------------------------------------------------------------
-$gridSb = [System.Text.StringBuilder]::new()
-[void]$gridSb.Append("      <div class=`"board-grid`">$nl")
-
-$first = $true
-foreach ($r in $repos) {
-    if (-not $first) { [void]$gridSb.Append($nl) }
-    $first = $false
-    [void]$gridSb.Append((New-TileHtml -Repo $r -Owner $Owner -Nl $nl))
+function New-GridHtml {
+    param([object[]]$Repos, [string]$Owner, [string]$Nl, [string]$Prefix)
+    $sb = [System.Text.StringBuilder]::new()
+    [void]$sb.Append("      <div class=`"board-grid`">$Nl")
+    $first = $true
+    foreach ($r in $Repos) {
+        if (-not $first) { [void]$sb.Append($Nl) }
+        $first = $false
+        [void]$sb.Append((New-TileHtml -Repo $r -Owner $Owner -Nl $Nl -Prefix $Prefix))
+    }
+    [void]$sb.Append("      </div>")
+    return $sb.ToString()
 }
 
-[void]$gridSb.Append("      </div>")
-$newGrid = $gridSb.ToString()
+# Replace the first `<div class="board-grid">...</div>` that appears AFTER
+# the given <h2>...</h2> anchor. This lets us target Software vs. Hardware
+# independently. Returns the new content (or original if no change/match).
+function Update-SectionGrid {
+    param([string]$Content, [string]$Heading, [string]$NewGrid)
 
-# ---------------------------------------------------------------------------
-# Replace the existing board-grid block in index.htm
-# ---------------------------------------------------------------------------
-# (?s)             dotall -- so .*? spans newlines
-# Match from start `      <div class="board-grid">` up through the first
-# `      </div>` that's followed by `    </div>` (the board-section close).
-# That sequence uniquely identifies the grid-end among nested </div>s.
-$pattern = '(?s)      <div class="board-grid">.*?\r?\n      </div>(?=\r?\n    </div>)'
-$rx = [regex]::new($pattern)
-
-if (-not $rx.IsMatch($content)) {
-    Write-Error 'Could not locate <div class="board-grid">...</div> block in index.htm.'
-    exit 1
+    $escH = [regex]::Escape("<h2>$Heading</h2>")
+    # (?s) dotall; capture the prefix (h2 + everything up to the grid open)
+    # so we can reattach it verbatim in the replacement.
+    $pattern = "(?s)($escH.*?)      <div class=`"board-grid`">.*?\r?\n      </div>(?=\r?\n    </div>)"
+    $rx = [regex]::new($pattern)
+    if (-not $rx.IsMatch($Content)) {
+        Write-Host ("  WARNING: could not locate <h2>{0}</h2> + board-grid block." -f $Heading) -ForegroundColor Yellow
+        return $Content
+    }
+    # MatchEvaluator so '$' in descriptions isn't treated as a backreference.
+    return $rx.Replace($Content, { param($m) $m.Groups[1].Value + $NewGrid }, 1)
 }
 
-# Use a MatchEvaluator so '$' characters in descriptions (e.g. "$0.01")
-# are not interpreted as regex backreferences in the replacement.
-$newContent = $rx.Replace($content, { param($m) $newGrid }, 1)
+$softwareGrid = New-GridHtml -Repos $softwareRepos -Owner $Owner -Nl $nl -Prefix 'sd'
+$hardwareGrid = New-GridHtml -Repos $hardwareRepos -Owner $Owner -Nl $nl -Prefix 'hw'
+
+$newContent = $content
+$newContent = Update-SectionGrid -Content $newContent -Heading 'Software' -NewGrid $softwareGrid
+$newContent = Update-SectionGrid -Content $newContent -Heading 'Hardware' -NewGrid $hardwareGrid
 
 if ($newContent -eq $content) {
-    Write-Host "No changes needed - grid already up to date." -ForegroundColor DarkGray
+    Write-Host "No changes needed - grids already up to date." -ForegroundColor DarkGray
     exit 0
 }
 
@@ -357,13 +393,18 @@ if ($newContent -eq $content) {
 # ---------------------------------------------------------------------------
 # Report
 # ---------------------------------------------------------------------------
-Write-Host ""
-Write-Host "Regenerated $($repos.Count) tile(s):" -ForegroundColor Green
-foreach ($r in $repos) {
-    if ([string]::IsNullOrWhiteSpace($r.homepageUrl)) { $mark = ' ' } else { $mark = '*' }
-    if ($r.description) { $descLen = $r.description.Length } else { $descLen = 0 }
-    Write-Host ("  [$mark] {0,-32} {1,4} chars desc" -f $r.name, $descLen) -ForegroundColor DarkGray
+function Write-RepoReport {
+    param([string]$Title, [object[]]$Repos)
+    Write-Host ""
+    Write-Host ("Regenerated {0} tile(s) [{1}]:" -f $Repos.Count, $Title) -ForegroundColor Green
+    foreach ($r in $Repos) {
+        if ([string]::IsNullOrWhiteSpace($r.homepageUrl)) { $mark = ' ' } else { $mark = '*' }
+        if ($r.description) { $descLen = $r.description.Length } else { $descLen = 0 }
+        Write-Host ("  [$mark] {0,-32} {1,4} chars desc" -f $r.name, $descLen) -ForegroundColor DarkGray
+    }
 }
+Write-RepoReport -Title 'Software' -Repos $softwareRepos
+Write-RepoReport -Title 'Hardware' -Repos $hardwareRepos
 Write-Host ""
-Write-Host "* = has homepage URL (Live Demo button)" -ForegroundColor DarkGray
+Write-Host "* = has homepage URL (Open button)" -ForegroundColor DarkGray
 exit 0
