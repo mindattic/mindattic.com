@@ -38,7 +38,7 @@ $contentRoot = "$PSScriptRoot\..\MindAttic.Components"
 $syncScript = "$contentRoot\sync\sync-mindattic-com.ps1"
 
 if (-not (Test-Path "$contentRoot\.git")) {
-    Write-Error "MindAttic.Components is not a git repo at $contentRoot. Clone https://github.com/mindattic/MindAttic.Content.git into that folder before re-running deploy."
+    Write-Error "MindAttic.Components is not a git repo at $contentRoot. Clone https://github.com/mindattic/MindAttic.Components.git into that folder before re-running deploy."
     exit 1
 }
 
