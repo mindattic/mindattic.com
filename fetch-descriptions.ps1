@@ -17,7 +17,7 @@
 #   1. gh repo list mindattic --visibility public --json name,description,homepageUrl
 #   2. Filter out the site repo itself (mindattic.com).
 #   3. Sort by name, case-insensitive.
-#   4. Build a <button> + <div class="board-tile-desc"> block per repo,
+#   4. Build a <button> + <div class="tabPage"> block per repo,
 #      using the current tile structure (image placeholder left,
 #      description right, button row below).
 #   5. Replace the entire <div class="board-grid">...</div> block in
@@ -179,23 +179,23 @@ function New-TileHtml {
     if (-not [string]::IsNullOrWhiteSpace($Repo.homepageUrl)) {
         $liveUrl = $Repo.homepageUrl
         $liveAttr = " data-live=`"$liveUrl`""
-        $liveBtn = "            <a class=`"board-tile-btn`" href=`"$liveUrl`" target=`"_blank`" rel=`"noopener noreferrer`">Open</a>$Nl"
+        $liveBtn = "            <a class=`"tabButton-btn`" href=`"$liveUrl`" target=`"_blank`" rel=`"noopener noreferrer`">Open</a>$Nl"
     }
 
     $sb = [System.Text.StringBuilder]::new()
-    [void]$sb.Append("        <button type=`"button`" class=`"board-tile`" data-target=`"$id`">$Nl")
-    [void]$sb.Append("          <div class=`"board-tile-name`">$name</div>$Nl")
+    [void]$sb.Append("        <button type=`"button`" class=`"tabButton`" data-target=`"$id`">$Nl")
+    [void]$sb.Append("          <div class=`"tabButton-name`">$name</div>$Nl")
     [void]$sb.Append("        </button>$Nl")
-    [void]$sb.Append("        <div class=`"board-tile-desc`" id=`"$id`" data-repo=`"$Owner/$name`"$liveAttr>$Nl")
-    [void]$sb.Append("          <div class=`"board-tile-desc-row`">$Nl")
-    [void]$sb.Append("            <div class=`"board-tile-desc-img board-tile-desc-img--placeholder`" aria-hidden=`"true`"></div>$Nl")
-    [void]$sb.Append("            <div class=`"board-tile-desc-body`">$Nl")
-    [void]$sb.Append("              <p class=`"board-tile-desc-text`">$descHtml</p>$Nl")
+    [void]$sb.Append("        <div class=`"tabPage`" id=`"$id`" data-repo=`"$Owner/$name`"$liveAttr>$Nl")
+    [void]$sb.Append("          <div class=`"tabPage-row`">$Nl")
+    [void]$sb.Append("            <div class=`"tabPage-img tabPage-img--placeholder`" aria-hidden=`"true`"></div>$Nl")
+    [void]$sb.Append("            <div class=`"tabPage-body`">$Nl")
+    [void]$sb.Append("              <p class=`"tabPage-text`">$descHtml</p>$Nl")
     [void]$sb.Append("            </div>$Nl")
     [void]$sb.Append("          </div>$Nl")
-    [void]$sb.Append("          <div class=`"board-tile-desc-links`">$Nl")
+    [void]$sb.Append("          <div class=`"tabPage-links`">$Nl")
     if ($liveBtn) { [void]$sb.Append($liveBtn) }
-    [void]$sb.Append("            <a class=`"board-tile-btn`" href=`"$ghUrl`" target=`"_blank`" rel=`"noopener noreferrer`">GitHub</a>$Nl")
+    [void]$sb.Append("            <a class=`"tabButton-btn`" href=`"$ghUrl`" target=`"_blank`" rel=`"noopener noreferrer`">GitHub</a>$Nl")
     [void]$sb.Append("          </div>$Nl")
     [void]$sb.Append("        </div>$Nl")
     return $sb.ToString()
