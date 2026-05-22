@@ -1,4 +1,4 @@
-﻿<!-- Last Updated: 2026-05-21T03:57:54Z -->
+﻿<!-- Last Updated: 2026-05-22T05:30:43Z -->
 <!--
   ════════════════════════════════════════════════════════════════════════════
   ║  Hey. You opened View Source.  I see you, and I appreciate it.           ║
@@ -182,13 +182,7 @@
 /* ──────────────────────────────────────────────────────────────────────
    §  4   ACCESSIBILITY
    ──────────────────────────────────────────────────────────────────────
-   Three patterns live here:
-
-     .skip-link        — a "skip to main content" anchor that sits off-
-                          screen (top: -40px) until it gains keyboard
-                          focus, at which point it slides into view.
-                          Keyboard users get a one-tab way past the
-                          repeating header.  Pointer users never see it.
+   Two patterns live here:
 
      .visually-hidden  — the standard A11Y trick to hide an element
                           from sighted users while keeping it in the
@@ -208,26 +202,6 @@
    equivalent.  These are the bare-minimum keyboard-and-screen-reader
    guarantees this page makes.
    ──────────────────────────────────────────────────────────────────── */
-
-.skip-link {
-  position: absolute;
-  top: -40px;
-  left: 8px;
-  z-index: 200;
-  background: var(--bg);
-  color: var(--accent);
-  padding: 8px 12px;
-  border: 2px solid var(--accent);
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: top 0.2s ease;
-}
-
-.skip-link:focus {
-  top: 8px;
-  outline: none;
-}
 
 .visually-hidden {
   position: absolute;
@@ -333,7 +307,7 @@ a:hover {
 
 #site-name {
   font-family: 'Attic', serif;
-  font-size: 5rem;
+  font-size: clamp(2rem, 11vw, 5rem);
   color: #fff;
   letter-spacing: 0.01em;
   line-height: 1;
@@ -6828,22 +6802,54 @@ window.consoleBg = (function () {
     var texLayers = null;   // built once; images reused across navigations
     var texRaf    = null;
     var texTimer  = null;
+    var texResizeBound = false;
+    var texCanvas = null;
+    var texRO     = null;
+
+    function syncTexCanvasSize() {
+        if (!texCanvas) return;
+        // Use the live viewport — the host is position:fixed;inset:0 so it always
+        // matches window inner dimensions. Round in case devicePixelRatio gives
+        // fractional pixels.
+        var w = Math.max(1, Math.round(window.innerWidth));
+        var h = Math.max(1, Math.round(window.innerHeight));
+        if (texCanvas.width  !== w) texCanvas.width  = w;
+        if (texCanvas.height !== h) texCanvas.height = h;
+    }
 
     function initTextures() {
         var host = getHost();
         if (!host) return;
 
-        // Reuse or create canvas inside host
+        // Reuse or create canvas inside host. CSS width/height:100% forces the
+        // canvas's CSS box to stretch with the host regardless of the width/height
+        // HTML attributes (which would otherwise also dictate the CSS box size
+        // and leave new viewport area uncovered after a maximize/resize).
         var canvas = host.querySelector('.cbg-tex');
         if (!canvas) {
             canvas = document.createElement('canvas');
             canvas.className = 'cbg-tex';
-            canvas.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:0;';
+            canvas.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:0;';
             host.insertBefore(canvas, host.firstChild);
+        } else {
+            canvas.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:0;';
         }
-        canvas.width  = window.innerWidth;
-        canvas.height = window.innerHeight;
+        texCanvas = canvas;
+        syncTexCanvasSize();
         var ctx = canvas.getContext('2d');
+
+        // Keep the bitmap in sync with the viewport — without this the parallax
+        // texture only paints the original window area after a maximize/resize.
+        if (!texResizeBound) {
+            window.addEventListener('resize', syncTexCanvasSize);
+            // Also observe the host directly so zoom changes, devtools panel
+            // toggles, and other container-size shifts repaint correctly.
+            if (typeof ResizeObserver !== 'undefined') {
+                texRO = new ResizeObserver(syncTexCanvasSize);
+                texRO.observe(host);
+            }
+            texResizeBound = true;
+        }
 
         // Build layer descriptors once; images survive page navigations
         if (!texLayers) {
@@ -6879,9 +6885,10 @@ window.consoleBg = (function () {
 
         // Restart animation loop on the (possibly new) canvas
         if (texRaf) cancelAnimationFrame(texRaf);
-        var w = canvas.width, h = canvas.height;
 
         function frame() {
+            // Read live so a resize-driven canvas.width/height change takes effect immediately.
+            var w = canvas.width, h = canvas.height;
             ctx.clearRect(0, 0, w, h);
             texLayers.forEach(function (t) {
                 if (!t.img.complete || !t.img.naturalWidth) return;
@@ -10156,7 +10163,6 @@ window.consoleBg = (function () {
      ─────────────────────────────────────────────────────────────────────
      Reading order from top to bottom, exactly as the DOM ships:
 
-       a.skip-link        — keyboard shortcut to jump past the header.
        <header>           — the wordmark strip.
        <main>             — Portfolio links, Projects grid, Books grid.
        <footer>           — Copyright, optionally pinned by JS.
@@ -10165,12 +10171,6 @@ window.consoleBg = (function () {
      the HTML5 elements imply them, because some screen readers still
      prefer the explicit form.  Belt + suspenders.
      ═══════════════════════════════════════════════════════════════════ -->
-
-<!-- The skip link is the very first focusable element, so the first
-     Tab keystroke after page load lands here.  Press Enter and you
-     jump straight to <main>, bypassing the header.  Critical for
-     anyone navigating without a mouse. -->
-<a class="skip-link" href="#content">Skip to main content</a>
 
 <header id="site-header" role="banner">
   <h1 id="site-name">MindAttic</h1>
