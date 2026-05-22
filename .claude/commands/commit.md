@@ -1,4 +1,4 @@
-Stage and commit the current working-tree changes.
+Stage, commit, and push the current working-tree changes.
 
 Run these in parallel first:
 - `git status` (no `-uall` flag — large repos)
