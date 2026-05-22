@@ -28,13 +28,13 @@ $useSsl     = [bool]$cfg.FtpUseSsl
 $usePassive = [bool]$cfg.FtpPassive
 
 # ---------------------------------------------------------------------------
-# Pull latest MindAttic.Content from origin, then sync into index.htm
+# Pull latest MindAttic.Components from origin, then sync into index.htm
 # ---------------------------------------------------------------------------
-$contentRoot = "$PSScriptRoot\..\MindAttic.Content"
+$contentRoot = "$PSScriptRoot\..\MindAttic.Components"
 $syncScript = "$contentRoot\sync\sync-mindattic-com.ps1"
 
 if (Test-Path "$contentRoot\.git") {
-    Write-Host "Pulling MindAttic.Content..."
+    Write-Host "Pulling MindAttic.Components..."
     $ErrorActionPreference = "Continue"
     $pullOut = & git -C $contentRoot pull --no-edit --no-rebase 2>&1
     $pullExit = $LASTEXITCODE
@@ -44,15 +44,15 @@ if (Test-Path "$contentRoot\.git") {
         Write-Host $pullOut -ForegroundColor Yellow
     }
 } else {
-    Write-Host "Note: MindAttic.Content is not a git repo at $contentRoot (skipping pull)."
+    Write-Host "Note: MindAttic.Components is not a git repo at $contentRoot (skipping pull)."
 }
 
 if (Test-Path $syncScript) {
-    Write-Host "Syncing MindAttic.Content front-page bundle..."
+    Write-Host "Syncing MindAttic.Components front-page bundle..."
     & powershell -NoProfile -ExecutionPolicy Bypass -File $syncScript -TargetIndex "$PSScriptRoot\index.htm"
-    if ($LASTEXITCODE -ne 0) { Write-Error "MindAttic.Content sync failed."; exit 1 }
+    if ($LASTEXITCODE -ne 0) { Write-Error "MindAttic.Components sync failed."; exit 1 }
 } else {
-    Write-Host "Note: MindAttic.Content sync script not found at $syncScript (skipping)."
+    Write-Host "Note: MindAttic.Components sync script not found at $syncScript (skipping)."
 }
 
 # ---------------------------------------------------------------------------
