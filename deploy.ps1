@@ -28,32 +28,39 @@ $useSsl     = [bool]$cfg.FtpUseSsl
 $usePassive = [bool]$cfg.FtpPassive
 
 # ---------------------------------------------------------------------------
-# Pull latest MindAttic.Components from origin, then sync into index.htm
+# Pull latest MindAttic.Components from origin, then sync into index.htm.
+# This step is MANDATORY -- MindAttic.Components is the canonical source for
+# the inlined component bundles (Cyberspace, fonts, PinFooter, WebSnapshot).
+# A silent skip here would let stale or broken content ship to production,
+# so every failure mode is a hard error before any FTP upload happens.
 # ---------------------------------------------------------------------------
 $contentRoot = "$PSScriptRoot\..\MindAttic.Components"
 $syncScript = "$contentRoot\sync\sync-mindattic-com.ps1"
 
-if (Test-Path "$contentRoot\.git") {
-    Write-Host "Pulling MindAttic.Components..."
-    $ErrorActionPreference = "Continue"
-    $pullOut = & git -C $contentRoot pull --no-edit --no-rebase 2>&1
-    $pullExit = $LASTEXITCODE
-    $ErrorActionPreference = "Stop"
-    if ($pullExit -ne 0) {
-        Write-Host "Warning: git pull failed (exit $pullExit). Proceeding with whatever is checked out locally." -ForegroundColor Yellow
-        Write-Host $pullOut -ForegroundColor Yellow
-    }
-} else {
-    Write-Host "Note: MindAttic.Components is not a git repo at $contentRoot (skipping pull)."
+if (-not (Test-Path "$contentRoot\.git")) {
+    Write-Error "MindAttic.Components is not a git repo at $contentRoot. Clone https://github.com/mindattic/MindAttic.Content.git into that folder before re-running deploy."
+    exit 1
 }
 
-if (Test-Path $syncScript) {
-    Write-Host "Syncing MindAttic.Components front-page bundle..."
-    & powershell -NoProfile -ExecutionPolicy Bypass -File $syncScript -TargetIndex "$PSScriptRoot\index.htm"
-    if ($LASTEXITCODE -ne 0) { Write-Error "MindAttic.Components sync failed."; exit 1 }
-} else {
-    Write-Host "Note: MindAttic.Components sync script not found at $syncScript (skipping)."
+Write-Host "Pulling MindAttic.Components..."
+$ErrorActionPreference = "Continue"
+$pullOut = & git -C $contentRoot pull --no-edit --no-rebase 2>&1
+$pullExit = $LASTEXITCODE
+$ErrorActionPreference = "Stop"
+if ($pullExit -ne 0) {
+    Write-Host $pullOut -ForegroundColor Red
+    Write-Error "git pull on MindAttic.Components failed (exit $pullExit). Resolve the conflict / uncommitted changes and re-run deploy. Refusing to ship potentially stale components."
+    exit 1
 }
+
+if (-not (Test-Path $syncScript)) {
+    Write-Error "MindAttic.Components sync script not found at $syncScript. Cannot inline subscribed components without it."
+    exit 1
+}
+
+Write-Host "Syncing MindAttic.Components front-page bundle..."
+& powershell -NoProfile -ExecutionPolicy Bypass -File $syncScript -TargetIndex "$PSScriptRoot\index.htm"
+if ($LASTEXITCODE -ne 0) { Write-Error "MindAttic.Components sync failed."; exit 1 }
 
 # ---------------------------------------------------------------------------
 # Pull project tile descriptions from GitHub (best-effort)
