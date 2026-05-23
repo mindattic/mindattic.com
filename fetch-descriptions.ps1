@@ -138,6 +138,26 @@ if ($untagged.Count -gt 0) {
 }
 
 # ---------------------------------------------------------------------------
+# Landing-page subscribers (from MindAttic.UIUX/subscribers.json) get a
+# deterministic /<slug>.htm URL on mindattic.com root. Repos outside that set
+# fall back to GitHub's homepageUrl (external live demos like StreetSamurai).
+# Repo names are derived from each subscriber's target-path parent folder so a
+# subscriber whose logical name diverges from its repo (rare, but possible)
+# still resolves correctly.
+# ---------------------------------------------------------------------------
+$script:landingRepos = @{}
+$subscribersPath = Join-Path $PSScriptRoot "..\MindAttic.UIUX\subscribers.json"
+if (Test-Path $subscribersPath) {
+    $subCfg = Get-Content -Raw -Path $subscribersPath -Encoding UTF8 | ConvertFrom-Json
+    foreach ($prop in $subCfg.subscribers.PSObject.Properties) {
+        if ($prop.Value.kind -eq 'landing-page') {
+            $repoName = Split-Path -Leaf (Split-Path -Parent $prop.Value.target)
+            $script:landingRepos[$repoName] = $true
+        }
+    }
+}
+
+# ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
@@ -174,10 +194,19 @@ function New-TileHtml {
         $descHtml = ConvertTo-HtmlText $desc
     }
 
+    # Landing-page subscribers get a deterministic /<slug>.htm URL on
+    # mindattic.com root; others fall back to GitHub's homepageUrl. Repos
+    # with neither get no Open button.
+    $liveUrl = $null
+    if ($script:landingRepos.ContainsKey($name)) {
+        $liveUrl = "https://mindattic.com/" + ($name.ToLowerInvariant() -replace '[^a-z0-9]', '') + ".htm"
+    } elseif (-not [string]::IsNullOrWhiteSpace($Repo.homepageUrl)) {
+        $liveUrl = $Repo.homepageUrl
+    }
+
     $liveAttr = ''
     $liveBtn = ''
-    if (-not [string]::IsNullOrWhiteSpace($Repo.homepageUrl)) {
-        $liveUrl = $Repo.homepageUrl
+    if ($liveUrl) {
         $liveAttr = " data-live=`"$liveUrl`""
         $liveBtn = "            <a class=`"tabButton-btn`" href=`"$liveUrl`" target=`"_blank`" rel=`"noopener noreferrer`">Open</a>$Nl"
     }
