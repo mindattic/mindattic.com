@@ -76,26 +76,9 @@ if (Test-Path $fetchScript) {
     Write-Host "Note: fetch-descriptions.ps1 not found (skipping)."
 }
 
-# ---------------------------------------------------------------------------
-# Regenerate per-project landing pages from each repo's README.md.
-# Writes <slug>.htm files at mindattic.com root for every landing-page
-# subscriber in MindAttic.UIUX/subscribers.json. The upload step
-# below picks them up via the *.htm glob -- no per-page wiring needed.
-# Failures here ARE a hard stop: shipping index.htm with Open buttons that
-# point at /<slug>.htm pages we never built would leave the homepage with
-# broken links.
-# ---------------------------------------------------------------------------
-$buildPagesScript = "$PSScriptRoot\build-project-pages.ps1"
-if (Test-Path $buildPagesScript) {
-    Write-Host "Building per-project landing pages..."
-    & powershell -NoProfile -ExecutionPolicy Bypass -File $buildPagesScript
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "build-project-pages.ps1 failed (exit $LASTEXITCODE). Aborting deploy so we don't ship index.htm with broken Open links."
-        exit 1
-    }
-} else {
-    Write-Host "Note: build-project-pages.ps1 not found (skipping per-project pages)."
-}
+# Per-project <slug>.htm landing pages are built and deployed by
+# MindAttic.Catalog (projects.json + src/build.js + src/deploy.js).
+# This deploy ships only the root index.htm.
 
 # ---------------------------------------------------------------------------
 # Stamp index.htm
