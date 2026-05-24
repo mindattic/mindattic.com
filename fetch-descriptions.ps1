@@ -138,7 +138,7 @@ if ($untagged.Count -gt 0) {
 }
 
 # ---------------------------------------------------------------------------
-# Landing-page subscribers (from MindAttic.UIUX/subscribers.json) get a
+# Landing-page subscribers (from MindAttic.UiUx/subscribers.json) get a
 # deterministic /<slug>.htm URL on mindattic.com root. Repos outside that set
 # fall back to GitHub's homepageUrl (external live demos like StreetSamurai).
 # Repo names are derived from each subscriber's target-path parent folder so a
@@ -146,7 +146,7 @@ if ($untagged.Count -gt 0) {
 # still resolves correctly.
 # ---------------------------------------------------------------------------
 $script:landingRepos = @{}
-$subscribersPath = Join-Path $PSScriptRoot "..\MindAttic.UIUX\subscribers.json"
+$subscribersPath = Join-Path $PSScriptRoot "..\MindAttic.UiUx\subscribers.json"
 if (Test-Path $subscribersPath) {
     $subCfg = Get-Content -Raw -Path $subscribersPath -Encoding UTF8 | ConvertFrom-Json
     foreach ($prop in $subCfg.subscribers.PSObject.Properties) {

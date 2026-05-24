@@ -28,39 +28,39 @@ $useSsl     = [bool]$cfg.FtpUseSsl
 $usePassive = [bool]$cfg.FtpPassive
 
 # ---------------------------------------------------------------------------
-# Pull latest MindAttic.UIUX from origin, then sync into index.htm.
-# This step is MANDATORY -- MindAttic.UIUX is the canonical source for
+# Pull latest MindAttic.UiUx from origin, then sync into index.htm.
+# This step is MANDATORY -- MindAttic.UiUx is the canonical source for
 # the inlined component bundles (Cyberspace, fonts, PinFooter, WebSnapshot).
 # A silent skip here would let stale or broken content ship to production,
 # so every failure mode is a hard error before any FTP upload happens.
 # ---------------------------------------------------------------------------
-$contentRoot = "$PSScriptRoot\..\MindAttic.UIUX"
+$contentRoot = "$PSScriptRoot\..\MindAttic.UiUx"
 $syncScript = "$contentRoot\sync\sync-mindattic-com.ps1"
 
 if (-not (Test-Path "$contentRoot\.git")) {
-    Write-Error "MindAttic.UIUX is not a git repo at $contentRoot. Clone https://github.com/mindattic/MindAttic.UIUX.git into that folder before re-running deploy."
+    Write-Error "MindAttic.UiUx is not a git repo at $contentRoot. Clone https://github.com/mindattic/MindAttic.UiUx.git into that folder before re-running deploy."
     exit 1
 }
 
-Write-Host "Pulling MindAttic.UIUX..."
+Write-Host "Pulling MindAttic.UiUx..."
 $ErrorActionPreference = "Continue"
 $pullOut = & git -C $contentRoot pull --no-edit --no-rebase 2>&1
 $pullExit = $LASTEXITCODE
 $ErrorActionPreference = "Stop"
 if ($pullExit -ne 0) {
     Write-Host $pullOut -ForegroundColor Red
-    Write-Error "git pull on MindAttic.UIUX failed (exit $pullExit). Resolve the conflict / uncommitted changes and re-run deploy. Refusing to ship potentially stale components."
+    Write-Error "git pull on MindAttic.UiUx failed (exit $pullExit). Resolve the conflict / uncommitted changes and re-run deploy. Refusing to ship potentially stale components."
     exit 1
 }
 
 if (-not (Test-Path $syncScript)) {
-    Write-Error "MindAttic.UIUX sync script not found at $syncScript. Cannot inline subscribed components without it."
+    Write-Error "MindAttic.UiUx sync script not found at $syncScript. Cannot inline subscribed components without it."
     exit 1
 }
 
-Write-Host "Syncing MindAttic.UIUX front-page bundle..."
+Write-Host "Syncing MindAttic.UiUx front-page bundle..."
 & powershell -NoProfile -ExecutionPolicy Bypass -File $syncScript -TargetIndex "$PSScriptRoot\index.htm"
-if ($LASTEXITCODE -ne 0) { Write-Error "MindAttic.UIUX sync failed."; exit 1 }
+if ($LASTEXITCODE -ne 0) { Write-Error "MindAttic.UiUx sync failed."; exit 1 }
 
 # ---------------------------------------------------------------------------
 # Pull project tile descriptions from GitHub (best-effort)
