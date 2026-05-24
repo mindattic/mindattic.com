@@ -1,9 +1,21 @@
-Deploy the site to the FTP server. Run the following command and report the result:
+Deploy mindattic.com via **MindAttic.Deploy** (sibling repo at `D:\Projects\MindAttic\MindAttic.Deploy`). One repo owns the whole FTP pipeline; the per-project `deploy.ps1` / `deploy.bat` / `settings.json` in this folder are retired.
+
+Run this command and report the result:
 
 ```
-powershell -NoProfile -ExecutionPolicy Bypass -File "D:\Projects\MindAttic\mindattic.com\deploy.ps1"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "cd D:\Projects\MindAttic\MindAttic.Deploy; npm run deploy -- --site mindattic.com"
 ```
 
-After running, summarize how many files were uploaded successfully and flag any failures.
+This site's profile lives in `MindAttic.Deploy/projects.json` under `sites[]`. It runs:
 
-Note: do NOT invoke via `cmd /c "D:/.../deploy.bat"` -- the forward slashes in the path get parsed as cmd switches (cmd uses `/` as its switch prefix), so the command silently opens a fresh shell in the directory and exits without running anything. Call deploy.ps1 directly via PowerShell as shown above.
+1. `git pull` on the sibling `MindAttic.UiUx` repo (hard-fail if dirty or missing).
+2. `MindAttic.UiUx/sync/sync-mindattic-com.ps1` to splice the latest subscribed components (Outfit/Attic fonts, Cyberspace, PinFooter, WebSnapshot) into `index.htm`.
+3. `fetch-descriptions.ps1` (best-effort: pulls GitHub repo descriptions / Amazon book synopses for the project tiles).
+4. Stamps `index.htm` with the current UTC `<!-- Last Updated: ... -->`.
+5. FTPS-uploads every `*.htm` in this folder to `/mindattic.com/`.
+
+After running, summarize how many files uploaded and flag any failures.
+
+Notes:
+- FTP credentials are centralized in `MindAttic.Deploy/secrets/ftp.json` (gitignored). The per-site `settings.json` is no longer read.
+- Per-project landing pages (`mindattic.com/<slug>.htm`) ship via the catalog half of the same pipeline (`npm run deploy -- --only <slug>`), not via this command.
