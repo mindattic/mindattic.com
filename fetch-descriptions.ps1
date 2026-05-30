@@ -1,10 +1,22 @@
-# fetch-descriptions.ps1 - regenerate the Software AND Hardware board-grids
-# on index.htm from public mindattic repos, partitioned by GitHub topic.
+# fetch-descriptions.ps1 - regenerate the Software, MindAttic Ecosystem AND
+# Hardware board-grids on index.htm from public mindattic repos, partitioned
+# by GitHub topic (and, within 'software', by repo-name prefix).
 #
 # Source of truth: GitHub repo topics + descriptions.
-#   - Topic 'software' -> goes in <h2>Software</h2> grid (tile ids prefixed sd-)
+#   - Topic 'software' -> goes in a software grid, then sub-partitioned:
+#       * repos named 'MindAttic.*' -> <h2>MindAttic Ecosystem</h2> grid
+#       * all other software repos  -> <h2>Software</h2> grid
+#     Both use tile ids prefixed sd- (ids are unique per repo name, so the
+#     two grids never collide).
 #   - Topic 'hardware' -> goes in <h2>Hardware</h2> grid (tile ids prefixed hw-)
 #   - Public repos with neither topic are NOT shown on the homepage.
+#
+# The <h2>MindAttic Ecosystem</h2> heading carries a hand-authored flow diagram
+# (an inline SVG between <!-- BEGIN/END ECOSYSTEM-DIAGRAM --> markers) in the
+# region BETWEEN the heading and its board-grid. Update-SectionGrid only
+# replaces the board-grid and reattaches that prefix verbatim, so the diagram
+# survives every regeneration. Edit diagram/ecosystem.mmd + run diagram/render.ps1
+# to change it -- never hand-edit the inlined SVG.
 #
 # To feature a repo:    make it public, set a description (and optionally
 #                       a homepage URL for the "Open" button), and add the
@@ -121,18 +133,26 @@ function Test-HasTopic {
     return $false
 }
 
-$softwareRepos = @($allRepos | Where-Object { Test-HasTopic -Repo $_ -Topic 'software' } |
+$allSoftwareRepos = @($allRepos | Where-Object { Test-HasTopic -Repo $_ -Topic 'software' } |
     Sort-Object @{Expression={$_.name.ToLowerInvariant()}})
 $hardwareRepos = @($allRepos | Where-Object { Test-HasTopic -Repo $_ -Topic 'hardware' } |
     Sort-Object @{Expression={$_.name.ToLowerInvariant()}})
+
+# Sub-partition the software-tagged repos: the foundational 'MindAttic.*'
+# libraries (Vault, Legion, Psst, Console, ...) get their own
+# <h2>MindAttic Ecosystem</h2> section; everything else stays under
+# <h2>Software</h2>. Both grids use the sd- id prefix (ids are derived from the
+# repo name, so they stay unique across the two grids).
+$ecosystemRepos = @($allSoftwareRepos | Where-Object { $_.name -match '^MindAttic\.' })
+$softwareRepos  = @($allSoftwareRepos | Where-Object { $_.name -notmatch '^MindAttic\.' })
 
 $untagged = @($allRepos | Where-Object {
     -not (Test-HasTopic -Repo $_ -Topic 'software') -and
     -not (Test-HasTopic -Repo $_ -Topic 'hardware')
 })
 
-Write-Host ("Software: {0} repo(s) | Hardware: {1} repo(s) | Untagged (not shown): {2}" -f `
-    $softwareRepos.Count, $hardwareRepos.Count, $untagged.Count) -ForegroundColor Cyan
+Write-Host ("Software: {0} repo(s) | MindAttic Ecosystem: {1} repo(s) | Hardware: {2} repo(s) | Untagged (not shown): {3}" -f `
+    $softwareRepos.Count, $ecosystemRepos.Count, $hardwareRepos.Count, $untagged.Count) -ForegroundColor Cyan
 if ($untagged.Count -gt 0) {
     foreach ($u in $untagged) { Write-Host ("  (skip) {0}" -f $u.name) -ForegroundColor DarkGray }
 }
@@ -450,11 +470,13 @@ function Update-SectionGrid {
     return $rx.Replace($Content, { param($m) $m.Groups[1].Value + $NewGrid }, 1)
 }
 
-$softwareGrid = New-GridHtml -Repos $softwareRepos -Owner $Owner -Nl $nl -Prefix 'sd'
-$hardwareGrid = New-GridHtml -Repos $hardwareRepos -Owner $Owner -Nl $nl -Prefix 'hw'
+$softwareGrid  = New-GridHtml -Repos $softwareRepos  -Owner $Owner -Nl $nl -Prefix 'sd'
+$ecosystemGrid = New-GridHtml -Repos $ecosystemRepos -Owner $Owner -Nl $nl -Prefix 'sd'
+$hardwareGrid  = New-GridHtml -Repos $hardwareRepos  -Owner $Owner -Nl $nl -Prefix 'hw'
 
 $newContent = $content
 $newContent = Update-SectionGrid -Content $newContent -Heading 'Software' -NewGrid $softwareGrid
+$newContent = Update-SectionGrid -Content $newContent -Heading 'MindAttic Ecosystem' -NewGrid $ecosystemGrid
 $newContent = Update-SectionGrid -Content $newContent -Heading 'Hardware' -NewGrid $hardwareGrid
 
 if ($newContent -eq $content) {
@@ -483,6 +505,7 @@ function Write-RepoReport {
     }
 }
 Write-RepoReport -Title 'Software' -Repos $softwareRepos
+Write-RepoReport -Title 'MindAttic Ecosystem' -Repos $ecosystemRepos
 Write-RepoReport -Title 'Hardware' -Repos $hardwareRepos
 Write-Host ""
 Write-Host "* = has Open button (projects.json landing page or homepage URL)" -ForegroundColor DarkGray

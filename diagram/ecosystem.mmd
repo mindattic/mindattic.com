@@ -1,0 +1,13 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"Outfit, system-ui, sans-serif"}}}%%
+graph TD
+  Vault["MindAttic.Vault<br/>credentials + settings"]
+  Legion["MindAttic.Legion<br/>multi-LLM consensus"]
+  Psst["MindAttic.Psst<br/>CLI notifier"]
+  Console["MindAttic.Console<br/>CLI orchestrator"]
+  Apps["Apps<br/>IdiotProof · Tutor · ThinkTank<br/>MediaButler · TaxRateCollector"]
+
+  Vault --> Legion
+  Vault --> Psst
+  Vault --> Console
+  Vault --> Apps
+  Legion --> Apps

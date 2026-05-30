@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" role="img" aria-labelledby="eco-diagram-title eco-diagram-desc" font-family="Outfit, system-ui, sans-serif">
+  <title id="eco-diagram-title">MindAttic ecosystem dependency flow</title>
+  <desc id="eco-diagram-desc">MindAttic.Vault provides credentials and settings to MindAttic.Legion, MindAttic.Psst, MindAttic.Console and the apps. MindAttic.Legion provides multi-LLM consensus to the apps (IdiotProof, Tutor, ThinkTank, MediaButler, TaxRateCollector).</desc>
+  <defs>
+    <marker id="eco-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#3d6fa3"/>
+    </marker>
+  </defs>
+  <style>
+    .eco-node { fill: #1a1e25; stroke: #6ba3e8; stroke-width: 1.5; }
+    .eco-edge { fill: none; stroke: #3d6fa3; stroke-width: 2; marker-end: url(#eco-arrow); }
+    .eco-title { fill: #e8eaf0; font-size: 15px; font-weight: 600; text-anchor: middle; }
+    .eco-sub   { fill: #9aa0b0; font-size: 11px; text-anchor: middle; }
+  </style>
+
+  <!-- edges (drawn first, behind nodes) -->
+  <line class="eco-edge" x1="360" y1="72"  x2="360" y2="147"/>                         <!-- Vault -> Legion -->
+  <line class="eco-edge" x1="360" y1="200" x2="360" y2="307"/>                         <!-- Legion -> Apps -->
+  <line class="eco-edge" x1="312" y1="70"  x2="150" y2="147"/>                         <!-- Vault -> Psst -->
+  <line class="eco-edge" x1="408" y1="70"  x2="588" y2="147"/>                         <!-- Vault -> Console -->
+  <path class="eco-edge" d="M293,58 C236,130 236,248 264,305"/>                        <!-- Vault -> Apps (direct) -->
+
+  <!-- Vault (foundation) -->
+  <rect class="eco-node" x="285" y="22" width="150" height="50" rx="8"/>
+  <text class="eco-title" x="360" y="43">MindAttic.Vault</text>
+  <text class="eco-sub"   x="360" y="60">credentials + settings</text>
+
+  <!-- Psst -->
+  <rect class="eco-node" x="55" y="150" width="130" height="50" rx="8"/>
+  <text class="eco-title" x="120" y="171">MindAttic.Psst</text>
+  <text class="eco-sub"   x="120" y="188">CLI notifier</text>
+
+  <!-- Legion -->
+  <rect class="eco-node" x="285" y="150" width="150" height="50" rx="8"/>
+  <text class="eco-title" x="360" y="171">MindAttic.Legion</text>
+  <text class="eco-sub"   x="360" y="188">multi-LLM consensus</text>
+
+  <!-- Console -->
+  <rect class="eco-node" x="525" y="150" width="150" height="50" rx="8"/>
+  <text class="eco-title" x="600" y="171">MindAttic.Console</text>
+  <text class="eco-sub"   x="600" y="188">CLI orchestrator</text>
+
+  <!-- Apps (consumers) -->
+  <rect class="eco-node" x="205" y="310" width="310" height="76" rx="8"/>
+  <text class="eco-title" x="360" y="333">Apps</text>
+  <text class="eco-sub"   x="360" y="354">IdiotProof &#183; Tutor &#183; ThinkTank</text>
+  <text class="eco-sub"   x="360" y="371">MediaButler &#183; TaxRateCollector</text>
+</svg>
