@@ -220,13 +220,20 @@ function New-TileHtml {
     # entry's external `openUrl` if present, else the deterministic
     # /<slug>.htm at the mindattic.com root. Repos outside the manifest fall
     # back to GitHub's homepageUrl. Repos with neither get no Open button.
+    # Internal landing pages (mindattic.com/<slug>.htm) each carry a BackHomeM
+    # button, so their Open link navigates in the SAME window -- drilling into a
+    # sub-project doesn't pile up browser tabs, and BackHomeM brings you back.
+    # External apps (openUrl) and third-party homepages still open in a new tab,
+    # since we don't control a back-home affordance on those pages.
     $liveUrl = $null
+    $liveInternal = $false
     if ($script:landingRepos.ContainsKey($name)) {
         $entry = $script:landingRepos[$name]
         if (-not [string]::IsNullOrWhiteSpace($entry.OpenUrl)) {
             $liveUrl = $entry.OpenUrl
         } else {
             $liveUrl = "https://mindattic.com/$($entry.Slug).htm"
+            $liveInternal = $true
         }
     } elseif (-not [string]::IsNullOrWhiteSpace($Repo.homepageUrl)) {
         $liveUrl = $Repo.homepageUrl
@@ -236,7 +243,11 @@ function New-TileHtml {
     $liveBtn = ''
     if ($liveUrl) {
         $liveAttr = " data-live=`"$liveUrl`""
-        $liveBtn = "            <a class=`"tabButton-btn`" href=`"$liveUrl`" target=`"_blank`" rel=`"noopener noreferrer`">Open</a>$Nl"
+        if ($liveInternal) {
+            $liveBtn = "            <a class=`"tabButton-btn`" href=`"$liveUrl`">Open</a>$Nl"
+        } else {
+            $liveBtn = "            <a class=`"tabButton-btn`" href=`"$liveUrl`" target=`"_blank`" rel=`"noopener noreferrer`">Open</a>$Nl"
+        }
     }
 
     $sb = [System.Text.StringBuilder]::new()
