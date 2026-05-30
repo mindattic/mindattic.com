@@ -138,22 +138,24 @@ if ($untagged.Count -gt 0) {
 }
 
 # ---------------------------------------------------------------------------
-# Landing-page subscribers (from MindAttic.UiUx/subscribers.json) get a
-# deterministic /<slug>.htm URL on mindattic.com root. Repos outside that set
-# fall back to GitHub's homepageUrl (external live demos like StreetSamurai).
-# Repo names are derived from each subscriber's target-path parent folder so a
-# subscriber whose logical name diverges from its repo (rare, but possible)
-# still resolves correctly.
+# Landing-page manifest (from MindAttic.Deploy/projects.json) is the single
+# source of truth for the "Open" URL of each card. MindAttic.Deploy renders
+# every projects[] entry to /mindattic.com/<slug>.htm at the site root, so a
+# repo listed there gets that deterministic /<slug>.htm URL -- UNLESS the entry
+# carries an `openUrl` (an external app like StreetSamurai / Cursory on Azure),
+# in which case the card links straight to that app. Repos NOT in projects.json
+# (or untracked here) fall back to GitHub's homepageUrl. This replaced the old
+# subscribers.json `landing-page` lookup, which went dead when the catalog
+# pages moved out of the UiUx splice pipeline into MindAttic.Deploy.
 # ---------------------------------------------------------------------------
 $script:landingRepos = @{}
-$subscribersPath = Join-Path $PSScriptRoot "..\MindAttic.UiUx\subscribers.json"
-if (Test-Path $subscribersPath) {
-    $subCfg = Get-Content -Raw -Path $subscribersPath -Encoding UTF8 | ConvertFrom-Json
-    foreach ($prop in $subCfg.subscribers.PSObject.Properties) {
-        if ($prop.Value.kind -eq 'landing-page') {
-            $repoName = Split-Path -Leaf (Split-Path -Parent $prop.Value.target)
-            $script:landingRepos[$repoName] = $true
-        }
+$projectsPath = Join-Path $PSScriptRoot "..\MindAttic.Deploy\projects.json"
+if (Test-Path $projectsPath) {
+    $projCfg = Get-Content -Raw -Path $projectsPath -Encoding UTF8 | ConvertFrom-Json
+    foreach ($p in $projCfg.projects) {
+        if (-not $p.repo -or -not $p.slug) { continue }
+        $openUrl = if ($p.PSObject.Properties.Name -contains 'openUrl') { $p.openUrl } else { $null }
+        $script:landingRepos[$p.repo] = [pscustomobject]@{ Slug = $p.slug; OpenUrl = $openUrl }
     }
 }
 
@@ -179,6 +181,26 @@ function Get-TileId {
     return "$Prefix-$n"
 }
 
+# Per-repo preview images. The Software/Hardware tiles default to a generic
+# placeholder, but a repo can supply a real preview by dropping a sidecar at
+# previews\<repo-name>.b64 whose contents are a full data: URL (e.g.
+# "data:image/jpeg;base64,..."). Filenames match the GitHub repo name exactly
+# (case-sensitive on the lookup key), so "Mosaic" -> previews\Mosaic.b64 and
+# "mindatticcares.com" -> previews\mindatticcares.com.b64. These sidecars are
+# build-time inputs only; their base64 is inlined into index.htm here, so the
+# deployed site stays a single self-contained file.
+$script:PreviewDir = Join-Path $PSScriptRoot "previews"
+
+function Get-PreviewDataUrl {
+    param([string]$RepoName)
+    if (-not (Test-Path $script:PreviewDir)) { return $null }
+    $f = Join-Path $script:PreviewDir ($RepoName + ".b64")
+    if (-not (Test-Path $f)) { return $null }
+    $data = (Get-Content -Raw -Path $f -Encoding UTF8).Trim()
+    if ([string]::IsNullOrWhiteSpace($data)) { return $null }
+    return $data
+}
+
 # Build the markup for one tile (button + toggleable desc panel).
 function New-TileHtml {
     param($Repo, [string]$Owner, [string]$Nl, [string]$Prefix = 'sd')
@@ -194,12 +216,18 @@ function New-TileHtml {
         $descHtml = ConvertTo-HtmlText $desc
     }
 
-    # Landing-page subscribers get a deterministic /<slug>.htm URL on
-    # mindattic.com root; others fall back to GitHub's homepageUrl. Repos
-    # with neither get no Open button.
+    # Projects in MindAttic.Deploy/projects.json get their canonical URL: the
+    # entry's external `openUrl` if present, else the deterministic
+    # /<slug>.htm at the mindattic.com root. Repos outside the manifest fall
+    # back to GitHub's homepageUrl. Repos with neither get no Open button.
     $liveUrl = $null
     if ($script:landingRepos.ContainsKey($name)) {
-        $liveUrl = "https://mindattic.com/" + ($name.ToLowerInvariant() -replace '[^a-z0-9]', '') + ".htm"
+        $entry = $script:landingRepos[$name]
+        if (-not [string]::IsNullOrWhiteSpace($entry.OpenUrl)) {
+            $liveUrl = $entry.OpenUrl
+        } else {
+            $liveUrl = "https://mindattic.com/$($entry.Slug).htm"
+        }
     } elseif (-not [string]::IsNullOrWhiteSpace($Repo.homepageUrl)) {
         $liveUrl = $Repo.homepageUrl
     }
@@ -217,7 +245,13 @@ function New-TileHtml {
     [void]$sb.Append("        </button>$Nl")
     [void]$sb.Append("        <div class=`"tabPage`" id=`"$id`" data-repo=`"$Owner/$name`"$liveAttr>$Nl")
     [void]$sb.Append("          <div class=`"tabPage-row`">$Nl")
-    [void]$sb.Append("            <div class=`"tabPage-img tabPage-img--placeholder`" aria-hidden=`"true`"></div>$Nl")
+    $preview = Get-PreviewDataUrl -RepoName $name
+    if ($preview) {
+        $altText = ConvertTo-HtmlText "$name preview"
+        [void]$sb.Append("            <div class=`"tabPage-img`"><img src=`"$preview`" alt=`"$altText`" loading=`"lazy`"></div>$Nl")
+    } else {
+        [void]$sb.Append("            <div class=`"tabPage-img tabPage-img--placeholder`" aria-hidden=`"true`"></div>$Nl")
+    }
     [void]$sb.Append("            <div class=`"tabPage-body`">$Nl")
     [void]$sb.Append("              <p class=`"tabPage-text`">$descHtml</p>$Nl")
     [void]$sb.Append("            </div>$Nl")
@@ -427,7 +461,12 @@ function Write-RepoReport {
     Write-Host ""
     Write-Host ("Regenerated {0} tile(s) [{1}]:" -f $Repos.Count, $Title) -ForegroundColor Green
     foreach ($r in $Repos) {
-        if ([string]::IsNullOrWhiteSpace($r.homepageUrl)) { $mark = ' ' } else { $mark = '*' }
+        # Mirror New-TileHtml's URL resolution so the marker reflects the actual
+        # Open button: projects.json landing page (slug.htm or openUrl) first,
+        # else GitHub homepageUrl.
+        $hasOpen = $script:landingRepos.ContainsKey($r.name) -or
+                   (-not [string]::IsNullOrWhiteSpace($r.homepageUrl))
+        if ($hasOpen) { $mark = '*' } else { $mark = ' ' }
         if ($r.description) { $descLen = $r.description.Length } else { $descLen = 0 }
         Write-Host ("  [$mark] {0,-32} {1,4} chars desc" -f $r.name, $descLen) -ForegroundColor DarkGray
     }
@@ -435,5 +474,5 @@ function Write-RepoReport {
 Write-RepoReport -Title 'Software' -Repos $softwareRepos
 Write-RepoReport -Title 'Hardware' -Repos $hardwareRepos
 Write-Host ""
-Write-Host "* = has homepage URL (Open button)" -ForegroundColor DarkGray
+Write-Host "* = has Open button (projects.json landing page or homepage URL)" -ForegroundColor DarkGray
 exit 0
