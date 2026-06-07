@@ -152,8 +152,8 @@ idempotently, and `codex doctor` passes. Recorded evidence:
 - ✅ **Single-file site exists and is self-contained.** `index.htm` is present (~3,591 lines), with
   inlined `<style>`/`<script>` and base64 assets; `git ls-files` shows no external CSS/JS asset
   dependencies. *(Evidence: file present on disk; no `<link rel="stylesheet">`/external `<script src>`.)*
-- ✅ **Software tiles render from generated markup.** 19 `tabPage` panels (17 `sd-*` software,
-  2 `hw-*` hardware) exist in the board. *(Evidence: `id="sd-*"`/`id="hw-*"` anchors in `index.htm`.)*
+- ✅ **Software tiles render from generated markup.** 20 `tabPage` panels (18 `sd-*` software,
+  2 `hw-*` hardware) exist in the board. *(Evidence: `id="sd-*"`/`id="hw-*"` anchors in `index.htm`; confirmed 2026-06-07.)*
 - ✅ **Writing/Visual-Arts grids populated.** 7 `class="book"` entries (6 Amazon `/dp/` books + 1
   Mosaic art link). *(Evidence: `class="book" href=...` matches in `index.htm`.)*
 - ✅ **Ecosystem diagram inlined.** The `<svg>` rendered from `ecosystem.mmd` sits between the
@@ -165,8 +165,9 @@ idempotently, and `codex doctor` passes. Recorded evidence:
 - 🟡 **fetch / render / deploy generators.** Scripts exist and document idempotent behavior, but
   their runs depend on network/`gh`/`npx`/sibling repos and were **not executed** during this
   documentation pass. *(Unproven here; downgraded from any "done" claim.)*
-- 🟡 **Codex tooling.** `tools/codex.ps1 doctor` result is recorded in the Phase 3 report; treat as
-  proven only once doctor passes.
+- ✅ **Codex tooling.** `tools/codex.ps1 doctor` passes: 7 checks, 0 warnings, 0 errors.
+  *(Evidence: `powershell -NoProfile -ExecutionPolicy Bypass -File tools/codex.ps1 doctor` — all 7
+  checks [PASS] on 2026-06-07; no build/CI needed for this static site.)*
 
 ## 7. Active frontier {#MAC-§7}
 

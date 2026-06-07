@@ -70,7 +70,7 @@ rules, which are **inherited** here, not restated:
   by [§5](#MAC-§5).
 
 ## Status index (user stories)
-- done: 9  partial: 2  planned: 2  cut: 0
+- done: 10  partial: 1  planned: 2  cut: 0
 
 ## Latest amendment
 - MAC-A2 — Deployment centralized in MindAttic.Deploy (supersedes per-project deploy scripts) (amendment wins over the bible)

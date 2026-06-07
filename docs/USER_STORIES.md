@@ -38,8 +38,8 @@ updated: 2026-06-07
 
 - **MAC-US-B1 ✅** As a visitor, I can browse project tiles and expand any one for its description
   and links, so I can explore the MindAttic ecosystem. *Given* the Software/Hardware boards, *when*
-  I click a tile, *then* its `tabPage` panel opens. *(verified by: 17 `sd-*` + 2 `hw-*` `tabPage`
-  panels and the `wireClicks()` handler in `index.htm`.)*
+  I click a tile, *then* its `tabPage` panel opens. *(verified by: 18 `sd-*` + 2 `hw-*` `tabPage`
+  panels and the `wireClicks()` handler in `index.htm`; count confirmed 2026-06-07.)*
 - **MAC-US-B2 ✅** As the maintainer, I can feature/hide a software project by toggling its GitHub
   repo (public + `software`/`hardware` topic + description), so I never hand-edit tiles. *Given* a
   public repo, *when* I run `/fetch`, *then* the board-grid is rebuilt from repo metadata.
@@ -72,17 +72,18 @@ updated: 2026-06-07
   theme toggle" claim, so the README matches reality. *Given* the dark-locked site, *when* the
   README is edited, *then* it no longer advertises a toggle. *(planned: deferred — this Codex pass
   does not modify site content/README; tracked against [MAC-A1](AMENDMENTS.md#MAC-A1).)*
-- **MAC-US-D2 🟡** As the maintainer, I want a Codex doctor that validates the docs and the
+- **MAC-US-D2 ✅** As the maintainer, I want a Codex doctor that validates the docs and the
   bible↔code cross-references, so documentation can't silently rot. *Given* `tools/codex.ps1`,
   *when* I run `doctor`, *then* front-matter, IDs, cross-refs, cited paths, and digest freshness are
-  checked. *(partial until doctor is proven green — see Phase 3 report.)*
+  checked. *(verified by: `powershell -NoProfile -ExecutionPolicy Bypass -File tools/codex.ps1 doctor`
+  → 7 checks [PASS], 0 warnings, 0 errors on 2026-06-07.)*
 - **MAC-US-D3 ⬜** As the maintainer, I want the doctor to optionally run an HTML-validity / dead
   link check on `index.htm`, so regressions in the single file are caught. *(planned — see
   [RFC 0001](rfc/0001-codex-adoption.md).)*
 
 ## Priority backlog
 
-1. **MAC-US-D2** — prove `codex doctor` green (immediate; this pass).
+1. ~~**MAC-US-D2** — prove `codex doctor` green~~ ✅ done 2026-06-07.
 2. **MAC-US-D1** — correct the README theme-toggle line (needs maintainer sign-off on content).
 3. **MAC-US-C3 / MAC-US-B2** — run the `fetch` generator end-to-end and record idempotent output.
 4. **MAC-US-D3** — add an HTML-validity / link-check step the doctor can invoke.
