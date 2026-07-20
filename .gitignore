@@ -6,3 +6,6 @@
 
 # FTP deploy credentials — never commit
 /settings.json
+
+# Generated IdiotProof replay archive (published via MindAttic.Deploy, not committed)
+idiotproof/replays/
