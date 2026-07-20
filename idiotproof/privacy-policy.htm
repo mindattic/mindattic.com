@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>IdiotProof — Privacy Policy</title>
+<style>
+:root{--bg:#0a0d13;--panel:#10141d;--edge:#1e2530;--ink:#d7dbe4;--dim:#8b94a5;--faint:#5c6577;--accent:#f5c518;
+--sans:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+@media(prefers-color-scheme:light){:root{--bg:#f3f4f7;--panel:#fff;--edge:#e2e5ea;--ink:#1a1f2b;--dim:#5b6472;--faint:#8b94a3;--accent:#b98f00}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.65}
+.wrap{max-width:760px;margin:0 auto;padding:44px 22px 80px}
+h1{font-size:28px;margin:0 0 4px;letter-spacing:.2px}
+.meta{color:var(--faint);font-family:var(--mono);font-size:12.5px;margin-bottom:8px}
+.lead{color:var(--dim);font-size:15px;border-left:3px solid var(--accent);padding:2px 0 2px 14px;margin:22px 0 8px}
+h2{font-size:16px;margin:32px 0 8px;color:var(--ink)}
+h2 .n{font-family:var(--mono);color:var(--accent);font-size:13px;margin-right:8px}
+p,li{color:var(--dim);font-size:15px}p{margin:8px 0}ul{margin:8px 0;padding-left:22px}
+strong{color:var(--ink)}a{color:var(--accent)}
+.tbl{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+.tbl th,.tbl td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--edge);vertical-align:top;color:var(--dim)}
+.tbl th{color:var(--faint);font-family:var(--mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.4px}
+.tbl td strong{color:var(--ink)}
+footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--edge);color:var(--faint);font-family:var(--mono);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>IdiotProof — Privacy Policy</h1>
+  <div class="meta">Effective 2026-07-20 · Operated by MindAttic · contact ryandebraal@mindattic.com</div>
+  <p class="lead">This policy explains what data IdiotProof collects, how it is used to operate the service and
+  connect to your brokerage account, how it is protected, and the choices you have.</p>
+
+  <h2><span class="n">1</span>Who we are</h2>
+  <p>IdiotProof is operated by MindAttic ("we," "us"). It is software that connects to your own brokerage account
+  (Alpaca) to author and evaluate trading strategies and, when you enable it, place orders on your behalf.</p>
+
+  <h2><span class="n">2</span>What we collect</h2>
+  <table class="tbl">
+    <tr><th>Category</th><th>Examples</th></tr>
+    <tr><td><strong>Account &amp; identity</strong></td><td>The login/email you register, and authentication data needed to secure your account.</td></tr>
+    <tr><td><strong>Brokerage credentials</strong></td><td>The Alpaca API key/secret you provide, or the OAuth token you authorize. Stored <strong>encrypted at rest</strong> and used only to operate features you enable.</td></tr>
+    <tr><td><strong>Trading configuration</strong></td><td>Strategies you author, profiles, risk settings, watchlists, and preferences.</td></tr>
+    <tr><td><strong>Activity &amp; analysis</strong></td><td>Evaluations, replays, backtests, scanner results, orders/positions read from or placed through your connected account, and audit logs of gate decisions.</td></tr>
+    <tr><td><strong>Market data</strong></td><td>Price/volume data we fetch on your behalf from the broker's data API.</td></tr>
+    <tr><td><strong>Operational logs</strong></td><td>Diagnostic/error logs needed to run and secure the service. Secrets are never written to logs.</td></tr>
+  </table>
+
+  <h2><span class="n">3</span>How we use it</h2>
+  <ul>
+    <li>To authenticate you and secure your account.</li>
+    <li>To connect to your brokerage account, evaluate your strategies against market data, and — only when you enable it — place and manage orders on your behalf.</li>
+    <li>To generate the replays, analytics, and dataset features you request.</li>
+    <li>To operate, maintain, debug, and secure the service.</li>
+  </ul>
+  <p>We do <strong>not</strong> sell your personal data, and we do not use your credentials for anything beyond operating the features you turn on.</p>
+
+  <h2><span class="n">4</span>AI / automated evaluation</h2>
+  <p>Some features (strategy generation and a voter-panel check on candidate trades) route through MindAttic.Legion
+  to a large-language-model provider. Only the data needed for that specific check is sent. No order is placed on the
+  basis of an AI response alone — every candidate must also clear your strategy's conditions and the Risk Guardian's
+  pre-trade limits.</p>
+
+  <h2><span class="n">5</span>How we store and protect it</h2>
+  <p>Sensitive fields — brokerage credentials and OAuth tokens — are encrypted at rest using the platform's data-protection
+  keys and are never displayed in full or logged. Runtime state (strategies, preferences, audit logs, replay records) is
+  stored in a SQL database. We apply reasonable technical and organizational measures to protect your data; no method of
+  storage or transmission is 100% secure.</p>
+
+  <h2><span class="n">6</span>Who we share it with</h2>
+  <ul>
+    <li><strong>Your broker (Alpaca).</strong> To read your account and place the orders you authorize, we necessarily
+    exchange data with Alpaca. Your use of Alpaca is governed by Alpaca's own terms and privacy policy.</li>
+    <li><strong>LLM provider.</strong> The minimal data needed for strategy generation / voter checks, via MindAttic.Legion.</li>
+    <li><strong>Service infrastructure.</strong> Hosting/database providers that run the service under confidentiality obligations.</li>
+    <li>We may disclose data if required by law.</li>
+  </ul>
+
+  <h2><span class="n">7</span>Retention, deletion, and revocation</h2>
+  <p>You can remove your stored credentials or revoke an OAuth link at any time (in IdiotProof and/or from your Alpaca
+  dashboard). You may request deletion of your account and associated data by contacting us. We retain data only as long
+  as needed to provide the service or as required by law.</p>
+
+  <h2><span class="n">8</span>Your choices</h2>
+  <p>You control which accounts you connect, which features you enable, and whether trading runs on paper or live. You can
+  disconnect or delete at any time.</p>
+
+  <h2><span class="n">9</span>Children</h2>
+  <p>IdiotProof is not directed to individuals under 18 and is intended only for those legally able to open and trade a
+  brokerage account.</p>
+
+  <h2><span class="n">10</span>Changes &amp; contact</h2>
+  <p>We may update this policy; material changes take effect when posted here. Questions or requests:
+  <a href="mailto:ryandebraal@mindattic.com">ryandebraal@mindattic.com</a>.</p>
+
+  <footer>IdiotProof · MindAttic · Privacy Policy · Last updated 2026-07-20 · see also the <a href="terms-of-use.htm">Terms of Use</a>.</footer>
+</div>
+</body>
+</html>
