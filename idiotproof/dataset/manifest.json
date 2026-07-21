@@ -1,0 +1,13 @@
+{
+  "generatedUtc": "2026-07-20T20:54:24.1083052Z",
+  "runs": 26,
+  "tradeRows": 19,
+  "barRows": 11169,
+  "backfilledRuns": 0,
+  "source": "SQL ReplayTrades / ReplayBars (normalized feature store)",
+  "files": [
+    "trades.csv",
+    "bars.csv"
+  ],
+  "note": "trades.csv = one row per round-trip (entry features -\u003E pnlPct/won label). bars.csv = one row per minute bar (time-series features \u002B entry/exit flags)."
+}
