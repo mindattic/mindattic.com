@@ -1,8 +1,8 @@
 {
-  "generatedUtc": "2026-07-20T20:54:24.1083052Z",
-  "runs": 26,
-  "tradeRows": 19,
-  "barRows": 11169,
+  "generatedUtc": "2026-07-21T02:10:42.4689175Z",
+  "runs": 40,
+  "tradeRows": 74,
+  "barRows": 22356,
   "backfilledRuns": 0,
   "source": "SQL ReplayTrades / ReplayBars (normalized feature store)",
   "files": [
