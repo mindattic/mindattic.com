@@ -162,7 +162,7 @@ if ($untagged.Count -gt 0) {
 # source of truth for the "Open" URL of each card. MindAttic.Deploy renders
 # every projects[] entry to /mindattic.com/<slug>.htm at the site root, so a
 # repo listed there gets that deterministic /<slug>.htm URL -- UNLESS the entry
-# carries an `openUrl` (an external app like StreetSamurai / Cursory on Azure),
+# carries an `openUrl` (an external app like Prose / Cursory on Azure),
 # in which case the card links straight to that app. Repos NOT in projects.json
 # (or untracked here) fall back to GitHub's homepageUrl. This replaced the old
 # subscribers.json `landing-page` lookup, which went dead when the catalog
