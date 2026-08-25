@@ -1,23 +1,26 @@
-# add-book.ps1 — Convert an Amazon book page into a base64-embedded book cover
-# entry in the Creative section of index.htm.
+# add-book.ps1 — Convert an Amazon book page into a base64-embedded book
+# cover entry appended to data/books.json.
 #
 # Usage:
 #   powershell -File add-book.ps1 https://www.amazon.com/dp/B0XXXXXXXX
 #   add-book.bat https://www.amazon.com/dp/B0XXXXXXXX
+#
+# Synopsis is left empty; run fetch-descriptions.ps1 afterward to fill it in
+# from the book's Amazon page (Update-BookSynopses).
 
 param (
     [Parameter(Mandatory = $true, Position = 0)]
     [string]$AmazonUrl,
 
-    [string]$IndexFile = "$PSScriptRoot\index.htm"
+    [string]$DataDir = "$PSScriptRoot\data"
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-if (-not (Test-Path $IndexFile)) {
-    Write-Error "index.htm not found at: $IndexFile"
-    exit 1
+$booksPath = Join-Path $DataDir "books.json"
+if (-not (Test-Path $DataDir)) {
+    New-Item -ItemType Directory -Path $DataDir | Out-Null
 }
 
 # ---------------------------------------------------------------------------
@@ -51,7 +54,7 @@ $coverUrl = $hiResUrl -replace '_SL\d+_', '_SL300_'
 Write-Host "Cover URL: $coverUrl"
 
 # ---------------------------------------------------------------------------
-# 3. Extract ASIN from URL (used as the canonical link)
+# 3. Extract ASIN from URL (used as the canonical link + dedup key)
 # ---------------------------------------------------------------------------
 if ($AmazonUrl -notmatch '/dp/([A-Z0-9]{10})') {
     Write-Error "Could not extract ASIN from URL"
@@ -61,7 +64,26 @@ $asin = $matches[1]
 $canonicalUrl = "https://www.amazon.com/dp/$asin"
 
 # ---------------------------------------------------------------------------
-# 4. Download cover and crop/resize to 200x300 (matching other book covers)
+# 4. Dedup check (before downloading/cropping the cover)
+# ---------------------------------------------------------------------------
+$books = @()
+if (Test-Path $booksPath) {
+    $books = @(Get-Content -Raw -Path $booksPath -Encoding UTF8 | ConvertFrom-Json)
+    # Defensive: a malformed read (partial write races, bad JSON) must never
+    # propagate into an append+overwrite that clobbers existing entries.
+    $malformed = @($books | Where-Object { -not ($_.PSObject.Properties.Name -contains 'title') -or [string]::IsNullOrWhiteSpace($_.title) })
+    if ($books.Count -gt 0 -and $malformed.Count -gt 0) {
+        Write-Error "Refusing to append: $booksPath parsed into $($books.Count) entrie(s) but $($malformed.Count) are malformed (missing title). Not writing."
+        exit 1
+    }
+}
+if ($books | Where-Object { $_.asin -eq $asin }) {
+    Write-Host "Book already present (ASIN $asin). Skipping insert."
+    exit 0
+}
+
+# ---------------------------------------------------------------------------
+# 5. Download cover and crop/resize to 200x300 (matching other book covers)
 # ---------------------------------------------------------------------------
 $tmpFile = [System.IO.Path]::GetTempFileName() + ".jpg"
 Invoke-WebRequest -Uri $coverUrl -OutFile $tmpFile -UseBasicParsing
@@ -110,46 +132,22 @@ Remove-Item $tmpFile -Force
 Write-Host "Cover: $targetW x $targetH, $($jpgBytes.Length) bytes"
 
 # ---------------------------------------------------------------------------
-# 5. Build the <a class="book"> markup
+# 6. Append to data/books.json
 # ---------------------------------------------------------------------------
-$titleEsc = $title -replace '"', '&quot;' -replace '&', '&amp;'
-$NL = "`r`n"
-$cardHtml = '    <a class="book" href="' + $canonicalUrl + '" target="_blank" rel="noopener noreferrer"><img src="' + $dataUrl + '" alt="' + $titleEsc + '" title="' + $titleEsc + '"></a>'
-
-# ---------------------------------------------------------------------------
-# 6. Detect duplicate ASIN (skip insert if already present)
-# ---------------------------------------------------------------------------
-$content = [System.IO.File]::ReadAllText($IndexFile, [System.Text.Encoding]::UTF8)
-if ($content.Contains("/dp/$asin`"")) {
-    Write-Host "Book already present (ASIN $asin). Skipping insert."
-    exit 0
+$newBook = [pscustomobject]@{
+    id         = "bk-" + $asin.ToLowerInvariant()
+    title      = $title
+    asin       = $asin
+    amazonUrl  = $canonicalUrl
+    coverImage = $dataUrl
+    synopsis   = ''
+    imprint    = $null
 }
-
-# ---------------------------------------------------------------------------
-# 7. Insert at end of the Creative books-grid (before its closing </div>)
-# ---------------------------------------------------------------------------
-$creativeIdx = $content.IndexOf('<h2>Creative</h2>')
-if ($creativeIdx -lt 0) {
-    Write-Error "Could not locate <h2>Creative</h2> in index.htm"
-    exit 1
-}
-$gridStart = $content.IndexOf('<div class="books-grid">', $creativeIdx)
-if ($gridStart -lt 0) {
-    Write-Error "Could not locate Creative books-grid"
-    exit 1
-}
-# Find the matching </div> for this books-grid
-$gridClose = $content.IndexOf('  </div>', $gridStart)
-if ($gridClose -lt 0) {
-    Write-Error "Could not locate closing </div> of books-grid"
-    exit 1
-}
-
-$before = $content.Substring(0, $gridClose)
-$after = $content.Substring($gridClose)
-$newContent = $before + $cardHtml + $NL + $after
-[System.IO.File]::WriteAllText($IndexFile, $newContent, [System.Text.Encoding]::UTF8)
+$books = @($books) + $newBook
+$json = ConvertTo-Json -InputObject $books -Depth 6
+[System.IO.File]::WriteAllText($booksPath, $json + "`n", [System.Text.UTF8Encoding]::new($false))
 
 Write-Host ""
 Write-Host "Added: $title (ASIN $asin)"
-Write-Host "File size: $((Get-Item $IndexFile).Length) bytes"
+Write-Host "data/books.json now has $($books.Count) entr$(if ($books.Count -eq 1) { 'y' } else { 'ies' })."
+Write-Host "Run fetch-descriptions.ps1 to fill in its synopsis from Amazon."

@@ -1,0 +1,28 @@
+[
+    {
+        "id":  "hw-chimesh",
+        "name":  "ChiMesh",
+        "description":  "Chicago LoRa Meshtastic mesh — proof-of-mesh build. Three solar-powered RAK4631 nodes in weatherproof IP65 enclosures that prove multi-hop LoRa routing across the city. Includes the build guide, parts catalog, assembly walkthrough, firmware flashing, node provisioning, and a Chicago-specific deployment strategy. ~$192 for the proof batch.",
+        "githubUrl":  "https://github.com/mindattic/ChiMesh",
+        "openUrl":  "https://mindattic.com/chimesh.htm",
+        "openInternal":  true,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/ChiMesh",
+        "topics":  [
+                       "hardware"
+                   ]
+    },
+    {
+        "id":  "hw-claudia",
+        "name":  "Claudia",
+        "description":  "DIY Claude-powered voice assistant on a Raspberry Pi Zero 2 W + PiSugar Whisplay HAT. Includes the build guide, parts catalog, automated Pi installer, a Windows console for SSH-based config/logs/updates, configurable wake word (default \u0027Hey Jarvis\u0027), swappable ASR/TTS/LLM backends, and an FTP deploy for the HTML guide.",
+        "githubUrl":  "https://github.com/mindattic/Claudia",
+        "openUrl":  "https://mindattic.com/claudia.htm",
+        "openInternal":  true,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/Claudia",
+        "topics":  [
+                       "hardware"
+                   ]
+    }
+]

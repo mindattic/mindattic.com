@@ -9,7 +9,7 @@ When invoked:
 2. Stage changed tracked files (use specific filenames, not `git add -A`)
 3. **If arguments were provided** (`$ARGUMENTS`), use that as the commit message
 4. **If no arguments**, auto-generate a descriptive commit message summarizing the "why" not the "what"
-5. Always append to the commit message: `Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>`
+5. Always append to the commit message: `Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>` (keep this in sync with `.claude/commands/commit.md`)
 6. Commit and push to remote
 7. Print the commit hash and message
 8. Always end with: `To revert: /revert <hash>`

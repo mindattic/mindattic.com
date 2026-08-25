@@ -1,0 +1,280 @@
+[
+    {
+        "id":  "sd-automata",
+        "name":  "Automata",
+        "description":  "Record-once, replay-many browser automation for the MindAttic ecosystem. A WPF host drives a WebView2 pane via Chrome DevTools Protocol; a provider-neutral LLM tool-calling engine (ported from Prose\u0027s KDP-publishing automation) performs generic DOM actions by fuzzy text/role matching instead of brittle selectors.",
+        "githubUrl":  "https://github.com/mindattic/Automata",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/Automata",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-battletrinity",
+        "name":  "BattleTrinity",
+        "description":  "Unity prototype (C#, HLSL, ShaderLab) for a battle game.",
+        "githubUrl":  "https://github.com/mindattic/BattleTrinity",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/BattleTrinity",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-ciaochatgptbonjourclaude",
+        "name":  "Ciao-ChatGpt-Bonjour-Claude",
+        "description":  "JavaScript migration tool exporting full ChatGPT conversation history into Claude Projects via the Anthropic API.",
+        "githubUrl":  "https://github.com/mindattic/Ciao-ChatGpt-Bonjour-Claude",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/Ciao-ChatGpt-Bonjour-Claude",
+        "topics":  [
+                       "software"
+                   ]
+    },
+    {
+        "id":  "sd-cursory",
+        "name":  "Cursory",
+        "description":  "Cooperative real-time multiplayer puzzle game: see every player\u0027s cursor on a shared 10,000x10,000 world and solve physics puzzles together -- drag blocks, thread shapes through gaps, wire circuits. Blazor Server + SignalR with a 30Hz physics tick.",
+        "githubUrl":  "https://github.com/mindattic/Cursory",
+        "openUrl":  "https://cursory.azurewebsites.net/",
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/Cursory",
+        "topics":  [
+                       "software"
+                   ]
+    },
+    {
+        "id":  "sd-ghostreconbreakpointreshades",
+        "name":  "GhostRecon.Breakpoint.Reshades",
+        "description":  "Collection of reshades for Ghost Recon Breakpoint",
+        "githubUrl":  "https://github.com/mindattic/GhostRecon.Breakpoint.Reshades",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/GhostRecon.Breakpoint.Reshades",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-gridgame",
+        "name":  "GridGame",
+        "description":  "Unity prototype (C#, ShaderLab/HLSL) for a grid-based dungeon/mining game -- an earlier iteration of GridGame2026.",
+        "githubUrl":  "https://github.com/mindattic/GridGame",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/GridGame",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-gridgame2025",
+        "name":  "GridGame2025",
+        "description":  "Earlier prototype in the GridGame series -- a grid-based tunneling/mining game about creatures burrowing through a subterranean world, corrupting everything they touch with light. Superseded by GridGame2026.",
+        "githubUrl":  "https://github.com/mindattic/GridGame2025",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/GridGame2025",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-gridgame2026",
+        "name":  "GridGame2026",
+        "description":  "Unity 6000.3.2f1 tactical grid RPG, 2D sprites on a 3D board. Drag-and-slide hero movement, pincer-attack combat, Grandia-style timeline with pushback zone, mana-gated casting with Fail/Pushback/Clutch interrupts, vendor scenes (alchemist, blacksmith, equip), weapon durability with shatter, code-only scene authoring. C# 9.",
+        "githubUrl":  "https://github.com/mindattic/GridGame2026",
+        "openUrl":  "https://mindattic.com/gridgame2026.htm",
+        "openInternal":  true,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/GridGame2026",
+        "topics":  [
+                       "software"
+                   ]
+    },
+    {
+        "id":  "sd-hotchocolate",
+        "name":  "HotChocolate",
+        "description":  "GraphQL gateway example built with HotChocolate (ASP.NET Core + Entity Framework Core/SQLite) that unifies a public REST API and a local database behind one unified GraphQL endpoint.",
+        "githubUrl":  "https://github.com/mindattic/HotChocolate",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/HotChocolate",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-hyperspace",
+        "name":  "Hyperspace",
+        "description":  "A small personal single-page site (plain HTML), deployed alongside mindattic.com and ryandebraal.com.",
+        "githubUrl":  "https://github.com/mindattic/Hyperspace",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/Hyperspace",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-idiotproof",
+        "name":  "IdiotProof",
+        "description":  "Automated stock trading platform. .NET 10 Blazor Server + console Monitor evaluating active strategies 24/7. IdiotScript — a 6-phase fluent C# DSL — authored visually, written directly, or generated from plain English by a multi-LLM voter panel. Alpaca brokerage, Polygon data, SQL Server, Risk Guardian pre-trade veto.",
+        "githubUrl":  "https://github.com/mindattic/IdiotProof",
+        "openUrl":  "https://mindattic.com/idiotproof.htm",
+        "openInternal":  true,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/IdiotProof",
+        "topics":  [
+                       "software"
+                   ]
+    },
+    {
+        "id":  "sd-joycefit",
+        "name":  "JoyceFit",
+        "description":  "Brand identity and print-collateral project for JoyceFit -- logo variants, business card, and flyer assets alongside a small static site.",
+        "githubUrl":  "https://github.com/mindattic/JoyceFit",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/JoyceFit",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-mediabutler",
+        "name":  "MediaButler",
+        "description":  "A media library organizer. Point it at a folder of messy downloads and it renames, tags, and files everything into place. Scans video files, pulls clean show and episode metadata. Built for people whose media folder looks like a crime scene.",
+        "githubUrl":  "https://github.com/mindattic/MediaButler",
+        "openUrl":  "https://mindattic.com/mediabutler.htm",
+        "openInternal":  true,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/MediaButler",
+        "topics":  [
+                       "software"
+                   ]
+    },
+    {
+        "id":  "sd-mindatticcarescom",
+        "name":  "mindatticcares.com",
+        "description":  "MindAttic LLC\u0027s philanthropic arm -- a self-contained site documenting fundraising events and giving campaigns in public, with full playbooks (timeline, budget, vendors) included. Flagship: the Child\u0027s Play track benefiting childsplaycharity.org.",
+        "githubUrl":  "https://github.com/mindattic/mindatticcares.com",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  "data:image/jpeg;base64,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",
+        "dataRepo":  "mindattic/mindatticcares.com",
+        "topics":  [
+                       "software"
+                   ]
+    },
+    {
+        "id":  "sd-opencredentials",
+        "name":  "OpenCredentials",
+        "description":  "Public-service credential-leak detection and responsible disclosure: find exposed credentials on public GitHub, file courtesy notices, track remediation.",
+        "githubUrl":  "https://github.com/mindattic/OpenCredentials",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/OpenCredentials",
+        "topics":  [
+                       "blazor",
+                       "credential-scanning",
+                       "dotnet",
+                       "github-api",
+                       "responsible-disclosure",
+                       "security"
+                   ]
+    },
+    {
+        "id":  "sd-prose",
+        "name":  "Prose",
+        "description":  "C#/.NET Blazor Server app for authoring long-form fiction. SQL Server canon with vector embeddings and a directional entity graph, outline-first Book/Chapter/Beat editor, multi-LLM Quorum review (11 providers), continuity contradiction sweep, motif tracking, EPUB/HTML/Markdown export, ElevenLabs TTS, and an MCP server for agent access.",
+        "githubUrl":  "https://github.com/mindattic/Prose",
+        "openUrl":  "https://prose.azurewebsites.net/",
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/Prose",
+        "topics":  [
+                       "software"
+                   ]
+    },
+    {
+        "id":  "sd-ryandebraalcom",
+        "name":  "ryandebraal.com",
+        "description":  "Single-file HTML resume. One hand-authored index.htm — vanilla HTML/CSS/JS, no dependencies, no build step, no framework. 15 themes with custom canvas animations, 3 layout profiles, ~200 tech tooltips, Markdown/HTML export, embedded Outfit font (base64), localStorage preferences. Deploys via FTPS.",
+        "githubUrl":  "https://github.com/mindattic/ryandebraal.com",
+        "openUrl":  "https://www.ryandebraal.com",
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/ryandebraal.com",
+        "topics":  [
+                       "software"
+                   ]
+    },
+    {
+        "id":  "sd-taxratecollector",
+        "name":  "TaxRateCollector",
+        "description":  "Blazor Server app (ASP.NET Core 10, EF Core, SQL Server) maintaining a US sales tax rate database for 14,000+ jurisdictions. Each rate links to its raw .gov source document with SHA-256 hash. Census jurisdiction + ZIP import, SSUTA taxonomy, scheduled rescraping with change detection, per-state/category subscriptions, CSV/XLSX/SQL/HTML exports.",
+        "githubUrl":  "https://github.com/mindattic/TaxRateCollector",
+        "openUrl":  "https://mindattic.com/taxratecollector.htm",
+        "openInternal":  true,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/TaxRateCollector",
+        "topics":  [
+                       "software"
+                   ]
+    },
+    {
+        "id":  "sd-thinktank",
+        "name":  "ThinkTank",
+        "description":  ".NET 10 MAUI + Blazor desktop app for multi-LLM conversations. 11 providers (OpenAI, Anthropic, Google, DeepSeek, Mistral, xAI, Groq, Together AI, OpenRouter, Fireworks, Cohere). Per-participant personalities, parallel conversation tabs, mid-discussion user injection, LLM-driven voting, 18 themes, cloud credential overlay.",
+        "githubUrl":  "https://github.com/mindattic/ThinkTank",
+        "openUrl":  "https://mindattic.com/thinktank.htm",
+        "openInternal":  true,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/ThinkTank",
+        "topics":  [
+                       "software"
+                   ]
+    },
+    {
+        "id":  "sd-tutor",
+        "name":  "Tutor",
+        "description":  "Blazor Server app that converts books and documents (PDF, EPUB, DOCX, HTML, MOBI, AZW, RTF, ODT) into structured courses. A multi-LLM pipeline (OpenAI, Claude, DeepSeek, Gemini) extracts concepts, correlates them via LSH/SimHash into a knowledge graph, and generates a learning path with RAG retrieval, quizzes, and progress tracking.",
+        "githubUrl":  "https://github.com/mindattic/Tutor",
+        "openUrl":  "https://mindattic.com/tutor.htm",
+        "openInternal":  true,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/Tutor",
+        "topics":  [
+                       "software"
+                   ]
+    },
+    {
+        "id":  "sd-tvwebhookreceiver",
+        "name":  "TvWebhookReceiver",
+        "description":  ".NET webhook receiver that accepts TradingView alert POSTs (via an ngrok tunnel) and forwards ticker/price events for further processing.",
+        "githubUrl":  "https://github.com/mindattic/TvWebhookReceiver",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/TvWebhookReceiver",
+        "topics":  [
+
+                   ]
+    }
+]

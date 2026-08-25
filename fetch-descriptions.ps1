@@ -1,49 +1,58 @@
-# fetch-descriptions.ps1 - regenerate the Software, MindAttic Ecosystem AND
-# Hardware board-grids on index.htm from public mindattic repos, partitioned
-# by GitHub topic (and, within 'software', by repo-name prefix).
+# fetch-descriptions.ps1 - regenerate data/software.json, data/ecosystem.json
+# and data/hardware.json from EVERY public mindattic repo on GitHub (no
+# visibility gate -- being public is the only opt-in), partitioned by GitHub
+# topic / repo-name prefix into the right section. Also refreshes
+# data/books.json synopses from Amazon.
 #
 # Source of truth: GitHub repo topics + descriptions.
-#   - Topic 'software' -> goes in a software grid, then sub-partitioned:
-#       * repos named 'MindAttic.*' -> <h2>MindAttic Ecosystem</h2> grid
-#       * all other software repos  -> <h2>Software</h2> grid
-#     Both use tile ids prefixed sd- (ids are unique per repo name, so the
-#     two grids never collide).
-#   - Topic 'hardware' -> goes in <h2>Hardware</h2> grid (tile ids prefixed hw-)
-#   - Public repos with neither topic are NOT shown on the homepage.
+#   - Topic 'hardware'         -> data/hardware.json
+#   - Name matches 'MindAttic.*' (and not 'hardware') -> data/ecosystem.json
+#   - Everything else public   -> data/software.json
+#   The 'software'/'hardware' topics no longer gate visibility -- they (and
+#   the MindAttic.* name prefix) only decide which section a repo lands in.
 #
-# The <h2>MindAttic Ecosystem</h2> heading carries a hand-authored flow diagram
-# (an inline SVG between <!-- BEGIN/END ECOSYSTEM-DIAGRAM --> markers) in the
-# region BETWEEN the heading and its board-grid. Update-SectionGrid only
-# replaces the board-grid and reattaches that prefix verbatim, so the diagram
-# survives every regeneration. Edit diagram/ecosystem.mmd + run diagram/render.ps1
-# to change it -- never hand-edit the inlined SVG.
+# index.htm holds a static, empty placeholder per section
+# (<div class="home-sections" data-catalog="software"></div>, etc.) and is
+# never touched by this script. At runtime index.htm's own JS fetches
+# data/<catalog>.json and renders the tiles client-side (mountCatalog() /
+# buildBoardSection()) -- see index.htm section 12 (SCRIPTS).
 #
-# To feature a repo:    make it public, set a description (and optionally
-#                       a homepage URL for the "Open" button), and add the
-#                       'software' or 'hardware' topic:
-#                         gh repo edit mindattic/<name> --add-topic software
-# To hide a repo:       remove the topic, or make it private.
+# The <h2>MindAttic Ecosystem</h2> heading carries a hand-authored flow
+# diagram (an inline SVG between <!-- BEGIN/END ECOSYSTEM-DIAGRAM --> markers)
+# directly in index.htm, untouched by this script. Edit diagram/ecosystem.mmd
+# + run diagram/render.ps1 to change it -- never hand-edit the inlined SVG.
+#
+# To hide a repo:       make it private. It disappears on the next
+#                       /fetch (or /deploy).
+# To move a repo between Software/Hardware: add/remove the 'hardware' topic
+#                       (gh repo edit mindattic/<name> --add-topic hardware).
 # To refresh the site:  run /fetch (or /deploy, which calls this first).
 #
-# What this script does:
-#   1. gh repo list mindattic --visibility public --json name,description,homepageUrl
+# Descriptions: a repo with an empty/whitespace-only GitHub description gets
+# a generic fallback client-side ("Repository on GitHub -- see source for
+# details.") -- this script does NOT write descriptions back to GitHub on
+# its own. -ListUntagged reports public repos missing both the
+# 'software'/'hardware' topic (informational -- they still show, just with
+# no explicit section signal beyond their name). -ProposeDescriptions
+# reports a README-derived candidate description per thin repo, for you to
+# review before applying with -ApplyDescriptions (which calls
+# `gh repo edit --description`) -- see docs/BIBLE.md LAW-3.
+#
+# What a plain (no-flag) run does:
+#   1. gh repo list mindattic --visibility public --json name,description,homepageUrl,repositoryTopics
 #   2. Filter out the site repo itself (mindattic.com).
 #   3. Sort by name, case-insensitive.
-#   4. Build a <button> + <div class="tabPage"> block per repo,
-#      using the current tile structure (image placeholder left,
-#      description right, button row below).
-#   5. Replace the entire <div class="board-grid">...</div> block in
-#      index.htm in one pass. New public repos appear; newly-private
-#      repos disappear; descriptions and live-demo URLs are refreshed.
-#   6. For each entry in BOOK_AMAZON_URLS, fetch the Amazon product page
-#      and refresh the matching BOOK_SYNOPSES entry from the
-#      div[name="book_description_expander"] span text. Amazon is the
-#      source of truth for Writing-section synopses.
+#   4. Build a tile object per repo (id, name, description, githubUrl,
+#      openUrl, openInternal, previewImage, dataRepo, topics).
+#   5. Write data/software.json, data/ecosystem.json, data/hardware.json.
+#      Every public repo appears; newly-private repos disappear;
+#      descriptions and live-demo URLs are refreshed.
+#   6. Refresh data/books.json synopses from Amazon (matched by ASIN).
 #
-# Tile element ids are derived deterministically from repo names:
-# lowercase + strip non-alphanumeric, prefixed with "sd-". So
-# MindAttic.Legion -> sd-mindatticlegion. Stable as long as the repo
-# name is stable.
+# Tile ids are derived deterministically from repo names: lowercase + strip
+# non-alphanumeric, prefixed with "sd-" (software/ecosystem) or "hw-"
+# (hardware). So MindAttic.Legion -> sd-mindatticlegion. Stable as long as
+# the repo name is stable.
 #
 # Exit code 0 on success or graceful no-op (gh missing / not authed).
 # Non-zero only on unexpected errors.
@@ -54,7 +63,11 @@
 
 param (
     [string]$IndexFile = "$PSScriptRoot\index.htm",
-    [string]$Owner = "mindattic"
+    [string]$DataDir = "$PSScriptRoot\data",
+    [string]$Owner = "mindattic",
+    [switch]$ListUntagged,
+    [switch]$ProposeDescriptions,
+    [string[]]$ApplyDescriptions
 )
 
 Set-StrictMode -Version Latest
@@ -68,14 +81,13 @@ $OutputEncoding = [System.Text.UTF8Encoding]::new($false)
 
 $EM_DASH = [char]0x2014
 
+if (-not (Test-Path $DataDir)) {
+    New-Item -ItemType Directory -Path $DataDir | Out-Null
+}
+
 # ---------------------------------------------------------------------------
 # Pre-checks
 # ---------------------------------------------------------------------------
-if (-not (Test-Path $IndexFile)) {
-    Write-Error "index.htm not found at: $IndexFile"
-    exit 1
-}
-
 $ghAvailable = $true
 try {
     & gh --version 1>$null 2>$null
@@ -99,6 +111,29 @@ try {
 } catch {
     Write-Host "gh CLI auth check failed - skipping regenerate." -ForegroundColor Yellow
     exit 0
+}
+
+# ---------------------------------------------------------------------------
+# -ApplyDescriptions: write approved descriptions back to GitHub, then fall
+# through to a normal run so the freshly-written text flows into the JSON.
+# ---------------------------------------------------------------------------
+if ($ApplyDescriptions -and $ApplyDescriptions.Count -gt 0) {
+    Write-Host "Applying approved descriptions..." -ForegroundColor Cyan
+    foreach ($entry in $ApplyDescriptions) {
+        $idx = $entry.IndexOf('=')
+        if ($idx -lt 1) {
+            Write-Host ("  SKIP (expected repo=description): {0}" -f $entry) -ForegroundColor Yellow
+            continue
+        }
+        $repoName = $entry.Substring(0, $idx)
+        $desc = $entry.Substring($idx + 1)
+        Write-Host ("  gh repo edit {0}/{1} --description ..." -f $Owner, $repoName) -ForegroundColor DarkGray
+        & gh repo edit "$Owner/$repoName" --description $desc
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error ("Failed to update description for {0}" -f $repoName)
+        }
+    }
+    Write-Host "Descriptions applied. Continuing with a normal regenerate..." -ForegroundColor Green
 }
 
 # ---------------------------------------------------------------------------
@@ -133,28 +168,93 @@ function Test-HasTopic {
     return $false
 }
 
-$allSoftwareRepos = @($allRepos | Where-Object { Test-HasTopic -Repo $_ -Topic 'software' } |
-    Sort-Object @{Expression={$_.name.ToLowerInvariant()}})
+
+# Every public repo gets a tile -- there is no visibility gate. Topic /
+# name only decide which JSON file (section) a repo lands in:
+#   - 'hardware' topic          -> data/hardware.json
+#   - name matches 'MindAttic.*' (and not 'hardware')
+#                                -> data/ecosystem.json
+#   - everything else           -> data/software.json
+# Both software/ecosystem use the sd- id prefix (ids are derived from the
+# repo name, so they stay unique across the two files).
 $hardwareRepos = @($allRepos | Where-Object { Test-HasTopic -Repo $_ -Topic 'hardware' } |
     Sort-Object @{Expression={$_.name.ToLowerInvariant()}})
+$nonHardwareRepos = @($allRepos | Where-Object { -not (Test-HasTopic -Repo $_ -Topic 'hardware') })
+$ecosystemRepos = @($nonHardwareRepos | Where-Object { $_.name -match '^MindAttic\.' } |
+    Sort-Object @{Expression={$_.name.ToLowerInvariant()}})
+$softwareRepos  = @($nonHardwareRepos | Where-Object { $_.name -notmatch '^MindAttic\.' } |
+    Sort-Object @{Expression={$_.name.ToLowerInvariant()}})
 
-# Sub-partition the software-tagged repos: the foundational 'MindAttic.*'
-# libraries (Vault, Legion, Psst, Console, ...) get their own
-# <h2>MindAttic Ecosystem</h2> section; everything else stays under
-# <h2>Software</h2>. Both grids use the sd- id prefix (ids are derived from the
-# repo name, so they stay unique across the two grids).
-$ecosystemRepos = @($allSoftwareRepos | Where-Object { $_.name -match '^MindAttic\.' })
-$softwareRepos  = @($allSoftwareRepos | Where-Object { $_.name -notmatch '^MindAttic\.' })
-
+# Informational only (kept for -ListUntagged): repos with neither topic
+# still appear (in Software or Ecosystem by name), this just flags which
+# ones have no explicit software/hardware signal on GitHub.
 $untagged = @($allRepos | Where-Object {
     -not (Test-HasTopic -Repo $_ -Topic 'software') -and
     -not (Test-HasTopic -Repo $_ -Topic 'hardware')
 })
 
-Write-Host ("Software: {0} repo(s) | MindAttic Ecosystem: {1} repo(s) | Hardware: {2} repo(s) | Untagged (not shown): {3}" -f `
+Write-Host ("Software: {0} repo(s) | MindAttic Ecosystem: {1} repo(s) | Hardware: {2} repo(s) | Untopic'd (still shown): {3}" -f `
     $softwareRepos.Count, $ecosystemRepos.Count, $hardwareRepos.Count, $untagged.Count) -ForegroundColor Cyan
-if ($untagged.Count -gt 0) {
-    foreach ($u in $untagged) { Write-Host ("  (skip) {0}" -f $u.name) -ForegroundColor DarkGray }
+
+if ($ListUntagged) {
+    Write-Host ""
+    Write-Host "Public repos missing both the 'software' and 'hardware' topic:" -ForegroundColor Cyan
+    if ($untagged.Count -eq 0) {
+        Write-Host "  (none)" -ForegroundColor DarkGray
+    } else {
+        foreach ($u in $untagged) {
+            $descLen = if ($u.description) { $u.description.Length } else { 0 }
+            Write-Host ("  {0,-32} {1,4} chars desc" -f $u.name, $descLen) -ForegroundColor DarkGray
+        }
+    }
+    exit 0
+}
+
+# ---------------------------------------------------------------------------
+# -ProposeDescriptions: for every tagged repo with an empty/whitespace
+# description, pull its README and print a candidate. Prints only -- never
+# writes. Review candidates, then re-run with -ApplyDescriptions
+# "repo=text",... once approved.
+# ---------------------------------------------------------------------------
+if ($ProposeDescriptions) {
+    $thin = @($softwareRepos + $ecosystemRepos + $hardwareRepos | Where-Object {
+        [string]::IsNullOrWhiteSpace($_.description)
+    })
+    Write-Host ""
+    Write-Host ("Thin/missing descriptions: {0} repo(s)" -f $thin.Count) -ForegroundColor Cyan
+    foreach ($r in $thin) {
+        Write-Host ""
+        Write-Host ("=== {0} ===" -f $r.name) -ForegroundColor Yellow
+        $ErrorActionPreference = "Continue"
+        $readme = & gh api "repos/$Owner/$($r.name)/readme" --jq ".content" 2>$null
+        $ErrorActionPreference = "Stop"
+        if ([string]::IsNullOrWhiteSpace($readme)) {
+            Write-Host "  (no README found -- no candidate)" -ForegroundColor DarkGray
+            continue
+        }
+        try {
+            $bytes = [Convert]::FromBase64String(($readme -replace '\s', ''))
+            $text = [System.Text.Encoding]::UTF8.GetString($bytes)
+        } catch {
+            Write-Host "  (README content not decodable -- draft manually)" -ForegroundColor DarkGray
+            continue
+        }
+        # Print the first non-empty, non-heading, non-badge line as a hint --
+        # a human (or the assistant running this) drafts the real candidate
+        # by reading the README; this is a starting point, not an oracle.
+        $firstLine = ($text -split "`n" | Where-Object {
+            $_.Trim() -and $_.Trim() -notmatch '^#' -and $_.Trim() -notmatch '^\[!\[' -and $_.Trim() -notmatch '^!\['
+        } | Select-Object -First 1)
+        if ($firstLine) {
+            Write-Host ("  README hint: {0}" -f $firstLine.Trim())
+        } else {
+            Write-Host "  (README has no plain-text lead paragraph -- draft manually)" -ForegroundColor DarkGray
+        }
+    }
+    Write-Host ""
+    Write-Host "Review candidates above, then re-run:" -ForegroundColor Cyan
+    Write-Host '  ./fetch-descriptions.ps1 -ApplyDescriptions "Repo=New description text", ...' -ForegroundColor DarkGray
+    exit 0
 }
 
 # ---------------------------------------------------------------------------
@@ -164,9 +264,7 @@ if ($untagged.Count -gt 0) {
 # repo listed there gets that deterministic /<slug>.htm URL -- UNLESS the entry
 # carries an `openUrl` (an external app like Prose / Cursory on Azure),
 # in which case the card links straight to that app. Repos NOT in projects.json
-# (or untracked here) fall back to GitHub's homepageUrl. This replaced the old
-# subscribers.json `landing-page` lookup, which went dead when the catalog
-# pages moved out of the UiUx splice pipeline into MindAttic.Deploy.
+# (or untracked here) fall back to GitHub's homepageUrl.
 # ---------------------------------------------------------------------------
 $script:landingRepos = @{}
 $projectsPath = Join-Path $PSScriptRoot "..\MindAttic.Deploy\projects.json"
@@ -183,32 +281,22 @@ if (Test-Path $projectsPath) {
 # Helpers
 # ---------------------------------------------------------------------------
 
-# HTML-escape: <, >, & to entities. Other characters (em-dashes, quotes,
-# Unicode) pass through as literal UTF-8.
-function ConvertTo-HtmlText {
-    param([string]$Text)
-    $t = $Text -replace '&', '&amp;'
-    $t = $t -replace '<', '&lt;'
-    $t = $t -replace '>', '&gt;'
-    return $t
-}
-
 # Build a stable HTML element id from a repo name. Prefix distinguishes
-# sections: sd- for Software, hw- for Hardware.
+# sections: sd- for Software/Ecosystem, hw- for Hardware.
 function Get-TileId {
     param([string]$Name, [string]$Prefix = 'sd')
     $n = $Name.ToLowerInvariant() -replace '[^a-z0-9]', ''
     return "$Prefix-$n"
 }
 
-# Per-repo preview images. The Software/Hardware tiles default to a generic
-# placeholder, but a repo can supply a real preview by dropping a sidecar at
+# Per-repo preview images. Tiles default to a generated SVG client-side, but
+# a repo can supply a real preview by dropping a sidecar at
 # previews\<repo-name>.b64 whose contents are a full data: URL (e.g.
 # "data:image/jpeg;base64,..."). Filenames match the GitHub repo name exactly
 # (case-sensitive on the lookup key), so "Mosaic" -> previews\Mosaic.b64 and
 # "mindatticcares.com" -> previews\mindatticcares.com.b64. These sidecars are
-# build-time inputs only; their base64 is inlined into index.htm here, so the
-# deployed site stays a single self-contained file.
+# build-time inputs only; their base64 is inlined into the JSON here, so the
+# deployed site stays free of extra image requests.
 $script:PreviewDir = Join-Path $PSScriptRoot "previews"
 
 function Get-PreviewDataUrl {
@@ -221,89 +309,68 @@ function Get-PreviewDataUrl {
     return $data
 }
 
-# Build the markup for one tile (button + toggleable desc panel).
-function New-TileHtml {
-    param($Repo, [string]$Owner, [string]$Nl, [string]$Prefix = 'sd')
+# Build the catalog object for one repo tile.
+function New-TileObject {
+    param($Repo, [string]$Owner, [string]$Prefix = 'sd')
 
     $name = $Repo.name
     $id = Get-TileId -Name $name -Prefix $Prefix
     $ghUrl = "https://github.com/$Owner/$name"
 
-    $desc = $Repo.description
-    if ([string]::IsNullOrWhiteSpace($desc)) {
-        $descHtml = "Repository on GitHub $EM_DASH see source for details."
-    } else {
-        $descHtml = ConvertTo-HtmlText $desc
-    }
+    $desc = if ([string]::IsNullOrWhiteSpace($Repo.description)) { '' } else { $Repo.description }
 
     # Projects in MindAttic.Deploy/projects.json get their canonical URL: the
     # entry's external `openUrl` if present, else the deterministic
     # /<slug>.htm at the mindattic.com root. Repos outside the manifest fall
     # back to GitHub's homepageUrl. Repos with neither get no Open button.
     # Internal landing pages (mindattic.com/<slug>.htm) each carry a BackHomeM
-    # button, so their Open link navigates in the SAME window -- drilling into a
-    # sub-project doesn't pile up browser tabs, and BackHomeM brings you back.
-    # External apps (openUrl) and third-party homepages still open in a new tab,
-    # since we don't control a back-home affordance on those pages.
-    $liveUrl = $null
-    $liveInternal = $false
+    # button, so their Open link navigates in the SAME window; external apps
+    # (openUrl) and third-party homepages open in a new tab.
+    $openUrl = $null
+    $openInternal = $false
     if ($script:landingRepos.ContainsKey($name)) {
         $entry = $script:landingRepos[$name]
         if (-not [string]::IsNullOrWhiteSpace($entry.OpenUrl)) {
-            $liveUrl = $entry.OpenUrl
+            $openUrl = $entry.OpenUrl
         } else {
-            $liveUrl = "https://mindattic.com/$($entry.Slug).htm"
-            $liveInternal = $true
+            $openUrl = "https://mindattic.com/$($entry.Slug).htm"
+            $openInternal = $true
         }
     } elseif (-not [string]::IsNullOrWhiteSpace($Repo.homepageUrl)) {
-        $liveUrl = $Repo.homepageUrl
+        $openUrl = $Repo.homepageUrl
     }
 
-    $liveAttr = ''
-    $liveBtn = ''
-    if ($liveUrl) {
-        $liveAttr = " data-live=`"$liveUrl`""
-        if ($liveInternal) {
-            $liveBtn = "            <a class=`"tabButton-btn`" href=`"$liveUrl`">Open</a>$Nl"
-        } else {
-            $liveBtn = "            <a class=`"tabButton-btn`" href=`"$liveUrl`" target=`"_blank`" rel=`"noopener noreferrer`">Open</a>$Nl"
-        }
+    $topics = @()
+    if ($Repo.repositoryTopics) {
+        $topics = @($Repo.repositoryTopics | ForEach-Object { $_.name })
     }
 
-    $sb = [System.Text.StringBuilder]::new()
-    [void]$sb.Append("        <button type=`"button`" class=`"tabButton`" data-target=`"$id`">$Nl")
-    [void]$sb.Append("          <div class=`"tabButton-name`">$name</div>$Nl")
-    [void]$sb.Append("        </button>$Nl")
-    [void]$sb.Append("        <div class=`"tabPage`" id=`"$id`" data-repo=`"$Owner/$name`"$liveAttr>$Nl")
-    [void]$sb.Append("          <div class=`"tabPage-row`">$Nl")
-    $preview = Get-PreviewDataUrl -RepoName $name
-    if ($preview) {
-        $altText = ConvertTo-HtmlText "$name preview"
-        [void]$sb.Append("            <div class=`"tabPage-img`"><img src=`"$preview`" alt=`"$altText`" loading=`"lazy`"></div>$Nl")
-    } else {
-        [void]$sb.Append("            <div class=`"tabPage-img tabPage-img--placeholder`" aria-hidden=`"true`"></div>$Nl")
+    return [pscustomobject]@{
+        id            = $id
+        name          = $name
+        description   = $desc
+        githubUrl     = $ghUrl
+        openUrl       = $openUrl
+        openInternal  = $openInternal
+        previewImage  = (Get-PreviewDataUrl -RepoName $name)
+        dataRepo      = "$Owner/$name"
+        topics        = $topics
     }
-    [void]$sb.Append("            <div class=`"tabPage-body`">$Nl")
-    [void]$sb.Append("              <p class=`"tabPage-text`">$descHtml</p>$Nl")
-    [void]$sb.Append("            </div>$Nl")
-    [void]$sb.Append("          </div>$Nl")
-    [void]$sb.Append("          <div class=`"tabPage-links`">$Nl")
-    if ($liveBtn) { [void]$sb.Append($liveBtn) }
-    [void]$sb.Append("            <a class=`"tabButton-btn`" href=`"$ghUrl`" target=`"_blank`" rel=`"noopener noreferrer`">GitHub</a>$Nl")
-    [void]$sb.Append("          </div>$Nl")
-    [void]$sb.Append("        </div>$Nl")
-    return $sb.ToString()
+}
+
+function Write-CatalogJson {
+    param([string]$Path, [object[]]$Items)
+    $json = ConvertTo-Json -InputObject @($Items) -Depth 6
+    [System.IO.File]::WriteAllText($Path, $json + "`n", [System.Text.UTF8Encoding]::new($false))
 }
 
 # ---------------------------------------------------------------------------
 # Amazon book synopsis scraper
 # ---------------------------------------------------------------------------
-# For each entry in the BOOK_AMAZON_URLS map inside index.htm, fetch the
-# Amazon product page and extract the synopsis from
-#   div[name="book_description_expander"] > div > p > span
-# Trim the trailing "Read more" Amazon appends, normalize whitespace, then
-# write the result back into the corresponding BOOK_SYNOPSES entry. Other
-# BOOK_SYNOPSES entries (e.g. visual-arts pieces) are left untouched.
+# For each entry in data/books.json, fetch its Amazon product page and
+# extract the synopsis from div[name="book_description_expander"] > div > p
+# > span. Trim the trailing "Read more" Amazon appends, normalize whitespace,
+# then write the result back into that entry's synopsis field.
 
 function Get-AmazonSynopsis {
     param([string]$Url)
@@ -355,158 +422,91 @@ function Get-AmazonSynopsis {
     $synopsis = $synopsis -replace '\s*Read more\s*$', ''
     # <i>-tag artifacts leave a space before some commas/periods.
     $synopsis = $synopsis -replace ' +([,.;:!?])', '$1'
-    # JS strings in BOOK_SYNOPSES are single-quoted; promote any straight
-    # apostrophes to curly so they don't terminate the string literal.
-    $synopsis = $synopsis -replace "'", ([string][char]0x2019)
     $synopsis = ($synopsis -replace '\s+', ' ').Trim()
 
     return $synopsis
 }
 
 function Update-BookSynopses {
-    param([string]$IndexPath)
+    param([string]$Path)
 
-    $content = [System.IO.File]::ReadAllText($IndexPath, [System.Text.Encoding]::UTF8)
-
-    if ($content -notmatch '(?s)var BOOK_AMAZON_URLS = \{(.+?)\};') {
-        Write-Host "  BOOK_AMAZON_URLS not found - skipping synopsis refresh." -ForegroundColor DarkGray
+    if (-not (Test-Path $Path)) {
+        Write-Host "  data/books.json not found - skipping synopsis refresh." -ForegroundColor DarkGray
         return
     }
-    $entries = [regex]::Matches($matches[1], "(?s)'([^']+)':\s*'([^']+)'")
-    if ($entries.Count -eq 0) {
-        Write-Host "  BOOK_AMAZON_URLS is empty - skipping synopsis refresh." -ForegroundColor DarkGray
+    $books = @(Get-Content -Raw -Path $Path -Encoding UTF8 | ConvertFrom-Json)
+    if ($books.Count -eq 0) {
+        Write-Host "  data/books.json is empty - skipping synopsis refresh." -ForegroundColor DarkGray
+        return
+    }
+    # Defensive: a malformed read (partial write races, bad JSON) must never
+    # propagate into a write that clobbers the file with fewer/garbage
+    # entries. Every real entry has a title; abort loudly instead of risking
+    # data loss if that's not true.
+    $malformed = @($books | Where-Object { -not ($_.PSObject.Properties.Name -contains 'title') -or [string]::IsNullOrWhiteSpace($_.title) })
+    if ($malformed.Count -gt 0) {
+        # Non-fatal: this must not abort the whole script (repo-tile JSON
+        # generation below is independent of book synopses).
+        Write-Warning "  Refusing to refresh synopses: $Path parsed into $($books.Count) entrie(s) but $($malformed.Count) are malformed (missing title). Not writing."
         return
     }
 
     Write-Host ""
     Write-Host "Refreshing Amazon book synopses..." -ForegroundColor Cyan
 
-    $synopses = @{}
-    foreach ($m in $entries) {
-        $title = $m.Groups[1].Value
-        $url   = $m.Groups[2].Value
-        $syn   = Get-AmazonSynopsis -Url $url
+    $changed = $false
+    foreach ($b in $books) {
+        if (-not $b.amazonUrl) { continue }
+        $syn = Get-AmazonSynopsis -Url $b.amazonUrl
         if ($syn) {
-            $synopses[$title] = $syn
-            Write-Host ("  [OK]   {0,-42} {1,4} chars" -f $title, $syn.Length) -ForegroundColor DarkGray
+            if ($b.synopsis -ne $syn) { $changed = $true }
+            $b.synopsis = $syn
+            Write-Host ("  [OK]   {0,-42} {1,4} chars" -f $b.title, $syn.Length) -ForegroundColor DarkGray
         } else {
-            Write-Host ("  [MISS] {0}" -f $title) -ForegroundColor Yellow
+            Write-Host ("  [MISS] {0}" -f $b.title) -ForegroundColor Yellow
         }
         # Be polite to Amazon and avoid the rate-limit/blocked-stub response
         # that hits the second-or-third request when bursting too fast.
         Start-Sleep -Milliseconds 1500
     }
 
-    if ($synopses.Count -eq 0) {
-        Write-Host "  No synopses scraped." -ForegroundColor Yellow
-        return
-    }
-
-    # Patch each existing entry in BOOK_SYNOPSES. Other entries are preserved.
-    $newContent = $content
-    foreach ($title in $synopses.Keys) {
-        $escTitle = [regex]::Escape($title)
-        $entryRx  = [regex]::new("(?s)('$escTitle':\s*)'[^']*'")
-        $newValue = "'" + $synopses[$title] + "'"
-        $newContent = $entryRx.Replace($newContent, { param($x) $x.Groups[1].Value + $newValue }, 1)
-    }
-
-    if ($newContent -eq $content) {
+    if (-not $changed) {
         Write-Host "  Synopses already up to date." -ForegroundColor DarkGray
         return
     }
 
-    [System.IO.File]::WriteAllText($IndexPath, $newContent, [System.Text.Encoding]::UTF8)
-    Write-Host ("Updated {0} synopses in index.htm." -f $synopses.Count) -ForegroundColor Green
+    Write-CatalogJson -Path $Path -Items $books
+    Write-Host ("Updated synopses in {0}." -f $Path) -ForegroundColor Green
 }
 
-Update-BookSynopses -IndexPath $IndexFile
+Update-BookSynopses -Path (Join-Path $DataDir "books.json")
 
 # ---------------------------------------------------------------------------
-# Read index.htm and detect line endings
+# Write catalog JSON files
 # ---------------------------------------------------------------------------
-$content = [System.IO.File]::ReadAllText($IndexFile, [System.Text.Encoding]::UTF8)
+$softwareItems  = @($softwareRepos  | ForEach-Object { New-TileObject -Repo $_ -Owner $Owner -Prefix 'sd' })
+$ecosystemItems = @($ecosystemRepos | ForEach-Object { New-TileObject -Repo $_ -Owner $Owner -Prefix 'sd' })
+$hardwareItems  = @($hardwareRepos  | ForEach-Object { New-TileObject -Repo $_ -Owner $Owner -Prefix 'hw' })
 
-# Match the file's existing line endings so we don't mix CRLF and LF.
-if ($content.IndexOf("`r`n") -ge 0) {
-    $nl = "`r`n"
-} else {
-    $nl = "`n"
-}
-
-# ---------------------------------------------------------------------------
-# Build a `<div class="board-grid">...</div>` block from a repo list.
-# ---------------------------------------------------------------------------
-function New-GridHtml {
-    param([object[]]$Repos, [string]$Owner, [string]$Nl, [string]$Prefix)
-    $sb = [System.Text.StringBuilder]::new()
-    [void]$sb.Append("      <div class=`"board-grid`">$Nl")
-    $first = $true
-    foreach ($r in $Repos) {
-        if (-not $first) { [void]$sb.Append($Nl) }
-        $first = $false
-        [void]$sb.Append((New-TileHtml -Repo $r -Owner $Owner -Nl $Nl -Prefix $Prefix))
-    }
-    [void]$sb.Append("      </div>")
-    return $sb.ToString()
-}
-
-# Replace the first `<div class="board-grid">...</div>` that appears AFTER
-# the given <h2>...</h2> anchor. This lets us target Software vs. Hardware
-# independently. Returns the new content (or original if no change/match).
-function Update-SectionGrid {
-    param([string]$Content, [string]$Heading, [string]$NewGrid)
-
-    $escH = [regex]::Escape("<h2>$Heading</h2>")
-    # (?s) dotall; capture the prefix (h2 + everything up to the grid open)
-    # so we can reattach it verbatim in the replacement.
-    $pattern = "(?s)($escH.*?)      <div class=`"board-grid`">.*?\r?\n      </div>(?=\r?\n    </div>)"
-    $rx = [regex]::new($pattern)
-    if (-not $rx.IsMatch($Content)) {
-        Write-Host ("  WARNING: could not locate <h2>{0}</h2> + board-grid block." -f $Heading) -ForegroundColor Yellow
-        return $Content
-    }
-    # MatchEvaluator so '$' in descriptions isn't treated as a backreference.
-    return $rx.Replace($Content, { param($m) $m.Groups[1].Value + $NewGrid }, 1)
-}
-
-$softwareGrid  = New-GridHtml -Repos $softwareRepos  -Owner $Owner -Nl $nl -Prefix 'sd'
-$ecosystemGrid = New-GridHtml -Repos $ecosystemRepos -Owner $Owner -Nl $nl -Prefix 'sd'
-$hardwareGrid  = New-GridHtml -Repos $hardwareRepos  -Owner $Owner -Nl $nl -Prefix 'hw'
-
-$newContent = $content
-$newContent = Update-SectionGrid -Content $newContent -Heading 'Software' -NewGrid $softwareGrid
-$newContent = Update-SectionGrid -Content $newContent -Heading 'MindAttic Ecosystem' -NewGrid $ecosystemGrid
-$newContent = Update-SectionGrid -Content $newContent -Heading 'Hardware' -NewGrid $hardwareGrid
-
-if ($newContent -eq $content) {
-    Write-Host "No changes needed - grids already up to date." -ForegroundColor DarkGray
-    exit 0
-}
-
-[System.IO.File]::WriteAllText($IndexFile, $newContent, [System.Text.Encoding]::UTF8)
+Write-CatalogJson -Path (Join-Path $DataDir "software.json")  -Items $softwareItems
+Write-CatalogJson -Path (Join-Path $DataDir "ecosystem.json") -Items $ecosystemItems
+Write-CatalogJson -Path (Join-Path $DataDir "hardware.json")  -Items $hardwareItems
 
 # ---------------------------------------------------------------------------
 # Report
 # ---------------------------------------------------------------------------
 function Write-RepoReport {
-    param([string]$Title, [object[]]$Repos)
+    param([string]$Title, [object[]]$Items)
     Write-Host ""
-    Write-Host ("Regenerated {0} tile(s) [{1}]:" -f $Repos.Count, $Title) -ForegroundColor Green
-    foreach ($r in $Repos) {
-        # Mirror New-TileHtml's URL resolution so the marker reflects the actual
-        # Open button: projects.json landing page (slug.htm or openUrl) first,
-        # else GitHub homepageUrl.
-        $hasOpen = $script:landingRepos.ContainsKey($r.name) -or
-                   (-not [string]::IsNullOrWhiteSpace($r.homepageUrl))
-        if ($hasOpen) { $mark = '*' } else { $mark = ' ' }
-        if ($r.description) { $descLen = $r.description.Length } else { $descLen = 0 }
-        Write-Host ("  [$mark] {0,-32} {1,4} chars desc" -f $r.name, $descLen) -ForegroundColor DarkGray
+    Write-Host ("Wrote {0} tile(s) [{1}]:" -f $Items.Count, $Title) -ForegroundColor Green
+    foreach ($it in $Items) {
+        $mark = if ($it.openUrl) { '*' } else { ' ' }
+        Write-Host ("  [$mark] {0,-32} {1,4} chars desc" -f $it.name, $it.description.Length) -ForegroundColor DarkGray
     }
 }
-Write-RepoReport -Title 'Software' -Repos $softwareRepos
-Write-RepoReport -Title 'MindAttic Ecosystem' -Repos $ecosystemRepos
-Write-RepoReport -Title 'Hardware' -Repos $hardwareRepos
+Write-RepoReport -Title 'Software' -Items $softwareItems
+Write-RepoReport -Title 'MindAttic Ecosystem' -Items $ecosystemItems
+Write-RepoReport -Title 'Hardware' -Items $hardwareItems
 Write-Host ""
 Write-Host "* = has Open button (projects.json landing page or homepage URL)" -ForegroundColor DarkGray
 exit 0

@@ -1,0 +1,184 @@
+[
+    {
+        "id":  "sd-mindatticauthentication",
+        "name":  "MindAttic.Authentication",
+        "description":  "Vault-backed authentication shared across the MindAttic ecosystem (Prose, MindAttic.Ideas, Tutor), shipped as a Razor Class Library. Built to OWASP ASVS L2/L3 and NIST SP 800-63B AAL2: login, TOTP step-up, enrollment, password reset/change, and full audit logging.",
+        "githubUrl":  "https://github.com/mindattic/MindAttic.Authentication",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/MindAttic.Authentication",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-mindatticcryptography",
+        "name":  "MindAttic.Cryptography",
+        "description":  "Early-stage .NET library for cryptographic helpers shared across the MindAttic ecosystem.",
+        "githubUrl":  "https://github.com/mindattic/MindAttic.Cryptography",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/MindAttic.Cryptography",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-mindatticdeploy",
+        "name":  "MindAttic.Deploy",
+        "description":  "Single-source generator and FTPS deployer for every mindattic.com/\u003cslug\u003e/ landing page.",
+        "githubUrl":  "https://github.com/mindattic/MindAttic.Deploy",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/MindAttic.Deploy",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-mindattichelpers",
+        "name":  "MindAttic.Helpers",
+        "description":  "Small, dependency-free .NET helpers shared across the MindAttic ecosystem: a deterministic seed-to-SVG generative art engine, and a streaming, memory-safe arbitrary-precision pi digit generator.",
+        "githubUrl":  "https://github.com/mindattic/MindAttic.Helpers",
+        "openUrl":  "https://mindattic.com/mindattichelpers.htm",
+        "openInternal":  true,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/MindAttic.Helpers",
+        "topics":  [
+                       "software"
+                   ]
+    },
+    {
+        "id":  "sd-mindatticideas",
+        "name":  "MindAttic.Ideas",
+        "description":  "A Module based CMS running on .NET 10 Blazor inspired by DotNetNuke\u0027s original elegant modular design",
+        "githubUrl":  "https://github.com/mindattic/MindAttic.Ideas",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/MindAttic.Ideas",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-mindatticideaslibrary",
+        "name":  "MindAttic.Ideas.Library",
+        "description":  "First-party library of .idea Themes and Widgets for the MindAttic.Ideas CMS -- one home for every component that ships with the CMS, each owning its own asset bundle (JS/CSS/HTML) as the single source of truth.",
+        "githubUrl":  "https://github.com/mindattic/MindAttic.Ideas.Library",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/MindAttic.Ideas.Library",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-mindatticlauncher",
+        "name":  "MindAttic.Launcher",
+        "description":  "C# CLI for MindAttic Orchestration",
+        "githubUrl":  "https://github.com/mindattic/MindAttic.Launcher",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/MindAttic.Launcher",
+        "topics":  [
+                       "software"
+                   ]
+    },
+    {
+        "id":  "sd-mindatticlegion",
+        "name":  "MindAttic.Legion",
+        "description":  ".NET 10 library and CLI for multi-LLM consensus. Unified client across 11 providers (Claude, OpenAI, Gemini, DeepSeek, Mistral, xAI, Groq, Together, OpenRouter, Fireworks, Cohere). Voting with quorum, choice decisions, rubric scoring, bulk polling, deduped generation, personas, tier-based model selection, automatic failover.",
+        "githubUrl":  "https://github.com/mindattic/MindAttic.Legion",
+        "openUrl":  "https://mindattic.com/mindatticlegion.htm",
+        "openInternal":  true,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/MindAttic.Legion",
+        "topics":  [
+                       "software"
+                   ]
+    },
+    {
+        "id":  "sd-mindatticlog",
+        "name":  "MindAttic.Log",
+        "description":  "Early-stage .NET logging library for the MindAttic ecosystem.",
+        "githubUrl":  "https://github.com/mindattic/MindAttic.Log",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/MindAttic.Log",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-mindatticmedia",
+        "name":  "MindAttic.Media",
+        "description":  "Media-processing library for the MindAttic ecosystem, with a companion Azure integration project (MindAttic.Media.Azure).",
+        "githubUrl":  "https://github.com/mindattic/MindAttic.Media",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/MindAttic.Media",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-mindatticmobile",
+        "name":  "MindAttic.Mobile",
+        "description":  "Browser-based mobile terminal bridge: hosts a WebSocket-backed web terminal (MindAttic.Terminal) so a Claude Code session can be driven remotely from a phone browser.",
+        "githubUrl":  "https://github.com/mindattic/MindAttic.Mobile",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/MindAttic.Mobile",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-mindatticpsst",
+        "name":  "MindAttic.Psst",
+        "description":  "CLI notifier for long-running commands. Wrap any shell command with \u0027psst -- \u003ccmd\u003e\u0027; on exit it plays a local sound and sends an SMS with the command, exit code, and elapsed time. SMS via Twilio (primary), email-to-SMS gateway as fallback. Credentials from the shared MindAttic.Vault chain. C#/.NET.",
+        "githubUrl":  "https://github.com/mindattic/MindAttic.Psst",
+        "openUrl":  "https://mindattic.com/mindatticpsst.htm",
+        "openInternal":  true,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/MindAttic.Psst",
+        "topics":  [
+                       "software"
+                   ]
+    },
+    {
+        "id":  "sd-mindatticuiux",
+        "name":  "MindAttic.UiUx",
+        "description":  "Shared front-end assets for MindAttic sites (StreetSamurai, mindattic.com). Ships the CBG (Console Background) effects suite: 17 animated background effects, content-aware keepout zones, parallax circuit-board textures, and scan-line overlays. Pure CSS+JS, no build step. Distributed by PowerShell sync scripts.",
+        "githubUrl":  "https://github.com/mindattic/MindAttic.UiUx",
+        "openUrl":  "https://mindattic.com/mindatticuiux.htm",
+        "openInternal":  true,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/MindAttic.UiUx",
+        "topics":  [
+                       "software"
+                   ]
+    },
+    {
+        "id":  "sd-mindatticvault",
+        "name":  "MindAttic.Vault",
+        "description":  ".NET 9/10 library for credentials and per-app settings. Unified IConfiguration-backed pipeline over User Secrets, environment variables, Azure App Service Application Settings, Azure Key Vault, and %APPDATA% files. Ships credential stores, token store, JSON settings store, path helpers, and DI extensions.",
+        "githubUrl":  "https://github.com/mindattic/MindAttic.Vault",
+        "openUrl":  "https://mindattic.com/mindatticvault.htm",
+        "openInternal":  true,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/MindAttic.Vault",
+        "topics":  [
+                       "software"
+                   ]
+    }
+]
