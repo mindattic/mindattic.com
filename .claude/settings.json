@@ -1,38 +1,50 @@
-{
-  "statusLine": { "type": "command", "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"%CLAUDE_PROJECT_DIR%\\.claude\\statusline.ps1\"" },
-  "hooks": {
-    "SessionStart": [
-      { "matcher": "clear", "hooks": [ { "type": "command", "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"%CLAUDE_PROJECT_DIR%\\.claude\\hooks\\restore-handoff.ps1\"" } ] },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"D:/Projects/MindAttic/mindattic.com/.claude/hooks/inject-digest.ps1\"",
-            "shell": "powershell"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "if": "Edit(*index.htm*)",
-            "command": "$f='D:/Projects/MindAttic/mindattic.com/index.htm'; if (Test-Path $f) { $d=(Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ'); $s=\"<!-- Last Updated: $d -->\"; $c=[System.IO.File]::ReadAllText($f,[System.Text.UTF8Encoding]::new($false)); if ($c -match '(?s)^<!--\\s*Last Updated:.*?-->(\\r?\\n)') { $c=$c -replace '(?s)^<!--\\s*Last Updated:.*?-->(\\r?\\n)',\"$s`$1\" } else { $c=\"$s`r`n$c\" }; [System.IO.File]::WriteAllText($f,$c,[System.Text.UTF8Encoding]::new($false)) }",
-            "shell": "powershell",
-            "statusMessage": "Updating last-updated timestamp..."
-          },
-          {
-            "type": "command",
-            "if": "Write(*index.htm*)",
-            "command": "$f='D:/Projects/MindAttic/mindattic.com/index.htm'; if (Test-Path $f) { $d=(Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ'); $s=\"<!-- Last Updated: $d -->\"; $c=[System.IO.File]::ReadAllText($f,[System.Text.UTF8Encoding]::new($false)); if ($c -match '(?s)^<!--\\s*Last Updated:.*?-->(\\r?\\n)') { $c=$c -replace '(?s)^<!--\\s*Last Updated:.*?-->(\\r?\\n)',\"$s`$1\" } else { $c=\"$s`r`n$c\" }; [System.IO.File]::WriteAllText($f,$c,[System.Text.UTF8Encoding]::new($false)) }",
-            "shell": "powershell",
-            "statusMessage": "Updating last-updated timestamp..."
-          }
-        ]
-      }
-    ]
-  }
+﻿{
+    "statusLine":  {
+                       "type":  "command",
+                       "command":  "powershell -NoProfile -ExecutionPolicy Bypass -File \"%CLAUDE_PROJECT_DIR%\\.claude\\statusline.ps1\""
+                   },
+    "hooks":  {
+                  "SessionStart":  [
+                                       {
+                                           "hooks":  [
+                                                         {
+                                                             "type":  "command",
+                                                             "command":  "powershell -NoProfile -ExecutionPolicy Bypass -File \"D:/Projects/MindAttic/mindattic.com/.claude/hooks/inject-digest.ps1\"",
+                                                             "shell":  "powershell"
+                                                         }
+                                                     ]
+                                       }
+                                   ],
+                  "PostToolUse":  [
+                                      {
+                                          "matcher":  "Edit|Write",
+                                          "hooks":  [
+                                                        {
+                                                            "type":  "command",
+                                                            "if":  "Edit(*index.htm*)",
+                                                            "command":  "$f=\u0027D:/Projects/MindAttic/mindattic.com/index.htm\u0027; if (Test-Path $f) { $d=(Get-Date).ToUniversalTime().ToString(\u0027yyyy-MM-ddTHH:mm:ssZ\u0027); $s=\"\u003c!-- Last Updated: $d --\u003e\"; $c=[System.IO.File]::ReadAllText($f,[System.Text.UTF8Encoding]::new($false)); if ($c -match \u0027(?s)^\u003c!--\\s*Last Updated:.*?--\u003e(\\r?\\n)\u0027) { $c=$c -replace \u0027(?s)^\u003c!--\\s*Last Updated:.*?--\u003e(\\r?\\n)\u0027,\"$s`$1\" } else { $c=\"$s`r`n$c\" }; [System.IO.File]::WriteAllText($f,$c,[System.Text.UTF8Encoding]::new($false)) }",
+                                                            "shell":  "powershell",
+                                                            "statusMessage":  "Updating last-updated timestamp..."
+                                                        },
+                                                        {
+                                                            "type":  "command",
+                                                            "if":  "Write(*index.htm*)",
+                                                            "command":  "$f=\u0027D:/Projects/MindAttic/mindattic.com/index.htm\u0027; if (Test-Path $f) { $d=(Get-Date).ToUniversalTime().ToString(\u0027yyyy-MM-ddTHH:mm:ssZ\u0027); $s=\"\u003c!-- Last Updated: $d --\u003e\"; $c=[System.IO.File]::ReadAllText($f,[System.Text.UTF8Encoding]::new($false)); if ($c -match \u0027(?s)^\u003c!--\\s*Last Updated:.*?--\u003e(\\r?\\n)\u0027) { $c=$c -replace \u0027(?s)^\u003c!--\\s*Last Updated:.*?--\u003e(\\r?\\n)\u0027,\"$s`$1\" } else { $c=\"$s`r`n$c\" }; [System.IO.File]::WriteAllText($f,$c,[System.Text.UTF8Encoding]::new($false)) }",
+                                                            "shell":  "powershell",
+                                                            "statusMessage":  "Updating last-updated timestamp..."
+                                                        }
+                                                    ]
+                                      }
+                                  ],
+                  "UserPromptSubmit":  [
+                                           {
+                                               "hooks":  [
+                                                             {
+                                                                 "type":  "command",
+                                                                 "command":  "powershell -NoProfile -ExecutionPolicy Bypass -File \"%CLAUDE_PROJECT_DIR%\\.claude\\hooks\\quickload-on-do.ps1\""
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+              }
 }
