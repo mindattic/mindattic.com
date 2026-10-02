@@ -4,7 +4,7 @@ project: mindattic.com
 code: MAC
 layer: amendments
 status: living
-updated: 2026-08-20
+updated: 2026-10-02
 ---
 
 # mindattic.com — Amendments (append-only; amendment wins over the bible)
@@ -136,3 +136,79 @@ the roadmap is visible in the UI itself. Each will get its own `[data-theme="...
 and renderer, reusing the same `mapRepoTile`/`mapBook`/`mapVisualArt`/`generateProjectArt` building
 blocks Classic uses — only the rendering layer differs per theme; `fetch-descriptions.ps1`/
 `add-book.ps1` remain the sole producers of `data/*.json` regardless of which theme is active.
+
+## MAC-A6 — The page is reduced to wordmark + three buttons; all binary assets move to the MindAttic.UiUx jsDelivr package (supersedes MAC-A3 and MAC-A5; refines LAW-1, LAW-2, LAW-3, LAW-5, LAW-6)
+
+**What changed.** `index.htm` is now a deliberately tiny page (user decision, 2026-10-02): a centered
+"MindAttic" wordmark (Attic font) with three equal-width link buttons beneath it — **Résumé**
+(`https://ryandebraal.com`), **GitHub** (`https://github.com/mindattic`) and **MindAttic Cares**
+(`https://mindatticcares.com`), each `target="_blank"` — a copyright footer fixed to the bottom
+edge, and the Cyberspace backdrop. Tapping/clicking anywhere (except on a button) spawns one random
+Cyberspace effect via `window.consoleBg._demo`. The page never scrolls and every size on it is a
+multiple of one viewport-relative unit (`--u`, 1% of the smaller visible viewport side, capped at
+`0.7273rem`), so it keeps the same shape at every size and aspect ratio; the three buttons together
+are exactly as wide as the wordmark.
+
+**Removed from `index.htm`:** the Classic catalog browser (the Portfolio / Software / Hardware /
+Writing / Visual Arts topic tabs, side list and detail pane), the `PORTFOLIO_*` objects and the
+`data/*.json` runtime `fetch()`, the presentation-mode / theme picker (`#theme-picker`,
+`[data-theme]`), the Projects grid and shine effect, the site header, and the `PinFooter` and
+`WebSnapshot` components. The footer is now a plain fixed element, not `pin-when-short`. The page
+wrapper is `<div id="content" role="main">`, **not** a `<main>` element, because Cyberspace treats
+every `<main>` as a keepout zone that effects stay out of — a full-screen `<main>` would block the
+whole screen; only the `.lockup` (wordmark + buttons) carries `.cyberspace-keepout`.
+
+**Assets are no longer embedded.** Fonts (Outfit, Attic), the logo PNGs, the Cyberspace engine
+(`console-bg.js`, `sacred-geometry.js`) and the parallax textures are plain static files served from
+jsDelivr out of the `MindAttic.UiUx` repo at a **tag-pinned** URL
+(`https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V7/<path>`). `<head>` carries a
+`preconnect` to `cdn.jsdelivr.net` and `preload` hints for the two fonts the first paint needs; the
+two engine scripts are `defer`red; the three textures are preloaded at low priority. The page went
+from ~224 KB to ~85 KB. Layout of the package and its rules: `MindAttic.UiUx/docs/ASSETS.md`,
+decision recorded there as MAU-A4.
+
+**Supersedes / refines.**
+
+- **[LAW-1](BIBLE.md#MAC-LAW-1) is refined.** The old text ("one authored file, inline CSS/JS,
+  base64-inlined fonts … no CDN, no third-party request") is retired. The surviving core is: *`index.htm`
+  is the only hand-authored page, with no build step, no bundler and no framework.* Static assets
+  may — and should — be external, served from the `MindAttic.UiUx` jsDelivr package. `<link rel=…>`,
+  `preconnect`, `preload` and `defer` are allowed.
+- **[LAW-6](BIBLE.md#MAC-LAW-6) is refined, not dropped.** Still forbidden: analytics, tracking
+  pixels, third-party fonts, and any third-party host *other than* jsDelivr serving the
+  `MindAttic.UiUx` repo. The one allowed external host is `cdn.jsdelivr.net` (own content, pinned tag).
+- **[LAW-2](BIBLE.md#MAC-LAW-2) and [LAW-3](BIBLE.md#MAC-LAW-3) are dormant.** Nothing the page renders
+  is generated from GitHub/Amazon/Mermaid any more. The only generated region left in `index.htm` is
+  the `BEGIN/END MINDATTIC.UIUX:CYBERSPACE` block, owned by `MindAttic.UiUx/sync/sync-mindattic-com.ps1`
+  (still [LAW-2](BIBLE.md#MAC-LAW-2): never hand-edit it). The GitHub/Amazon generators still run and
+  still write `data/*.json`, but no page reads those files.
+- **[MAC-A3](#MAC-A3) is superseded.** The page makes no same-origin `data/*.json` requests, so
+  `MindAttic.Deploy` no longer needs to upload `data/*.json` and `/run` no longer needs local HTTP to
+  avoid a CORS-blocked `fetch()` (it is kept as the convenient way to preview).
+- **[MAC-A5](#MAC-A5) is superseded.** The presentation-mode system (Classic / Collage / Terminal),
+  the `#theme-picker` and the `[data-theme]` renderers are gone; the Collage and Terminal roadmap is
+  cut. The dark Cyberspace palette ([LAW-5](BIBLE.md#MAC-LAW-5)) remains the only palette — LAW-5's
+  presentation-mode clause is moot.
+- **[MAC-A2](#MAC-A2) still holds, with different hooks.** `MindAttic.Deploy` (`projects.json`,
+  site `mindattic.com`) still runs `uiux-pull`, then `sync-mindattic-com.ps1` (which now splices only
+  the `CYBERSPACE` block — `mindattic.com` is no longer enrolled for `OutfitFont`, `AtticFont`,
+  `PinFooter` or `WebSnapshot` in `MindAttic.UiUx/subscribers.json`), then the *optional*
+  `fetch-descriptions.ps1` (harmless: it only rewrites `data/*.json`), then stamps and FTPS-uploads
+  `*.htm`.
+- **[LAW-5](BIBLE.md#MAC-LAW-5), [LAW-4](BIBLE.md#MAC-LAW-4), [LAW-7](BIBLE.md#MAC-LAW-7)** are
+  unchanged. The View Source banner and table of contents are kept (rewritten so they no longer claim
+  "one file / no CDN").
+
+**Dormant, kept on disk (nothing deleted).** `data/*.json`, `fetch-descriptions.ps1`,
+`add-book.ps1` / `add-book.bat`, `diagram/` (note: `diagram/render.ps1` splices between
+`BEGIN/END ECOSYSTEM-DIAGRAM` markers that `index.htm` no longer contains, so it will throw if run),
+`previews/` and `.image-base64.txt`. `idiotproof/` is **not** dormant: it is still FTP-uploaded as the
+`idiotproof-replays` site in `MindAttic.Deploy/projects.json`. Whether to delete the dormant
+machinery is an open decision for the maintainer.
+
+**Why.** The user wanted the front door reduced to the logo and three buttons, loading as fast as
+possible, with every MindAttic site sharing one cached, versioned asset backend instead of each page
+carrying megabytes of base64.
+
+**Migration.** Bump the `@V<n>` tag in `index.htm` (search `MindAttic.UiUx@V`) to take a newer asset
+release; tags are immutable whole numbers. Never point the page at `@main`.

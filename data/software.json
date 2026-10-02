@@ -1,5 +1,18 @@
 [
     {
+        "id":  "sd-audibletogoodreads",
+        "name":  "Audible-To-GoodReads",
+        "description":  "",
+        "githubUrl":  "https://github.com/mindattic/Audible-To-GoodReads",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/Audible-To-GoodReads",
+        "topics":  [
+
+                   ]
+    },
+    {
         "id":  "sd-automata",
         "name":  "Automata",
         "description":  "Record-once, replay-many browser automation for the MindAttic ecosystem. A WPF host drives a WebView2 pane via Chrome DevTools Protocol; a provider-neutral LLM tool-calling engine (ported from Prose\u0027s KDP-publishing automation) performs generic DOM actions by fuzzy text/role matching instead of brittle selectors.",
@@ -8,6 +21,19 @@
         "openInternal":  false,
         "previewImage":  null,
         "dataRepo":  "mindattic/Automata",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-autowebnav",
+        "name":  "AutoWebNav",
+        "description":  "",
+        "githubUrl":  "https://github.com/mindattic/AutoWebNav",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/AutoWebNav",
         "topics":  [
 
                    ]
@@ -49,6 +75,58 @@
         "dataRepo":  "mindattic/Cursory",
         "topics":  [
                        "software"
+                   ]
+    },
+    {
+        "id":  "sd-doctech",
+        "name":  "DocTech",
+        "description":  "",
+        "githubUrl":  "https://github.com/mindattic/DocTech",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/DocTech",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-experimenteve",
+        "name":  "ExperimentEve",
+        "description":  "",
+        "githubUrl":  "https://github.com/mindattic/ExperimentEve",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/ExperimentEve",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-experimentrts",
+        "name":  "ExperimentRTS",
+        "description":  "",
+        "githubUrl":  "https://github.com/mindattic/ExperimentRTS",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/ExperimentRTS",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-formicarium",
+        "name":  "Formicarium",
+        "description":  "",
+        "githubUrl":  "https://github.com/mindattic/Formicarium",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/Formicarium",
+        "topics":  [
+
                    ]
     },
     {
@@ -143,6 +221,32 @@
                    ]
     },
     {
+        "id":  "sd-jellyfinposter",
+        "name":  "JellyFinPoster",
+        "description":  "",
+        "githubUrl":  "https://github.com/mindattic/JellyFinPoster",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/JellyFinPoster",
+        "topics":  [
+
+                   ]
+    },
+    {
+        "id":  "sd-jobhunt",
+        "name":  "JobHunt",
+        "description":  "",
+        "githubUrl":  "https://github.com/mindattic/JobHunt",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/JobHunt",
+        "topics":  [
+
+                   ]
+    },
+    {
         "id":  "sd-joycefit",
         "name":  "JoyceFit",
         "description":  "Brand identity and print-collateral project for JoyceFit -- logo variants, business card, and flyer assets alongside a small static site.",
@@ -197,6 +301,19 @@
                        "github-api",
                        "responsible-disclosure",
                        "security"
+                   ]
+    },
+    {
+        "id":  "sd-processlogger",
+        "name":  "ProcessLogger",
+        "description":  "",
+        "githubUrl":  "https://github.com/mindattic/ProcessLogger",
+        "openUrl":  null,
+        "openInternal":  false,
+        "previewImage":  null,
+        "dataRepo":  "mindattic/ProcessLogger",
+        "topics":  [
+
                    ]
     },
     {

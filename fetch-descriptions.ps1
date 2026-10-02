@@ -11,22 +11,21 @@
 #   The 'software'/'hardware' topics no longer gate visibility -- they (and
 #   the MindAttic.* name prefix) only decide which section a repo lands in.
 #
-# index.htm holds a static, empty placeholder per section
-# (<div class="home-sections" data-catalog="software"></div>, etc.) and is
-# never touched by this script. At runtime index.htm's own JS fetches
-# data/<catalog>.json and renders the tiles client-side (mountCatalog() /
-# buildBoardSection()) -- see index.htm section 12 (SCRIPTS).
+# DORMANT (docs/AMENDMENTS.md MAC-A6, 2026-10-02): index.htm is now a wordmark
+# plus three buttons and no longer reads data/*.json (the portfolio browser
+# that rendered these files client-side was removed). This script still runs
+# and still writes the JSON files, but nothing on the live site changes when
+# you run it. It never touches index.htm. MindAttic.Deploy still calls it as an
+# optional pre-deploy hook; that is harmless.
 #
-# The <h2>MindAttic Ecosystem</h2> heading carries a hand-authored flow
-# diagram (an inline SVG between <!-- BEGIN/END ECOSYSTEM-DIAGRAM --> markers)
-# directly in index.htm, untouched by this script. Edit diagram/ecosystem.mmd
-# + run diagram/render.ps1 to change it -- never hand-edit the inlined SVG.
+# The old inline MindAttic Ecosystem SVG (between BEGIN/END ECOSYSTEM-DIAGRAM
+# markers) is also gone from index.htm -- see diagram/render.ps1.
 #
 # To hide a repo:       make it private. It disappears on the next
 #                       /fetch (or /deploy).
 # To move a repo between Software/Hardware: add/remove the 'hardware' topic
 #                       (gh repo edit mindattic/<name> --add-topic hardware).
-# To refresh the site:  run /fetch (or /deploy, which calls this first).
+# To refresh the JSON: run /fetch (or /deploy, which calls this first).
 #
 # Descriptions: a repo with an empty/whitespace-only GitHub description gets
 # a generic fallback client-side ("Repository on GitHub -- see source for

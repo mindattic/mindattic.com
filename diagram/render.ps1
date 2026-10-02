@@ -1,15 +1,21 @@
 # render.ps1 - regenerate the MindAttic Ecosystem flow diagram and inline it.
 #
+# DORMANT / WILL THROW (docs/AMENDMENTS.md MAC-A6, 2026-10-02): this script
+# splices the rendered SVG into ../index.htm between <!-- BEGIN/END
+# ECOSYSTEM-DIAGRAM --> markers, and index.htm no longer contains them (the
+# page is now a wordmark plus three buttons), so running it fails with
+# "BEGIN ECOSYSTEM-DIAGRAM marker not found". It is kept on disk in case a
+# future page wants the diagram back; rendering ecosystem.svg itself still works.
+#
 # Source of truth is ecosystem.mmd (Mermaid). This script renders it to
 # ecosystem.svg via @mermaid-js/mermaid-cli (themed by mermaid-config.json to
-# the site's Cyberspace palette), then splices that SVG into ../index.htm
-# between the <!-- BEGIN/END ECOSYSTEM-DIAGRAM --> markers. The page stays a
-# single self-contained file (no runtime JS / CDN dependency).
+# the site's Cyberspace palette), then splices that SVG into the page. (It
+# used to say this kept the page "a single self-contained file"; the page no
+# longer makes that promise -- assets come from the MindAttic.UiUx CDN package.)
 #
-# The splice region sits BETWEEN <h2>MindAttic Ecosystem</h2> and its
-# board-grid, so it is preserved by fetch-descriptions.ps1 (which only rewrites
-# the grid) and ignored by the UiUx sync (these are plain HTML comments, not
-# MINDATTIC.UIUX markers).
+# The splice region used to sit BETWEEN <h2>MindAttic Ecosystem</h2> and its
+# board-grid, preserved by fetch-descriptions.ps1 and ignored by the UiUx sync
+# (plain HTML comments, not MINDATTIC.UIUX markers).
 #
 # NOTE: on networks that MITM TLS (corporate proxy / custom root CA), the
 # `npx @mermaid-js/mermaid-cli` download can fail with

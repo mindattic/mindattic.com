@@ -1,8 +1,11 @@
+> **DORMANT (MAC-A6, 2026-10-02):** `index.htm` no longer reads `data/*.json` — the portfolio browser was
+> removed and the page is a wordmark + three buttons. This command still works and still writes the
+> JSON files (useful if the catalog comes back or for the GitHub description write-back below), but
+> nothing on the live site changes when you run it.
+
 Regenerate data/software.json, data/ecosystem.json, and data/hardware.json from
 public mindattic repos on GitHub, and refresh data/books.json synopses from
-Amazon. index.htm never changes — it holds a static, empty
-`<div class="home-sections" data-catalog="...">` placeholder per section, and
-fetches these JSON files at runtime (mountCatalog() in index.htm's own JS).
+Amazon. index.htm is never touched by this script.
 
 Run:
 
@@ -33,13 +36,12 @@ What it does:
 
 GitHub is the source of truth for repo tiles:
 
-- **To feature a repo:** make it public and tag it
-  `gh repo edit mindattic/<name> --add-topic software` (or `hardware`). Set
+- **To section a repo:** every public repo gets an entry; the `hardware` topic and the `MindAttic.*`
+  name prefix only choose which file it lands in. Set
   its description on the repo page or via
   `gh repo edit --description "..."`. Optionally set a homepage URL via
   `gh repo edit --homepage "<url>"` to add an Open button.
-- **To hide a repo:** remove the topic, or make it private. It disappears on
-  the next `/fetch` (or `/deploy`).
+- **To hide a repo:** make it private. It disappears on the next `/fetch` (or `/deploy`).
 - **To refresh a description:** edit it on GitHub, rerun this.
 
 Other flags on the same script:

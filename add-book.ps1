@@ -1,3 +1,5 @@
+# DORMANT (docs/AMENDMENTS.md MAC-A6): no page reads data/books.json any more.
+#
 # add-book.ps1 — Convert an Amazon book page into a base64-embedded book
 # cover entry appended to data/books.json.
 #
