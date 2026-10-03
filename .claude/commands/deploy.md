@@ -14,10 +14,10 @@ The linked flow (`MindAttic.Deploy/src/linked.js`):
 
 1. **Preflight** — `MindAttic.UiUx` must be on `main` with a clean working tree (the deploy never auto-commits), not behind origin, with `assets-manifest.json` current.
 2. **Publish** — tag the package `V<n+1>` if `HEAD` is ahead of the latest tag, then push `main` + the tag.
-3. **Pin** — `MindAttic.UiUx@V<n>` is rewritten to the release tag in each site's `index.htm` (this site: `index.htm` only; the generated `README.htm` is uploaded but never pinned).
-4. **Prepare** — this site's hooks run: `sync-mindattic-com.ps1 -CyberspaceCdnTag <tag>` splices **only the CYBERSPACE block** (the fonts, logo and effects engine are loaded from jsDelivr, not spliced); `fetch-descriptions.ps1` is best-effort and its output (`data/*.json`) is no longer used by the page.
+3. **Pin** — `MindAttic.UiUx@V<n>` is rewritten to the release tag in each site's `index.htm` (this site: `index.htm`).
+4. **Prepare** — this site's hooks run: `sync-mindattic-com.ps1 -CyberspaceCdnTag <tag>` splices **only the CYBERSPACE block** (the fonts, logo and effects engine are loaded from jsDelivr, not spliced); the dormant `fetch-descriptions.ps1` is no longer a deploy hook (DEP-A4).
 5. **CDN gate** — every asset the pages use must be live on jsDelivr at that tag, byte-exact, or the run aborts **before any FTP upload**.
-6. **FTP** — ryandebraal.com (`/`), mindatticcares.com (`/mindatticcares.com/`), then this site (`*.htm` -> `/mindattic.com/`), each stamped with a `<!-- Last Updated: ... -->` comment.
+6. **FTP** — ryandebraal.com (`/`), mindatticcares.com (`/mindatticcares.com/`), then this site (`index.htm` only -> `/mindattic.com/`), each stamped with a `<!-- Last Updated: ... -->` comment.
 
 After running, summarize the release tag, the pins that changed, the CDN gate result and the per-site upload table, and flag any failure. The deploy does not commit or push the site repos — mention any uncommitted changes `git status` shows.
 

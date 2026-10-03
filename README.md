@@ -20,11 +20,12 @@ needed to view or edit it. It contains:
 | Piece | What it is |
 |---|---|
 | `#site-name` | The "MindAttic" wordmark, set in the Attic display font |
-| `.link-row` / `.link-btn` | Three equal-width buttons — **Résumé** → `https://ryandebraal.com`, **GitHub** → `https://github.com/mindattic`, **MindAttic Cares** → `https://mindatticcares.com` — each opening in a new window |
+| `.link-row` / `.link-btn` | Three equal-width buttons — **Résumé** → `https://ryandebraal.com`, **GitHub** → `https://github.com/mindattic`, **MindAttic Cares** → `https://mindatticcares.com` — each opening in a new window, which screen readers announce via `aria-describedby` |
 | `.lockup` | The wordmark + buttons, centered both ways; the buttons together are exactly as wide as the wordmark |
 | `#site-footer` | Copyright line fixed to the bottom edge; the page never scrolls |
+| No selection | Text can't be highlighted (`user-select: none`), long-press shows no iOS copy bubble and taps don't flash a highlight box; links and keyboard focus still work |
 | Cyberspace block | The backdrop (circuit-board parallax, scanlines, console windows), spliced in by the UiUx sync |
-| Tap script | Tap or click anywhere (not on a button) to spawn one random Cyberspace effect |
+| Tap script | Tap or left-click anywhere (not on a button) to spawn one random Cyberspace effect; right/middle clicks are ignored |
 
 Everything on the page is a multiple of one viewport-relative unit (`--u`, 1% of the smaller visible
 viewport side), so it keeps the same shape on every screen and aspect ratio.
@@ -186,13 +187,16 @@ The pipeline (owned entirely by the sibling **MindAttic.Deploy** repo — this r
 `deploy.ps1`/`deploy.bat`/FTP `settings.json` are retired, see
 [MAC-A2](docs/AMENDMENTS.md#MAC-A2)):
 
-1. `git pull` on the sibling `MindAttic.UiUx` repo (hard-fails if it's dirty or missing).
-2. Runs `MindAttic.UiUx/sync/sync-mindattic-com.ps1` to splice the Cyberspace block into `index.htm`.
-3. Runs `fetch-descriptions.ps1` (optional, best-effort; it only rewrites the dormant `data/*.json`).
-4. Stamps `index.htm`'s `<!-- Last Updated: ... -->` comment with the current UTC time.
-5. FTPS-uploads every `*.htm` in this folder to `/mindattic.com/`.
+It is a **linked 4-in-1 deploy**: deploying this site also publishes `MindAttic.UiUx` and deploys
+`ryandebraal.com` and `mindatticcares.com` (see `MindAttic.Deploy/README.md`, "Linked deploy"):
 
-Only `*.htm` is uploaded: the fonts, logo, engine and textures are already on the CDN (they ship when
+1. Preflight: `MindAttic.UiUx` must be clean, on `main`, not behind origin, with a current manifest.
+2. Publishes the next `MindAttic.UiUx` tag (`V<n>`) if its `HEAD` is ahead of the latest tag.
+3. Pins that tag in each site's `index.htm` and runs `sync-mindattic-com.ps1` to splice the Cyberspace block.
+4. Verifies every asset the sites use is live on jsDelivr, byte-exact, before anything is uploaded.
+5. Stamps `index.htm`'s `<!-- Last Updated: ... -->` comment and FTPS-uploads it to `/mindattic.com/`.
+
+Only `index.htm` is uploaded: the fonts, logo, engine and textures are already on the CDN (they ship when
 the `MindAttic.UiUx` tag is pushed), and `data/*.json` is no longer needed on the server
 ([MAC-A6](docs/AMENDMENTS.md#MAC-A6) supersedes [MAC-A3](docs/AMENDMENTS.md#MAC-A3)).
 

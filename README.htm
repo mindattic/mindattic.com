@@ -129,7 +129,7 @@ pre:hover .cpbtn{opacity:1}
 </tr>
 <tr>
 <td><code>.link-row</code> / <code>.link-btn</code></td>
-<td>Three equal-width buttons — <strong>Résumé</strong> → <code>https://ryandebraal.com</code>, <strong>GitHub</strong> → <code>https://github.com/mindattic</code>, <strong>MindAttic Cares</strong> → <code>https://mindatticcares.com</code> — each opening in a new window</td>
+<td>Three equal-width buttons — <strong>Résumé</strong> → <code>https://ryandebraal.com</code>, <strong>GitHub</strong> → <code>https://github.com/mindattic</code>, <strong>MindAttic Cares</strong> → <code>https://mindatticcares.com</code> — each opening in a new window, which screen readers announce via <code>aria-describedby</code></td>
 </tr>
 <tr>
 <td><code>.lockup</code></td>
@@ -140,12 +140,16 @@ pre:hover .cpbtn{opacity:1}
 <td>Copyright line fixed to the bottom edge; the page never scrolls</td>
 </tr>
 <tr>
+<td>No selection</td>
+<td>Text can't be highlighted (<code>user-select: none</code>), long-press shows no iOS copy bubble and taps don't flash a highlight box; links and keyboard focus still work</td>
+</tr>
+<tr>
 <td>Cyberspace block</td>
 <td>The backdrop (circuit-board parallax, scanlines, console windows), spliced in by the UiUx sync</td>
 </tr>
 <tr>
 <td>Tap script</td>
-<td>Tap or click anywhere (not on a button) to spawn one random Cyberspace effect</td>
+<td>Tap or left-click anywhere (not on a button) to spawn one random Cyberspace effect; right/middle clicks are ignored</td>
 </tr>
 </tbody></table>
 <p>Everything on the page is a multiple of one viewport-relative unit (<code>--u</code>, 1% of the smaller visible viewport side), so it keeps the same shape on every screen and aspect ratio.</p>
@@ -245,14 +249,15 @@ powershell -File diagram\render.ps1      # WILL THROW: the ECOSYSTEM-DIAGRAM mar
 <pre><code class="language-powershell">cd D:\Projects\MindAttic\MindAttic.Deploy
 npm run deploy -- --site mindattic.com</code></pre>
 <p>The pipeline (owned entirely by the sibling <strong>MindAttic.Deploy</strong> repo — this repo's own <code>deploy.ps1</code>/<code>deploy.bat</code>/FTP <code>settings.json</code> are retired, see <a href="docs/AMENDMENTS.md#MAC-A2">MAC-A2</a>):</p>
+<p>It is a <strong>linked 4-in-1 deploy</strong>: deploying this site also publishes <code>MindAttic.UiUx</code> and deploys <code>ryandebraal.com</code> and <code>mindatticcares.com</code> (see <code>MindAttic.Deploy/README.md</code>, "Linked deploy"):</p>
 <ol>
-<li><code>git pull</code> on the sibling <code>MindAttic.UiUx</code> repo (hard-fails if it's dirty or missing).</li>
-<li>Runs <code>MindAttic.UiUx/sync/sync-mindattic-com.ps1</code> to splice the Cyberspace block into <code>index.htm</code>.</li>
-<li>Runs <code>fetch-descriptions.ps1</code> (optional, best-effort; it only rewrites the dormant <code>data/*.json</code>).</li>
-<li>Stamps <code>index.htm</code>'s <code>&lt;!-- Last Updated: ... --&gt;</code> comment with the current UTC time.</li>
-<li>FTPS-uploads every <code>*.htm</code> in this folder to <code>/mindattic.com/</code>.</li>
+<li>Preflight: <code>MindAttic.UiUx</code> must be clean, on <code>main</code>, not behind origin, with a current manifest.</li>
+<li>Publishes the next <code>MindAttic.UiUx</code> tag (<code>V&lt;n&gt;</code>) if its <code>HEAD</code> is ahead of the latest tag.</li>
+<li>Pins that tag in each site's <code>index.htm</code> and runs <code>sync-mindattic-com.ps1</code> to splice the Cyberspace block.</li>
+<li>Verifies every asset the sites use is live on jsDelivr, byte-exact, before anything is uploaded.</li>
+<li>Stamps <code>index.htm</code>'s <code>&lt;!-- Last Updated: ... --&gt;</code> comment and FTPS-uploads it to <code>/mindattic.com/</code>.</li>
 </ol>
-<p>Only <code>*.htm</code> is uploaded: the fonts, logo, engine and textures are already on the CDN (they ship when the <code>MindAttic.UiUx</code> tag is pushed), and <code>data/*.json</code> is no longer needed on the server (<a href="docs/AMENDMENTS.md#MAC-A6">MAC-A6</a> supersedes <a href="docs/AMENDMENTS.md#MAC-A3">MAC-A3</a>).</p>
+<p>Only <code>index.htm</code> is uploaded: the fonts, logo, engine and textures are already on the CDN (they ship when the <code>MindAttic.UiUx</code> tag is pushed), and <code>data/*.json</code> is no longer needed on the server (<a href="docs/AMENDMENTS.md#MAC-A6">MAC-A6</a> supersedes <a href="docs/AMENDMENTS.md#MAC-A3">MAC-A3</a>).</p>
 <p>This site's deploy profile lives in <code>MindAttic.Deploy/projects.json</code> under <code>sites[]</code>; per-project landing pages (<code>mindattic.com/&lt;slug&gt;.htm</code>, e.g. <code>idiotproof.htm</code>) ship via the catalog half of the same pipeline (<code>npm run deploy -- --only &lt;slug&gt;</code>), not via this command. FTP credentials are centralized in <code>MindAttic.Deploy/secrets/ftp.json</code> (gitignored there) — this repo no longer reads its own <code>settings.json</code> for that purpose.</p>
 <p>A <code>PostToolUse</code> hook in <code>.claude/settings.json</code> also stamps <code>&lt;!-- Last Updated: ... --&gt;</code> locally on every <code>Edit</code>/<code>Write</code> of <code>index.htm</code>, independent of a deploy.</p>
 <h2 id="conventions">Conventions</h2>

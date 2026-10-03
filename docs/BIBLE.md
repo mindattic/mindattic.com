@@ -67,7 +67,7 @@ tag-pinned jsDelivr package instead of being embedded in the page.
   MindAttic.UiUx/sync/sync-mindattic-com.ps1 ──splice (CYBERSPACE block only)──▶  index.htm
   PostToolUse hook stamps <!-- Last Updated: ... --> on every Edit/Write of index.htm ──▶  (authored page)
                                                                                     ▲
-                      MindAttic.Deploy (sibling repo) ──FTPS (*.htm only)──────────┘  live site
+                      MindAttic.Deploy (sibling repo) ──FTPS (index.htm only)─────┘  live site
 ```
 
 ### 4.1 Files / components {#MAC-§4.1}
@@ -88,8 +88,8 @@ tag-pinned jsDelivr package instead of being embedded in the page.
   `data/` (`software.json`, `ecosystem.json`, `hardware.json`, `books.json`, `visual-arts.json`),
   `fetch-descriptions.ps1`, `add-book.ps1` / `add-book.bat`, `diagram/` (`render.ps1` would throw: the
   `ECOSYSTEM-DIAGRAM` markers are gone from `index.htm`), `previews/` and `.image-base64.txt`.
-  The generators still run; no page reads their output. `MindAttic.Deploy` still calls
-  `fetch-descriptions.ps1` as an optional pre-deploy hook.
+  The generators still run when invoked by hand; no page reads their output, and
+  `MindAttic.Deploy` no longer calls `fetch-descriptions.ps1` as a pre-deploy hook (DEP-A4).
 - **`docs/`** — the Codex canon (this file, `AMENDMENTS.md`, `USER_STORIES.md`, `rfc/`, the generated
   `BIBLE.digest.md`).
 - **`tools/`** — `codex.ps1` (`doctor` / `digest`) and `build-readme.ps1`.
@@ -119,8 +119,8 @@ tag-pinned jsDelivr package instead of being embedded in the page.
   is still enrolled in.
 - **stamp** (PostToolUse hook in `.claude/settings.json`) — write the UTC `<!-- Last Updated: ... -->`
   comment on every Edit/Write of `index.htm`.
-- **deploy** (`/deploy` → `MindAttic.Deploy`) — pull UiUx, run the sync, run the optional
-  `fetch-descriptions.ps1`, stamp, then FTPS-upload `*.htm`. Assets need no upload: they are already on
+- **deploy** (`/deploy` → `MindAttic.Deploy`) — the linked 4-in-1 deploy: publish the UiUx tag, pin it, run
+  the sync, verify the CDN, stamp, then FTPS-upload `index.htm` only. Assets need no upload: they are already on
   the CDN.
 - **tap-to-spawn** — in-page script: on `pointerdown` anywhere except a link, call one random spawn
   function from `window.consoleBg._demo` (an underscore-prefixed "dev handle" of the engine — the only
@@ -186,15 +186,17 @@ disk on 2026-10-02 unless stated otherwise.
 
 - ✅ **Reduced page.** `index.htm` contains `<div id="content" role="main">` →
   `<div class="lockup cyberspace-keepout">` → `<h1 id="site-name">` + `<nav class="link-row">` with three
-  `<a class="link-btn" target="_blank" rel="noopener noreferrer">` (Résumé, GitHub, MindAttic Cares), a
-  `<footer id="site-footer">`, and no `renderClassic`, `PORTFOLIO_*`, `#theme-picker`, `data-catalog`
+  `<a class="link-btn" target="_blank" rel="noopener noreferrer" aria-describedby="new-window-note">`
+  (Résumé, GitHub, MindAttic Cares; the hidden `#new-window-note` tells screen readers they open a new
+  window), a `<footer id="site-footer">`, and no `renderClassic`, `PORTFOLIO_*`, `#theme-picker`, `data-catalog`
   or `fetch('data/…')`. *(Evidence: grep of `index.htm`; file is ~85 KB.)*
 - ✅ **Assets served from the tag-pinned jsDelivr package.** Fonts, logo variables, the two engine
   scripts and the three textures are referenced as `https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V7/…`;
   `<head>` has `preconnect` and font `preload`; engine scripts carry `defer`. *(Evidence: grep of
   `index.htm`; no `base64` font or image data remains in it.)*
 - ✅ **Sizing model.** `.lockup` defines `--u`/`--wm`, `.link-row` defines `--btn-u` and fills
-  `.lockup`, and `html`/`body` are `overflow: hidden` with a `position: fixed` footer. *(Evidence: CSS
+  `.lockup`, and `html`/`body` are `overflow: hidden` (and `user-select: none`, no touch callout, transparent
+  tap highlight — nothing on the page is selectable) with a `position: fixed` footer. *(Evidence: CSS
   in `index.htm`; the parent session also measured the button row at the wordmark's width, within
   0.02 px, and no scroll, in headless Chrome across viewports from 120×600 to 5120×2880 — recorded
   here as reported, not re-run for this doc pass.)*
@@ -215,8 +217,7 @@ disk on 2026-10-02 unless stated otherwise.
   (historical — written when the site was still "one file").
 - Backlog and shipped capabilities live in [`docs/USER_STORIES.md`](USER_STORIES.md).
 - Open decisions: delete or keep the dormant machinery (`data/`, `fetch-descriptions.ps1`,
-  `add-book.*`, `diagram/`, `previews/`); stop `MindAttic.Deploy` from calling the now-pointless
-  optional `fetch-descriptions.ps1` hook; add an HTML-validity / link-check step the doctor can run
+  `add-book.*`, `diagram/`, `previews/`); add an HTML-validity / link-check step the doctor can run
   ([MAC-US-D3](USER_STORIES.md#MAC-US-D3)); bump the page to each new `MindAttic.UiUx` tag
   deliberately.
 
