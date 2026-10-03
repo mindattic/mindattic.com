@@ -36,6 +36,13 @@ updated: 2026-10-03
   embedded. *(verified by: `<link rel="preconnect">` / font `<link rel="preload">` in `<head>`, `defer` on
   the engine scripts, `…/MindAttic.UiUx@V10/…` URLs and no base64 font/image data in `index.htm`; file
   size 89,615 bytes on 2026-10-03. No load-time benchmark has been run.)*
+- **MAC-US-A9 ✅** As a visitor on any device, I see the motto "A distributed software development
+  company specializing in interactive media." between the wordmark and the buttons, exactly as wide as
+  the wordmark. *Given* any viewport, *when* the fonts load or the screen resizes, *then* every motto line
+  starts and ends at the wordmark's edges (one line on wide screens, 2–3 balanced lines when one line
+  would be under 10px). *(verified by: the motto fitter script and `#site-motto` rules in `index.htm`;
+  measured in headless Chrome at 11 viewports from 320×568 to 2560×1440 on 2026-10-03: worst edge
+  deviation 0.02px, no horizontal overflow.)*
 - **MAC-US-A6 ✅** As a visitor on any device, I see the wordmark and three buttons (Résumé, GitHub,
   MindAttic Cares) centered on the screen, the buttons together exactly as wide as the wordmark, at every
   size and aspect ratio. *Given* any viewport, *when* it renders, *then* `.lockup` is centered both ways,

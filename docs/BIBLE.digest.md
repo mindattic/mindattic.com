@@ -7,14 +7,15 @@
 
 ## The one sentence
 mindattic.com is Ryan DeBraal's front door — one hand-authored `index.htm` (no build step, no
-framework) that shows the MindAttic wordmark and three link buttons (Résumé, GitHub, MindAttic
-Cares) over the Cyberspace backdrop, with every font, image and effect asset served from a
+framework) that shows the MindAttic wordmark, the motto "A distributed software development company
+specializing in interactive media." and three link buttons (Résumé, GitHub, MindAttic Cares) over the
+Cyberspace backdrop, with every font, image and effect asset served from a
 tag-pinned jsDelivr package instead of being embedded in the page.
 
 ## What it is NOT
 - **NOT a framework app.** No React/Vue/Svelte, no bundler, no transpiler, no `dist/` folder. (See
   [LAW-1](#MAC-LAW-1).)
-- **NOT a portfolio or catalog.** The page is a wordmark, three buttons and a backdrop. It fetches no
+- **NOT a portfolio or catalog.** The page is a wordmark, a motto, three buttons and a backdrop. It fetches no
   local data and lists no projects.
 - **NOT a multi-page site.** It is one `index.htm`. There are no per-project sub-pages: each project's
   page is its GitHub README (`https://github.com/mindattic/<Repo>`), and the server 301-redirects
@@ -58,7 +59,7 @@ rules, which are **inherited** here, not restated:
   curious reader.
 
 ## Glossary
-- **Lockup** — the wordmark plus the three link buttons (`.lockup`), centered both ways and
+- **Lockup** — the wordmark, the motto and the three link buttons (`.lockup`), centered both ways and
   shrink-wrapped to the wordmark's width. The only Cyberspace keepout.
 - **Unit (`--u`)** — 1% of the smaller visible viewport side (`dvmin`), capped at 0.7273 rem; every
   size on the page is a multiple of it.
@@ -76,5 +77,5 @@ rules, which are **inherited** here, not restated:
   by [§5](#MAC-§5).
 
 ## Status index (user stories)
-- done: 10  partial: 0  planned: 1
+- done: 11  partial: 0  planned: 1
 

@@ -1,4 +1,4 @@
-<!-- Last Updated: 2026-10-03T19:53:25Z -->
+<!-- Last Updated: 2026-10-03T20:07:47Z -->
 <!--
   ════════════════════════════════════════════════════════════════════════════
   ║  Hey. You opened View Source.  I see you, and I appreciate it.           ║
@@ -44,7 +44,7 @@
   ║  § 4  Accessibility ....... Focus rings                                  ║
   ║  § 5  Reset ............... Box-sizing + minimal normalization           ║
   ║  § 6  Wordmark ............ The "MindAttic" logotype, set in Attic       ║
-  ║  § 7  Content ............. Centered column: wordmark + link buttons     ║
+  ║  § 7  Content ............. Centered column: wordmark, motto, buttons    ║
   ║  § 8  Logo assets ......... Sized helpers for the CDN-hosted logo        ║
   ║  § 9  Link buttons ........ Equal-width, as wide as the wordmark         ║
   ║  § 10 Footer .............. Copyright line, fixed to the bottom edge     ║
@@ -298,7 +298,7 @@ a:hover {
 /* ──────────────────────────────────────────────────────────────────────
    §  6   WORDMARK
    ──────────────────────────────────────────────────────────────────────
-   The "MindAttic" logotype, centered above the link buttons.
+   The "MindAttic" logotype, centered above the motto and the link buttons.
 
    The wordmark uses 'Attic' (the custom face from § 1) — that's the
    only place the custom font appears.  Forcing pure white via
@@ -317,7 +317,7 @@ a:hover {
   color: #fff;
   letter-spacing: 0.01em;
   line-height: 1;
-  margin: 0 auto calc(var(--u) * 1.5);
+  margin: 0 auto calc(var(--u) * 1.2);
   font-weight: normal;
   text-align: center;
   display: block;
@@ -325,11 +325,41 @@ a:hover {
   white-space: nowrap;
 }
 
+/* The motto, between the wordmark and the buttons.  It is always exactly
+   as wide as the wordmark:
+
+     - width: 0 + min-width: 100% means the motto adds nothing to the
+       lockup's max-content width (the wordmark alone sets it) and then
+       stretches to fill it.
+     - Without JavaScript it is simply justified to that width.
+     - With JavaScript, the fitter script in § 11 measures the wordmark and
+       the motto's natural width in Outfit, then solves for the font-size
+       and letter-spacing that make the first and last letters line up
+       with the wordmark's edges.  The trailing letter-space after the last
+       letter is cancelled with an equal negative margin.  If one line
+       would be too small to read (narrow phones), the motto is split into
+       2-3 balanced lines; every line still spans the wordmark exactly. */
+#site-motto {
+  width: 0;
+  min-width: 100%;
+  margin: 0 0 calc(var(--u) * 2.4);
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-weight: 300;
+  font-size: calc(var(--wm) * 0.13);
+  line-height: 1.35;
+  color: var(--text2);
+  text-align: justify;
+  text-align-last: justify;
+}
+
+#site-motto.fitted { text-align: left; text-align-last: auto; }
+#site-motto .motto-line { display: block; white-space: nowrap; }
+
 /* ──────────────────────────────────────────────────────────────────────
    §  7   CONTENT
    ──────────────────────────────────────────────────────────────────────
-   A single full-height column that centers the lockup (wordmark + link
-   buttons) both ways on every screen.
+   A single full-height column that centers the lockup (wordmark, motto
+   and link buttons) both ways on every screen.
 
    .lockup shrink-wraps to the wordmark (width: max-content), and the
    button row inside is told to fill 100% of it — so the three buttons
@@ -1828,9 +1858,11 @@ window.homeBg = (function () {
      ─────────────────────────────────────────────
      Reading order from top to bottom, exactly as the DOM ships:
 
-       #content           — one centered lockup: the wordmark, then the
-                            three link buttons directly beneath it.
+       #content           — one centered lockup: the wordmark, the motto
+                            (fitted to the wordmark's width) and the three
+                            link buttons beneath them.
        <footer>           — Copyright, fixed to the bottom edge.
+       <script>           — fits the motto to the wordmark's width.
        <script>           — tap anywhere to spawn a random Cyberspace effect.
 
      The three links are plain <a> elements — no script builds them, so
@@ -1847,6 +1879,7 @@ window.homeBg = (function () {
 <div id="content" role="main">
   <div class="lockup cyberspace-keepout">
     <h1 id="site-name" class="site-name">MindAttic</h1>
+    <p id="site-motto">A distributed software development company specializing in interactive media.</p>
     <nav class="link-row" aria-label="Links">
       <a class="link-btn" href="https://ryandebraal.com" target="_blank" rel="noopener noreferrer" aria-describedby="new-window-note">R&eacute;sum&eacute;</a>
       <a class="link-btn" href="https://github.com/mindattic" target="_blank" rel="noopener noreferrer" aria-describedby="new-window-note">GitHub</a>
@@ -1864,6 +1897,129 @@ window.homeBg = (function () {
 <footer id="site-footer" role="contentinfo">
   <span>&copy; <script>document.write(new Date().getFullYear())</script> MindAttic LLC</span>
 </footer>
+
+<!-- Motto fitter: keeps #site-motto exactly as wide as the wordmark.
+     The wordmark's width W is its text's advance width minus its own
+     trailing letter-space.  Each motto line's natural width at 1px is
+     measured with canvas (Outfit 300, after the fonts load).  For a line
+     of n characters, natural em-width N and letter-spacing s (in em):
+
+         visible width = f * (N + (n - 1) * s)
+
+     The longest line gets the base tracking s0, which sets the font-size
+     f = W / (N + (n - 1) * s0); every other line keeps that f and gets its
+     own s = (W / f - N) / (n - 1).  The trailing letter-space after each
+     line's last character is cancelled with margin-right: -s.  If one line
+     would render below MIN_PX, the words are split into 2 (then 3) lines
+     of balanced width.  Re-runs whenever the wordmark changes size. -->
+<script>
+(function () {
+  var MIN_PX = 10, BASE_TRACK = 0.06, MAX_TRACK = 0.2, MAX_LINES = 3;
+  var title = document.getElementById('site-name');
+  var motto = document.getElementById('site-motto');
+  if (!title || !motto || !window.requestAnimationFrame) return;
+  var words = motto.textContent.trim().split(/\s+/);
+  var ctx = document.createElement('canvas').getContext('2d');
+  if (!ctx) return;
+
+  function natural(text) { return ctx.measureText(text).width / 100; } // em at 1px
+
+  // Split words into k lines (k <= 3, few words: brute force).  Every line
+  // shares one font-size, so the extra tracking a short line needs grows with
+  // how much narrower it is than the widest line.  Score a split by its
+  // widest line plus its spread (widest - narrowest): small and even wins.
+  function balance(k) {
+    if (k === 1) return [words.join(' ')];
+    var best = null, bestScore = Infinity, n = words.length;
+    function consider(lines) {
+      var ws = lines.map(natural);
+      var max = Math.max.apply(null, ws), min = Math.min.apply(null, ws);
+      var score = max + 2 * (max - min);
+      if (score < bestScore) { bestScore = score; best = lines; }
+    }
+    for (var i = 1; i < n; i++) {
+      if (k === 2) {
+        consider([words.slice(0, i).join(' '), words.slice(i).join(' ')]);
+      } else {
+        for (var j = i + 1; j < n; j++) {
+          consider([words.slice(0, i).join(' '), words.slice(i, j).join(' '), words.slice(j).join(' ')]);
+        }
+      }
+    }
+    return best;
+  }
+
+  function fit() {
+    var range = document.createRange();
+    range.selectNodeContents(title);
+    var cs = getComputedStyle(title);
+    var W = range.getBoundingClientRect().width - (parseFloat(cs.letterSpacing) || 0);
+    if (!(W > 0)) return;
+    ctx.font = '300 100px Outfit';
+
+    // Choose the line count: the fewest lines that are readable
+    // (font-size >= MIN_PX) with no line needing more than MAX_TRACK of
+    // letter-spacing.  Failing that, the readable layout with the most even
+    // tracking; failing that (tiny screens), the largest font-size.
+    var cands = [];
+    for (var k = 1; k <= MAX_LINES; k++) {
+      var cand = balance(k);
+      var widest = 0, widestLen = 1;
+      cand.forEach(function (l) { var w = natural(l); if (w > widest) { widest = w; widestLen = l.length; } });
+      var fk = W / (widest + (widestLen - 1) * BASE_TRACK);
+      var maxTrack = Math.max.apply(null, cand.map(function (l) {
+        return (W / fk - natural(l)) / Math.max(1, l.length - 1);
+      }));
+      cands.push({ lines: cand, f: fk, track: maxTrack });
+    }
+    var readable = cands.filter(function (c) { return c.f >= MIN_PX; });
+    var pick = readable.filter(function (c) { return c.track <= MAX_TRACK; })[0]
+      || readable.sort(function (a, b) { return a.track - b.track; })[0]
+      || cands.sort(function (a, b) { return b.f - a.f; })[0];
+    var lines = pick.lines, f = pick.f;
+
+    motto.textContent = '';
+    lines.forEach(function (l) {
+      var s = (W / f - natural(l)) / Math.max(1, l.length - 1);
+      var span = document.createElement('span');
+      span.className = 'motto-line';
+      span.textContent = l;
+      span.style.letterSpacing = s + 'em';
+      span.style.marginRight = (-s) + 'em';
+      motto.appendChild(span);
+    });
+    motto.style.fontSize = f + 'px';
+    motto.classList.add('fitted');
+
+    // Canvas and layout can differ by a fraction of a pixel (kerning,
+    // rounding), so measure each rendered line once and spread the
+    // remaining error across its letter gaps.
+    Array.prototype.forEach.call(motto.children, function (span) {
+      var gaps = Math.max(1, span.textContent.length - 1);
+      var r = document.createRange();
+      r.selectNodeContents(span);
+      var ls = parseFloat(getComputedStyle(span).letterSpacing) || 0;
+      var err = W - (r.getBoundingClientRect().width - ls);
+      var s = parseFloat(span.style.letterSpacing) + err / gaps / f;
+      span.style.letterSpacing = s + 'em';
+      span.style.marginRight = (-s) + 'em';
+    });
+  }
+
+  var pending = false;
+  function schedule() {
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(function () { pending = false; fit(); });
+  }
+
+  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(function () {
+    fit();
+    if (window.ResizeObserver) new ResizeObserver(schedule).observe(title);
+    window.addEventListener('resize', schedule);
+  });
+})();
+</script>
 
 <!-- Tap / click anywhere → spawn one random Cyberspace effect.
      console-bg.js (loaded above in the CYBERSPACE block) exposes its spawn

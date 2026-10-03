@@ -15,8 +15,9 @@ updated: 2026-10-03
 ## 1. The one sentence {#MAC-§1}
 
 mindattic.com is Ryan DeBraal's front door — one hand-authored `index.htm` (no build step, no
-framework) that shows the MindAttic wordmark and three link buttons (Résumé, GitHub, MindAttic
-Cares) over the Cyberspace backdrop, with every font, image and effect asset served from a
+framework) that shows the MindAttic wordmark, the motto "A distributed software development company
+specializing in interactive media." and three link buttons (Résumé, GitHub, MindAttic Cares) over the
+Cyberspace backdrop, with every font, image and effect asset served from a
 tag-pinned jsDelivr package instead of being embedded in the page.
 
 ## 2. The product promise {#MAC-§2}
@@ -30,7 +31,10 @@ tag-pinned jsDelivr package instead of being embedded in the page.
 - **Fast and proportional.** `<head>` opens the CDN connection early and preloads the first-paint
   fonts; the ~560 KB effects engine is `defer`red so it never blocks the first paint. Everything on the
   page is a multiple of one viewport-relative unit, so the layout is the same shape on every screen and
-  aspect ratio, never scrolls, and the three buttons together are exactly as wide as the wordmark.
+  aspect ratio, never scrolls, and the three buttons together are exactly as wide as the wordmark. The
+  motto is fitted to the wordmark's width too: a small script solves for its font-size and
+  letter-spacing (one line on wide screens, 2–3 balanced lines on narrow ones, each spanning the
+  wordmark exactly); without JavaScript it is justified to the same width.
 - **Findable and shareable.** `<head>` carries a `meta description`, a canonical URL
   (`https://mindattic.com/`), `theme-color`, and Open Graph / Twitter "summary" card tags whose image is
   the M monogram (`mindattic.com/logos/m-monogram.png`, 320×320) from the same pinned package.
@@ -44,7 +48,7 @@ tag-pinned jsDelivr package instead of being embedded in the page.
 
 - **NOT a framework app.** No React/Vue/Svelte, no bundler, no transpiler, no `dist/` folder. (See
   [LAW-1](#MAC-LAW-1).)
-- **NOT a portfolio or catalog.** The page is a wordmark, three buttons and a backdrop. It fetches no
+- **NOT a portfolio or catalog.** The page is a wordmark, a motto, three buttons and a backdrop. It fetches no
   local data and lists no projects.
 - **NOT a multi-page site.** It is one `index.htm`. There are no per-project sub-pages: each project's
   page is its GitHub README (`https://github.com/mindattic/<Repo>`), and the server 301-redirects
@@ -224,7 +228,7 @@ A change to mindattic.com is "done" when:
 
 ## 9. Glossary {#MAC-§9}
 
-- **Lockup** — the wordmark plus the three link buttons (`.lockup`), centered both ways and
+- **Lockup** — the wordmark, the motto and the three link buttons (`.lockup`), centered both ways and
   shrink-wrapped to the wordmark's width. The only Cyberspace keepout.
 - **Unit (`--u`)** — 1% of the smaller visible viewport side (`dvmin`), capped at 0.7273 rem; every
   size on the page is a multiple of it.
