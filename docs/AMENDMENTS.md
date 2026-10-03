@@ -212,3 +212,9 @@ carrying megabytes of base64.
 
 **Migration.** Bump the `@V<n>` tag in `index.htm` (search `MindAttic.UiUx@V`) to take a newer asset
 release; tags are immutable whole numbers. Never point the page at `@main`.
+
+## MAC-A7 — Meta description and link-preview tags (refines MAC-A6) {#MAC-A7}
+Decision (user, 2026-10-03): `<head>` gains a `meta description`, a canonical URL (`https://mindattic.com/`),
+`theme-color`, and Open Graph / Twitter "summary" card tags. The preview image is the M monogram
+(`mindattic.com/logos/m-monogram.png`, 320×320) served from the MindAttic.UiUx package, so the linked deploy
+re-pins it with every other asset URL.

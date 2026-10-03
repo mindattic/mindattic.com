@@ -94,5 +94,5 @@ rules, which are **inherited** here, not restated:
 - done: 10  partial: 0  planned: 2  cut: 12
 
 ## Latest amendment
-- MAC-A6 — The page is reduced to wordmark + three buttons; all binary assets move to the MindAttic.UiUx jsDelivr package (supersedes MAC-A3 and MAC-A5; refines LAW-1, LAW-2, LAW-3, LAW-5, LAW-6) (amendment wins over the bible)
+- MAC-A7 — Meta description and link-preview tags (refines MAC-A6) {#MAC-A7} (amendment wins over the bible)
 

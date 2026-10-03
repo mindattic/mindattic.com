@@ -1,4 +1,4 @@
-<!-- Last Updated: 2026-10-03T00:44:31Z -->
+<!-- Last Updated: 2026-10-03T01:59:22Z -->
 <!--
   ════════════════════════════════════════════════════════════════════════════
   ║  Hey. You opened View Source.  I see you, and I appreciate it.           ║
@@ -71,6 +71,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MindAttic</title>
+<!-- Search-result snippet and link-preview card (Open Graph / Twitter). The image is served
+     from the MindAttic.UiUx CDN package like every other asset on this page. -->
+<meta name="description" content="MindAttic, the software studio of Ryan DeBraal: his résumé, his projects on GitHub, and the MindAttic Cares nonprofit.">
+<link rel="canonical" href="https://mindattic.com/">
+<meta name="theme-color" content="#0d1117">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MindAttic">
+<meta property="og:title" content="MindAttic">
+<meta property="og:description" content="MindAttic, the software studio of Ryan DeBraal: his résumé, his projects on GitHub, and the MindAttic Cares nonprofit.">
+<meta property="og:url" content="https://mindattic.com/">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/mindattic.com/logos/m-monogram.png">
+<meta property="og:image:width" content="320">
+<meta property="og:image:height" content="320">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MindAttic">
+<meta name="twitter:description" content="MindAttic, the software studio of Ryan DeBraal: his résumé, his projects on GitHub, and the MindAttic Cares nonprofit.">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/mindattic.com/logos/m-monogram.png">
 
 <!-- Resource hints.  Open the CDN connection immediately (TLS handshake in
      parallel with parsing) and start the two fonts the first paint needs
@@ -79,9 +96,9 @@
      without it would not match the real request and the font would be
      downloaded twice. -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="icon" href="https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V8/mindattic.com/logos/favicon.ico" sizes="48x48">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V8/fonts/attic/attic.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V8/fonts/outfit/outfit-latin.woff2">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/mindattic.com/logos/favicon.ico" sizes="48x48">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/fonts/attic/attic.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/fonts/outfit/outfit-latin.woff2">
 
 <!-- ═══════════════════════════════════════════════════════════════════════
      §  STYLESHEET
@@ -129,7 +146,7 @@
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V8/fonts/outfit/outfit-latin-ext.woff2') format('woff2');
+  src: url('https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/fonts/outfit/outfit-latin-ext.woff2') format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 @font-face {
@@ -137,7 +154,7 @@
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V8/fonts/outfit/outfit-latin.woff2') format('woff2');
+  src: url('https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/fonts/outfit/outfit-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
@@ -147,7 +164,7 @@
   font-style: normal;
   font-weight: normal;
   font-display: block;
-  src: url('https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V8/fonts/attic/attic.woff2') format('woff2');
+  src: url('https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/fonts/attic/attic.woff2') format('woff2');
 }
 
 /* Ergonomic reuse: var(--font-outfit) / var(--font-attic) instead of
@@ -191,8 +208,8 @@ html, body { font-family: 'Outfit', system-ui, sans-serif; }
   --text2: #9aa0b0;
   --text3: #5c6275;
   --rule: #3d6fa3;
-  --logo: url("https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V8/mindattic.com/logos/m-monogram.png");
-  --logo-tiny: url("https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V8/mindattic.com/logos/m-icon-16.png");
+  --logo: url("https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/mindattic.com/logos/m-monogram.png");
+  --logo-tiny: url("https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/mindattic.com/logos/m-icon-16.png");
 }
 
 /* ──────────────────────────────────────────────────────────────────────
@@ -513,9 +530,9 @@ a:hover {
 <div class="cyberspace-sl-coarse"   aria-hidden="true"></div>
 <div class="console-bg-host" aria-hidden="true"></div>
 
-<link rel="preload" as="image" fetchpriority="low" href="https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V8/Components/Cyberspace/assets/circuitboard.00.png">
-<link rel="preload" as="image" fetchpriority="low" href="https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V8/Components/Cyberspace/assets/circuitboard.01.png">
-<link rel="preload" as="image" fetchpriority="low" href="https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V8/Components/Cyberspace/assets/circuitboard.02.png">
+<link rel="preload" as="image" fetchpriority="low" href="https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/Components/Cyberspace/assets/circuitboard.00.png">
+<link rel="preload" as="image" fetchpriority="low" href="https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/Components/Cyberspace/assets/circuitboard.01.png">
+<link rel="preload" as="image" fetchpriority="low" href="https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/Components/Cyberspace/assets/circuitboard.02.png">
 <style id="mindattic-components-cyberspace-css">
 /* ====================================================================
  * MindAttic.UiUx - cyberspace/frontpage.css
@@ -1255,11 +1272,11 @@ hr {
 }
 </style>
 <script id="mindattic-components-cyberspace-js">
-/* ---- circuitboard textures (jsDelivr URLs @V8) ---- */
+/* ---- circuitboard textures (jsDelivr URLs @V9) ---- */
 window.__cyberspaceCircuitboardSrcs = [
-  'https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V8/Components/Cyberspace/assets/circuitboard.00.png',
-  'https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V8/Components/Cyberspace/assets/circuitboard.01.png',
-  'https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V8/Components/Cyberspace/assets/circuitboard.02.png'
+  'https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/Components/Cyberspace/assets/circuitboard.00.png',
+  'https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/Components/Cyberspace/assets/circuitboard.01.png',
+  'https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/Components/Cyberspace/assets/circuitboard.02.png'
 ];
 
 /* ---- loader.js ---- */
@@ -1807,8 +1824,8 @@ window.homeBg = (function () {
 })();
 
 </script>
-<script id="mindattic-components-cyberspace-sacred-geometry-js" src="https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V8/Components/SacredGeometry/sacred-geometry.js" defer></script>
-<script id="mindattic-components-cyberspace-console-bg-js" src="https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V8/Components/Cyberspace/console-bg.js" defer></script>
+<script id="mindattic-components-cyberspace-sacred-geometry-js" src="https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/Components/SacredGeometry/sacred-geometry.js" defer></script>
+<script id="mindattic-components-cyberspace-console-bg-js" src="https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/Components/Cyberspace/console-bg.js" defer></script>
 <!-- END MINDATTIC.UIUX:CYBERSPACE -->
 
 <!-- ═════════════════════════════════════════════
