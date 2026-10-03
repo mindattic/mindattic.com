@@ -1,12 +1,11 @@
 ---
 name: run
-description: Serve the mindattic.com portfolio site locally and open it in the default browser. No arguments needed.
+description: Serve the mindattic.com page locally and open it in the default browser. No arguments needed.
 ---
 
-index.htm no longer fetches any local data, so serving over HTTP is not strictly required any more
-(it used to be, because `file://` blocks `fetch()` of data/*.json under CORS). It loads its fonts, logo,
-effects engine and textures from jsDelivr, so you must be online. Serving over local HTTP is still the
-supported preview path (matches the `mindattic.com` entry in `.claude/launch.json`):
+index.htm fetches no local data, so opening it directly also works. It loads its fonts, logo, effects
+engine and textures from jsDelivr, so you must be online. Serving over local HTTP is the supported
+preview path (matches the `mindattic.com` entry in `.claude/launch.json`):
 
 When invoked:
 

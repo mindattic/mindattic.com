@@ -112,7 +112,7 @@ pre:hover .cpbtn{opacity:1}
   <main id="content">
 <h1 id="mindatticcom">mindattic.com</h1>
 <p>Ryan DeBraal's front door: one hand-authored HTML page with the MindAttic wordmark, three links and a tap-to-play Cyberspace backdrop, with no build step, no framework and no tracking.</p>
-<p><a href="index.htm"><img src="https://img.shields.io/badge/HTML5-hand--authored-e34f26" alt="HTML5"></a> <a href="index.htm"><img src="https://img.shields.io/badge/CSS3-custom%20properties-1572b6" alt="CSS3"></a> <a href="index.htm"><img src="https://img.shields.io/badge/JavaScript-vanilla-f7df1e" alt="JavaScript"></a> <a href="https://github.com/mindattic/MindAttic.UiUx"><img src="https://img.shields.io/badge/assets-MindAttic.UiUx%20V9-6c5ce7" alt="Assets"></a> <a href="https://mindattic.com"><img src="https://img.shields.io/badge/status-live-2ea043" alt="Status"></a></p>
+<p><a href="index.htm"><img src="https://img.shields.io/badge/HTML5-hand--authored-e34f26" alt="HTML5"></a> <a href="index.htm"><img src="https://img.shields.io/badge/CSS3-custom%20properties-1572b6" alt="CSS3"></a> <a href="index.htm"><img src="https://img.shields.io/badge/JavaScript-vanilla-f7df1e" alt="JavaScript"></a> <a href="https://github.com/mindattic/MindAttic.UiUx"><img src="https://img.shields.io/badge/assets-MindAttic.UiUx%20V10-6c5ce7" alt="Assets"></a> <a href="https://mindattic.com"><img src="https://img.shields.io/badge/status-live-2ea043" alt="Status"></a></p>
 <p><img src="docs/images/home-cyberspace.png" alt="The mindattic.com home page: the MindAttic wordmark above three red-outlined buttons (Résumé, GitHub, MindAttic Cares) on the dark Cyberspace backdrop, with two faint console windows drifting behind them"></p>
 <p>Try it: <a href="https://mindattic.com">mindattic.com</a></p>
 <h2 id="why">Why</h2>
@@ -156,11 +156,14 @@ pre:hover .cpbtn{opacity:1}
 <td>Tap script</td>
 <td>Tap or left-click anywhere off the buttons to spawn one random Cyberspace effect. Right and middle clicks are ignored</td>
 </tr>
+<tr>
+<td>Link preview</td>
+<td>Meta description, canonical URL, <code>theme-color</code> and Open Graph / Twitter card tags, so shared links show the M monogram and a one-line summary</td>
+</tr>
 </tbody></table>
 <p>Everything on the page is a multiple of one viewport-relative unit (<code>--u</code>, 1% of the smaller visible viewport side), so it keeps the same shape on every screen and aspect ratio.</p>
 <p><img src="docs/images/tap-effects.png" alt="After a few taps: a ring of drifting glyphs top left, a blue glyph cluster beside the wordmark and a schematic console window bottom right"></p>
 <p>The file opens with an ASCII banner and a numbered table of contents, from § 1 to § 12, aimed at anyone who opens View Source (see <a href="docs/BIBLE.md#MAC-§2">BIBLE §2</a> and <a href="docs/BIBLE.md#MAC-LAW-7">LAW-7</a>).</p>
-<p>The page was radically simplified on 2026-10-02. Read <a href="docs/AMENDMENTS.md#MAC-A6">MAC-A6</a> for what changed and why.</p>
 <h2 id="quick-start">Quick start</h2>
 <p>You need Python 3 (or any static file server) and a network connection, because fonts, logo, effects engine and textures load from jsDelivr.</p>
 <pre><code class="language-powershell">git clone https://github.com/mindattic/mindattic.com
@@ -168,15 +171,15 @@ cd mindattic.com
 python -m http.server 3457
 start http://localhost:3457/index.htm</code></pre>
 <p>You should see the wordmark and three buttons over the dark Cyberspace backdrop. Tap the background to spawn an effect. The <code>/run</code> Claude Code skill does the same thing.</p>
-<p>The page no longer fetches any local data, so serving over HTTP is not strictly required (it used to be, to avoid a CORS-blocked <code>fetch()</code> of <code>data/*.json</code>). Opening <code>index.htm</code> directly works too.</p>
+<p>The page fetches no local data, so opening <code>index.htm</code> directly works too.</p>
 <h2 id="stack">Stack</h2>
-<p><code>HTML5</code>, <code>CSS3</code> (custom properties, <code>dvmin</code>-based sizing, dark "Cyberspace" palette only: the theme toggle was retired, see <a href="docs/AMENDMENTS.md#MAC-A1">MAC-A1</a>), one small vanilla JavaScript snippet, and the shared Cyberspace bundle from <code>MindAttic.UiUx</code>.</p>
-<p>No React. No Vite. No npm. No analytics, tracking pixels or third-party fonts. The only external host is <code>cdn.jsdelivr.net</code>, serving the <code>MindAttic.UiUx</code> repo (<a href="docs/BIBLE.md#MAC-LAW-6">LAW-6</a>, refined by <a href="docs/AMENDMENTS.md#MAC-A6">MAC-A6</a>).</p>
+<p><code>HTML5</code>, <code>CSS3</code> (custom properties, <code>dvmin</code>-based sizing, dark "Cyberspace" palette only, see <a href="docs/BIBLE.md#MAC-LAW-5">LAW-5</a>), one small vanilla JavaScript snippet, and the shared Cyberspace bundle from <code>MindAttic.UiUx</code>.</p>
+<p>No React. No Vite. No npm. No analytics, tracking pixels or third-party fonts. The only external host is <code>cdn.jsdelivr.net</code>, serving the <code>MindAttic.UiUx</code> repo (<a href="docs/BIBLE.md#MAC-LAW-6">LAW-6</a>).</p>
 <h2 id="where-the-assets-live">Where the assets live</h2>
 <p>The assets are not in this repo and not in the HTML. Fonts (Outfit, Attic), the logo PNGs, the Cyberspace effects engine and its parallax textures are plain static files in the sibling MindAttic.UiUx repo, served over jsDelivr at a tag-pinned URL:</p>
-<pre><code class="language-text">https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V9/&lt;path&gt;</code></pre>
+<pre><code class="language-text">https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V10/&lt;path&gt;</code></pre>
 <p><code>&lt;head&gt;</code> opens the connection early (<code>preconnect</code>) and preloads the first-paint fonts. The two big engine scripts are <code>defer</code>red so they never block the first paint.</p>
-<p>UiUx tags are immutable whole numbers (<code>V7</code>, <code>V8</code>, <code>V9</code>, and so on). The page currently pins <code>V9</code>. To take a newer asset release, change every <code>MindAttic.UiUx@V…</code> in <code>index.htm</code>. The Cyberspace block's tag is set by the sync script's <code>-CyberspaceCdnTag</code>, which defaults to the latest <code>V*</code> tag in the UiUx checkout. Never point the page at <code>@main</code>.</p>
+<p>UiUx tags are immutable whole numbers (<code>V9</code>, <code>V10</code>, and so on). The page pins <code>V10</code>. The linked deploy rewrites every <code>MindAttic.UiUx@V…</code> in <code>index.htm</code> to the release tag; the Cyberspace block's tag is set by the sync script's <code>-CyberspaceCdnTag</code>, which defaults to the latest <code>V*</code> tag in the UiUx checkout. Never point the page at <code>@main</code>.</p>
 <p>Layout of the package (full rules in <code>MindAttic.UiUx/docs/ASSETS.md</code>):</p>
 <ul>
 <li>Shared fonts at the repo root: <code>fonts/outfit/</code>, <code>fonts/attic/</code>.</li>
@@ -187,28 +190,21 @@ start http://localhost:3457/index.htm</code></pre>
 <h2 id="project-layout">Project layout</h2>
 <pre><code class="language-text">mindattic.com/
 ├── index.htm                  # The entire homepage: wordmark, three buttons, backdrop
-├── idiotproof/                # Support pages for the IdiotProof sub-project (see below), still deployed
+├── idiotproof/                # Support pages for the IdiotProof project (see below), deployed
 │   ├── privacy-policy.htm     # Standalone privacy policy, deployed to /idiotproof/
 │   ├── terms-of-use.htm       # Standalone terms of use, deployed to /idiotproof/
 │   ├── dataset/               # ML feature-store exports (trades.csv, bars.csv, manifest.json)
 │   └── replays/               # Generated trade-replay HTML archive: gitignored, deploy-only
-├── docs/                      # Codex canon: BIBLE, AMENDMENTS, USER_STORIES, rfc/, images/
+├── docs/                      # Codex canon: BIBLE, AMENDMENTS, USER_STORIES, images/
 ├── tools/
 │   ├── codex.ps1              # doctor (validate docs/) and digest (regenerate BIBLE.digest.md)
 │   └── build-readme.ps1       # Thin wrapper -&gt; shared engine in ../codex-standard/build-readme.ps1
-├── .claude/                   # Slash commands (/deploy, /fetch, /quicksave, /quickload), skills
+├── .claude/                   # Slash commands (/deploy, /quicksave, /quickload), skills
 │                              #   (/run, /commit, /discard, /revert), hooks (digest injection,
 │                              #   quickload-on-do)
-│
-│   DORMANT: kept on disk, no longer used by the page (MAC-A6)
-├── data/                      # software/ecosystem/hardware/books/visual-arts .json (generated)
-├── fetch-descriptions.ps1     # Regenerates data/*.json from GitHub repo metadata + Amazon synopses
-├── add-book.ps1 / .bat        # Appends an Amazon book (cover as base64) to data/books.json
-├── diagram/                   # ecosystem.mmd (Mermaid) -&gt; render.ps1 -&gt; ecosystem.svg
-├── previews/                  # &lt;RepoName&gt;.b64 preview images used by fetch-descriptions.ps1
-├── .image-base64.txt          # Base64 source text for an old inlined image
+├── .prose/                    # Provider-neutral aliases of the same commands
 └── README.md                  # This file</code></pre>
-<p><code>deploy.ps1</code>, <code>deploy.bat</code> and a per-repo FTP <code>settings.json</code> are retired. Deployment lives in the sibling MindAttic.Deploy repo (see <a href="#deployment">Deployment</a>).</p>
+<p>This repo has no deploy script and no FTP settings. Deployment lives in the sibling MindAttic.Deploy repo (see <a href="#deployment">Deployment</a>).</p>
 <h2 id="editing-the-page">Editing the page</h2>
 <p>The only region you must not hand-edit is the <code>BEGIN/END MINDATTIC.UIUX:CYBERSPACE</code> block: the next UiUx sync overwrites it (<a href="docs/BIBLE.md#MAC-LAW-2">LAW-2</a>).</p>
 <h3 id="change-a-link-or-the-wordmark">Change a link or the wordmark</h3>
@@ -221,19 +217,9 @@ start http://localhost:3457/index.htm</code></pre>
 </ol>
 <p>The linked deploy does all three steps for you (see <a href="#deployment">Deployment</a>).</p>
 <h3 id="cyberspace-the-only-synced-component">Cyberspace, the only synced component</h3>
-<p>It is not run on its own from this repo. It happens as step 3 of a deploy, through <code>MindAttic.UiUx/sync/sync-mindattic-com.ps1</code>, which rewrites only the <code>CYBERSPACE</code> marker block. This site is no longer enrolled for the <code>OutfitFont</code>, <code>AtticFont</code>, <code>PinFooter</code> or <code>WebSnapshot</code> components: the fonts load straight from the CDN.</p>
-<h3 id="dormant-generators">Dormant generators</h3>
-<p>These still run, but their output (<code>data/*.json</code>, the ecosystem SVG) is not shown anywhere any more:</p>
-<pre><code class="language-powershell">powershell -NoProfile -ExecutionPolicy Bypass -File "D:\Projects\MindAttic\mindattic.com\fetch-descriptions.ps1"
-powershell -File add-book.ps1 https://www.amazon.com/dp/B0XXXXXXXX
-powershell -File diagram\render.ps1      # WILL THROW: the ECOSYSTEM-DIAGRAM markers are no longer in index.htm</code></pre>
-<ul>
-<li><code>fetch-descriptions.ps1</code> rebuilds <code>data/software.json</code>, <code>ecosystem.json</code> and <code>hardware.json</code> from every public <code>mindattic</code> GitHub repo. Visibility is the only gate; the <code>hardware</code> topic and the <code>MindAttic.*</code> prefix only pick the section (<a href="docs/AMENDMENTS.md#MAC-A4">MAC-A4</a>). It also refreshes <code>data/books.json</code> synopses from Amazon, and has <code>-ListUntagged</code> and <code>-ProposeDescriptions</code> / <code>-ApplyDescriptions</code> (README-derived description write-back through <code>gh repo edit</code>, human-approved first). It requires the <code>gh</code> CLI and does nothing if <code>gh</code> is missing. It never writes <code>index.htm</code>.</li>
-<li><code>add-book.ps1</code> appends an Amazon book (cropped cover as a base64 data URL, deduplicated by ASIN) to <code>data/books.json</code>.</li>
-<li>Whether to delete this machinery is an open decision (<a href="docs/USER_STORIES.md#MAC-US-D5">MAC-US-D5</a>).</li>
-</ul>
+<p>It is not run on its own from this repo. It happens as step 3 of a deploy, through <code>MindAttic.UiUx/sync/sync-mindattic-com.ps1</code>, which rewrites only the <code>CYBERSPACE</code> marker block. Cyberspace is the only UiUx component this site subscribes to: the fonts and logo load straight from the CDN.</p>
 <h2 id="the-idiotproof-folder">The idiotproof folder</h2>
-<p><a href="https://github.com/mindattic/IdiotProof">IdiotProof</a> is one of the <code>MindAttic.*</code> ecosystem software projects: a tool that connects to a brokerage account (Alpaca) to author and evaluate trading strategies and, optionally, place orders. Its project page is its GitHub README. The old catalog landing page (<code>mindattic.com/idiotproof.htm</code>) was retired (MindAttic.Deploy DEP-A6).</p>
+<p><a href="https://github.com/mindattic/IdiotProof">IdiotProof</a> is one of the <code>MindAttic.*</code> ecosystem software projects: a tool that connects to a brokerage account (Alpaca) to author and evaluate trading strategies and, optionally, place orders. Its project page is its GitHub README.</p>
 <p>What does live in this repo, under <code>idiotproof/</code>, is the small set of static support pages that ship to <code>/idiotproof/</code> on the same domain:</p>
 <table><thead><tr>
 <th>Path</th>
@@ -266,7 +252,7 @@ powershell -File diagram\render.ps1      # WILL THROW: the ECOSYSTEM-DIAGRAM mar
 <p>Use the <code>/deploy</code> Claude Code slash command, or run:</p>
 <pre><code class="language-powershell">cd D:\Projects\MindAttic\MindAttic.Deploy
 npm run deploy -- --site mindattic.com</code></pre>
-<p>The pipeline is owned entirely by the sibling MindAttic.Deploy repo. This repo's own <code>deploy.ps1</code>, <code>deploy.bat</code> and FTP <code>settings.json</code> are retired (<a href="docs/AMENDMENTS.md#MAC-A2">MAC-A2</a>).</p>
+<p>The pipeline is owned entirely by the sibling MindAttic.Deploy repo (<a href="docs/BIBLE.md#MAC-LAW-4">LAW-4</a>).</p>
 <p>It is a linked 4-in-1 deploy: deploying this site also publishes <code>MindAttic.UiUx</code> and deploys <code>ryandebraal.com</code> and <code>mindatticcares.com</code> (see <code>MindAttic.Deploy/README.md</code>, "Linked deploy"):</p>
 <ol>
 <li>Preflight: <code>MindAttic.UiUx</code> must be clean, on <code>main</code>, not behind origin, with a current manifest.</li>
@@ -275,9 +261,11 @@ npm run deploy -- --site mindattic.com</code></pre>
 <li>Verifies every asset the sites use is live on jsDelivr, byte-exact, before anything is uploaded.</li>
 <li>Stamps the <code>Last Updated</code> comment at the top of <code>index.htm</code> and FTPS-uploads it to <code>/mindattic.com/</code>.</li>
 </ol>
-<p>Only <code>index.htm</code> is uploaded. The fonts, logo, engine and textures are already on the CDN (they ship when the <code>MindAttic.UiUx</code> tag is pushed), and <code>data/*.json</code> is no longer needed on the server (<a href="docs/AMENDMENTS.md#MAC-A6">MAC-A6</a> supersedes <a href="docs/AMENDMENTS.md#MAC-A3">MAC-A3</a>).</p>
-<p>This site's deploy profile lives in <code>MindAttic.Deploy/projects.json</code> under <code>sites[]</code>. The old per-project landing pages (<code>mindattic.com/&lt;slug&gt;.htm</code>, for example <code>idiotproof.htm</code>) and the catalog mode that built them were retired (MindAttic.Deploy DEP-A6): each repo's GitHub README is now its project page. FTP credentials are centralised in MindAttic.Deploy (gitignored there); this repo no longer reads its own <code>settings.json</code> for that.</p>
+<p>Only <code>index.htm</code> is uploaded. The fonts, logo, engine and textures are already on the CDN (they ship when the <code>MindAttic.UiUx</code> tag is pushed).</p>
+<p>This site's deploy profile lives in <code>MindAttic.Deploy/projects.json</code> under <code>sites[]</code>. FTP credentials are centralised in MindAttic.Deploy (gitignored there).</p>
 <p>A <code>PostToolUse</code> hook in <code>.claude/settings.json</code> also stamps the <code>Last Updated</code> comment locally on every <code>Edit</code> or <code>Write</code> of <code>index.htm</code>, independent of a deploy.</p>
+<h2 id="hosting">Hosting</h2>
+<p>The server holds static files only. Its <code>/mindattic.com/</code> folder is the docroot: <code>index.htm</code> from this repo, <code>idiotproof/</code> and <code>hyperspace/</code> (both uploaded by MindAttic.Deploy), and a hand-placed <code>.htaccess</code> that is not in this repo. That <code>.htaccess</code> forces HTTPS, redirects <code>www.mindattic.com</code> to <code>mindattic.com</code>, and 301-redirects project URLs of the form <code>/&lt;slug&gt;.htm</code> to the matching GitHub repo, so each project's page is its GitHub README. Details: <a href="docs/BIBLE.md#MAC-§4.4">BIBLE §4.4</a>.</p>
 <h2 id="conventions">Conventions</h2>
 <ul>
 <li>Asset URLs: <code>https://cdn.jsdelivr.net/gh/mindattic/MindAttic.UiUx@V&lt;n&gt;/&lt;path&gt;</code>, tag-pinned, whole-number tags, never <code>@main</code>.</li>
@@ -286,7 +274,7 @@ npm run deploy -- --site mindattic.com</code></pre>
 </ul>
 <p>The full list is <a href="docs/BIBLE.md#MAC-§10">BIBLE §10</a>.</p>
 <h2 id="testing">Testing</h2>
-<p>There is no compiler, unit-test suite or CI in this repo: it is a static HTML page with dormant PowerShell generators. "Verified" here means the file loads as HTML, the page's markup is present as documented, and <code>codex doctor</code> passes clean. The shared Playwright suite in <code>MindAttic.UiUx/tests</code> covers the linked sites.</p>
+<p>There is no compiler, unit-test suite or CI in this repo: it is a static HTML page. "Verified" here means the file loads as HTML, the page's markup is present as documented, and <code>codex doctor</code> passes clean. The shared Playwright suite in <code>MindAttic.UiUx/tests</code> covers the linked sites.</p>
 <pre><code class="language-powershell">powershell -NoProfile -ExecutionPolicy Bypass -File tools\codex.ps1 doctor   # validate docs/
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\codex.ps1 digest   # regenerate the digest
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\build-readme.ps1   # regenerate README.htm</code></pre>
@@ -300,22 +288,22 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\build-readme.ps1   # r
 <tr>
 <td>L0</td>
 <td><a href="docs/BIBLE.md">docs/BIBLE.md</a></td>
-<td>What the site is and is not, architecture, the Laws (<code>MAC-LAW-n</code>), verified state, glossary, conventions</td>
+<td>What the site is and is not, architecture, hosting, the Laws (<code>MAC-LAW-n</code>), verified state, glossary, conventions</td>
 </tr>
 <tr>
 <td>L1</td>
 <td><a href="docs/AMENDMENTS.md">docs/AMENDMENTS.md</a></td>
-<td>Append-only change log (<code>MAC-A&lt;n&gt;</code>); an amendment wins over the bible</td>
+<td>Decisions not yet folded into the bible (normally empty)</td>
 </tr>
 <tr>
 <td>L2</td>
-<td><a href="docs/USER_STORIES.md"><code>docs/USER_STORIES.md</code></a></td>
+<td><a href="docs/USER<em>STORIES.md">docs/USER</em>STORIES.md</a></td>
 <td>Stories <code>MAC-US-&lt;Epic&gt;&lt;n&gt;</code>; every done story cites its evidence</td>
 </tr>
 <tr>
 <td>rfc</td>
-<td><a href="docs/rfc/">docs/rfc</a></td>
-<td>Design notes (for example <code>0001-codex-adoption.md</code>) that graduate into the layers above</td>
+<td><code>docs/rfc/</code></td>
+<td>Open design notes, when there are any</td>
 </tr>
 <tr>
 <td>generated</td>

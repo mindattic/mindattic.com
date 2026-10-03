@@ -7,7 +7,7 @@
     doctor  - validate the docs/ canon (front-matter, IDs, cross-refs, cited paths,
               story evidence, JSON data, digest freshness). Exits non-zero on any hard error.
     digest  - regenerate docs/BIBLE.digest.md from BIBLE.md (S1, S3, S5 Laws, S9), a
-              status index, and the latest amendment head.
+              status index, and any pending-decision heads from AMENDMENTS.md.
 
   No build step, no module dependencies. Windows PowerShell 5.1 compatible. This file is
   intentionally pure ASCII on disk: non-ASCII glyphs are built from code points at runtime, and
@@ -33,7 +33,6 @@ $SECT        = [char]0x00A7                                             # sectio
 $SYM_DONE    = [char]0x2705                                             # check mark button
 $SYM_PARTIAL = [System.Char]::ConvertFromUtf32(0x1F7E1)                 # yellow circle
 $SYM_PLANNED = [char]0x2B1C                                             # white large square
-$SYM_CUT     = [System.Char]::ConvertFromUtf32(0x1F5D1) + [char]0xFE0F  # wastebasket + VS16
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 $DocsDir  = Join-Path $RepoRoot 'docs'
@@ -174,7 +173,7 @@ function Invoke-Doctor {
     }
     Pass "validated $($dataFiles.Count) data file(s); $($ids.Count) entity id(s)"
   } else {
-    Pass "no L5 data files (website domain; catalogs are generated regions)"
+    Pass "no L5 data files (website domain)"
   }
 
   # --- 4. every done story cites an evidence/test token ---
@@ -198,7 +197,7 @@ function Invoke-Doctor {
       $p = $m.Groups[1].Value
       if ($p -match '^(MindAttic\.|https?:|data:|\.\./|node_|npm$)') { continue }
       if ($p -match '^(react|vue|svelte)') { continue }
-      # paths the bible cites as ABSENT/retired by design (LAW-1, LAW-4): not expected on disk
+      # paths the bible cites as deliberately absent (LAW-1, LAW-4): not expected on disk
       if ($p -match '^(dist/|deploy\.(ps1|bat)$)') { continue }
       $cited[$p] = $true
     }
@@ -266,20 +265,19 @@ function Invoke-Digest {
   $gloss = Get-Section $b "MAC-${SECT}9"
 
   # status index from USER_STORIES
-  $counts = [ordered]@{ $SYM_DONE = 0; $SYM_PARTIAL = 0; $SYM_PLANNED = 0; $SYM_CUT = 0 }
+  $counts = [ordered]@{ $SYM_DONE = 0; $SYM_PARTIAL = 0; $SYM_PLANNED = 0 }
   if (Test-Path $Stories) {
     $s = Read-Text $Stories
-    foreach ($sym in @($SYM_DONE, $SYM_PARTIAL, $SYM_PLANNED, $SYM_CUT)) {
+    foreach ($sym in @($SYM_DONE, $SYM_PARTIAL, $SYM_PLANNED)) {
       $counts[$sym] = ([regex]::Matches($s, "MAC-US-[A-Za-z0-9]+\s*$([regex]::Escape($sym))")).Count
     }
   }
 
-  # latest amendment head
-  $amendHead = ''
+  # pending-decision heads (AMENDMENTS.md is normally empty)
+  $pending = @()
   if (Test-Path $Amend) {
     $a = Read-Text $Amend
-    $ms = [regex]::Matches($a, "(?m)^##\s+(MAC-A\d+\s+.*)$")
-    if ($ms.Count -gt 0) { $amendHead = $ms[$ms.Count - 1].Groups[1].Value.Trim() }
+    foreach ($m in [regex]::Matches($a, "(?m)^##\s+(MAC-A\d+\s+.*)$")) { $pending += $m.Groups[1].Value.Trim() }
   }
 
   $today = (Get-Date).ToString('yyyy-MM-dd')
@@ -304,12 +302,13 @@ function Invoke-Digest {
   [void]$sb.AppendLine($gloss)
   [void]$sb.AppendLine("")
   [void]$sb.AppendLine("## Status index (user stories)")
-  [void]$sb.AppendLine("- done: $($counts[$SYM_DONE])  partial: $($counts[$SYM_PARTIAL])  planned: $($counts[$SYM_PLANNED])  cut: $($counts[$SYM_CUT])")
+  [void]$sb.AppendLine("- done: $($counts[$SYM_DONE])  partial: $($counts[$SYM_PARTIAL])  planned: $($counts[$SYM_PLANNED])")
   [void]$sb.AppendLine("")
-  [void]$sb.AppendLine("## Latest amendment")
-  if ($amendHead) { [void]$sb.AppendLine("- $amendHead (amendment wins over the bible)") }
-  else { [void]$sb.AppendLine("- (none)") }
-  [void]$sb.AppendLine("")
+  if ($pending.Count -gt 0) {
+    [void]$sb.AppendLine("## Pending decisions (not yet folded into the bible)")
+    foreach ($h in $pending) { [void]$sb.AppendLine("- $h") }
+    [void]$sb.AppendLine("")
+  }
 
   [System.IO.File]::WriteAllText($Digest, $sb.ToString(), [System.Text.UTF8Encoding]::new($false))
   Write-Host "Wrote docs/BIBLE.digest.md ($([Math]::Round((Get-Item $Digest).Length / 1KB, 1)) KB)." -ForegroundColor Green

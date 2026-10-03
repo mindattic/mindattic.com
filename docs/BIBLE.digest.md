@@ -14,19 +14,20 @@ tag-pinned jsDelivr package instead of being embedded in the page.
 ## What it is NOT
 - **NOT a framework app.** No React/Vue/Svelte, no bundler, no transpiler, no `dist/` folder. (See
   [LAW-1](#MAC-LAW-1).)
-- **NOT a portfolio browser any more.** The Classic catalog browser (Portfolio / Software / Hardware /
-  Writing / Visual Arts), the presentation-mode picker and the `data/*.json` runtime fetch were removed
-  ([MAC-A6](AMENDMENTS.md#MAC-A6)). The page is a wordmark, three buttons and a backdrop.
-- **NOT a multi-page site.** It is one `index.htm`. There are no per-project sub-pages: the old
-  `<slug>.htm` catalog landing pages were retired (MindAttic.Deploy DEP-A6), and each project's page
-  is its GitHub README (`https://github.com/mindattic/<Repo>`).
+- **NOT a portfolio or catalog.** The page is a wordmark, three buttons and a backdrop. It fetches no
+  local data and lists no projects.
+- **NOT a multi-page site.** It is one `index.htm`. There are no per-project sub-pages: each project's
+  page is its GitHub README (`https://github.com/mindattic/<Repo>`), and the server 301-redirects
+  `/<slug>.htm` URLs there (see [§4.4](#MAC-§4.4)).
 - **NOT a light/dark toggle site.** The site is locked to the dark Cyberspace palette
-  ([MAC-A1](AMENDMENTS.md#MAC-A1)).
+  ([LAW-5](#MAC-LAW-5)).
 - **NOT the home of its own assets.** Fonts, logos, textures and the effects engine live in the
   `MindAttic.UiUx` repo (`MindAttic.UiUx/fonts/`, `MindAttic.UiUx/mindattic.com/`, `MindAttic.UiUx/Components/Cyberspace/`) and are loaded
   from jsDelivr. Edit them there and take a new tag; do not paste binaries back into `index.htm`.
-- **NOT self-deploying.** Deployment is owned by the sibling `MindAttic.Deploy` repo; the retired
-  per-project `deploy.ps1`/`deploy.bat`/`settings.json` are not used. (See [LAW-4](#MAC-LAW-4).)
+- **NOT self-deploying.** Deployment is owned by the sibling `MindAttic.Deploy` repo; this repo has no
+  deploy script or FTP settings. (See [LAW-4](#MAC-LAW-4).)
+- **NOT a CMS or server app.** The server docroot holds static files only, plus a hand-placed
+  `.htaccess` ([§4.4](#MAC-§4.4)).
 
 ## The Laws
 These project-specific laws are in addition to — and never override — the shared MindAttic house
@@ -34,44 +35,27 @@ rules, which are **inherited** here, not restated:
 
 > **Inherited:** [`MindAttic.HouseRules.md`](../../MindAttic.HouseRules.md) (shared across all
 > MindAttic projects: whole-number versioning, tooling etiquette, etc.). When a house rule and a
-> project law conflict, the house rule wins unless an amendment says otherwise.
-
-> **Amended 2026-10-02 by [MAC-A6](AMENDMENTS.md#MAC-A6):** LAW-1 and LAW-6 are refined (external
-> static assets from the `MindAttic.UiUx` jsDelivr package are allowed); LAW-2 and LAW-3 are dormant.
-> The law IDs are unchanged.
+> project law conflict, the house rule wins.
 
 - **{#MAC-LAW-1} One authored page, no build step, no framework.** `index.htm` is the only
-  hand-authored page, with no bundler, no transpiler and no framework. *Refined by
-  [MAC-A6](AMENDMENTS.md#MAC-A6):* the old "inline CSS/JS, base64-inlined fonts, no CDN, no
-  third-party request" wording is retired — heavy static assets are served from the tag-pinned
-  `MindAttic.UiUx` jsDelivr package, and `<link rel=…>`, `preconnect`, `preload` and `defer` are
-  allowed. If a build pipeline (compiler/bundler step) ever becomes justified, it must be decided in an
-  RFC and recorded as an amendment.
-- **{#MAC-LAW-2} Generated regions are not hand-edited.** The only generated region left in
-  `index.htm` is the `BEGIN/END MINDATTIC.UIUX:CYBERSPACE` block, owned by
+  hand-authored page, with no bundler, no transpiler and no framework. Heavy static assets are served
+  from the tag-pinned `MindAttic.UiUx` jsDelivr package, never embedded; `<link rel=…>`, `preconnect`,
+  `preload` and `defer` are allowed. A build pipeline would need an RFC and a bible change first.
+- **{#MAC-LAW-2} Generated regions are not hand-edited.** The only generated region in `index.htm` is
+  the `BEGIN/END MINDATTIC.UIUX:CYBERSPACE` block, owned by
   `MindAttic.UiUx/sync/sync-mindattic-com.ps1`; edit the source in `MindAttic.UiUx` and re-run the
-  sync. *Dormant by [MAC-A6](AMENDMENTS.md#MAC-A6):* `data/*.json`, the ecosystem `<svg>` and the
-  other generators (`fetch-descriptions.ps1`, `add-book.ps1`, `diagram/render.ps1`) no longer feed
-  the page, but the rule still applies to their outputs: never hand-edit `data/*.json`.
-- **{#MAC-LAW-3} GitHub and Amazon are upstream.** *Dormant by [MAC-A6](AMENDMENTS.md#MAC-A6):* the
-  page no longer shows repo tiles or books. The rule still governs the dormant generators: tile content
-  comes from public `mindattic` repo metadata and book/synopsis content from Amazon; every public repo
-  gets an entry (visibility is the only gate; the `hardware` topic and the `MindAttic.*` name prefix
-  only pick the section — [MAC-A4](AMENDMENTS.md#MAC-A4)); a repo's GitHub description may be written
-  back via `gh repo edit --description` (README-derived draft, human-approved first) so GitHub itself
-  stays the durable source.
+  sync.
 - **{#MAC-LAW-4} Deployment is centralized.** Deploys go through the sibling `MindAttic.Deploy`
-  pipeline (`npm run deploy -- --site mindattic.com`). The per-project deploy scripts and
-  `settings.json` FTP profile are retired and gitignored; do not resurrect them.
-- **{#MAC-LAW-5} Dark palette only.** The dark Cyberspace palette is the only palette, full stop — no
-  light mode, no per-theme color scheme. (The presentation-mode switch that [MAC-A5](AMENDMENTS.md#MAC-A5)
-  allowed was removed by [MAC-A6](AMENDMENTS.md#MAC-A6); there is no theme picker.)
+  pipeline (`npm run deploy -- --site mindattic.com`). This repo keeps no deploy script and no FTP
+  credentials (a stray `settings.json` is gitignored).
+- **{#MAC-LAW-5} Dark palette only.** The dark Cyberspace palette is the only palette — no light mode,
+  no theme toggle, no theme picker.
 - **{#MAC-LAW-6} Privacy by default.** No analytics, tracking pixels, third-party fonts, or third-party
-  network requests may be added to `index.htm`. *Refined by [MAC-A6](AMENDMENTS.md#MAC-A6):* the one
-  allowed external host is the jsDelivr CDN (cdn.jsdelivr.net), serving the `MindAttic.UiUx` repo at a pinned tag.
+  network requests may be added to `index.htm`. The one allowed external host is the jsDelivr CDN
+  (cdn.jsdelivr.net), serving the `MindAttic.UiUx` repo at a pinned tag.
 - **{#MAC-LAW-7} View-source stays welcoming.** Preserve the opening banner, the section table of
-  contents, and explanatory comments — kept accurate: they must not claim "one file / no CDN". Code
-  here is documentation for the curious reader.
+  contents, and explanatory comments, and keep them accurate. Code here is documentation for the
+  curious reader.
 
 ## Glossary
 - **Lockup** — the wordmark plus the three link buttons (`.lockup`), centered both ways and
@@ -82,18 +66,15 @@ rules, which are **inherited** here, not restated:
   immutable whole numbers.
 - **Generated region** — a block owned by a generator and never hand-edited; on the page, only the
   `CYBERSPACE` marker block. See [LAW-2](#MAC-LAW-2).
-- **Dormant machinery** — `data/*.json`, `fetch-descriptions.ps1`, `add-book.*`, `diagram/`,
-  `previews/`: kept on disk, no longer used by the page ([MAC-A6](AMENDMENTS.md#MAC-A6)).
 - **Cyberspace** — the shared MindAttic.UiUx visual bundle (circuit-board backdrop, scanlines, console
   windows). Its CSS and small scripts are spliced inline; its engine and textures load from the CDN.
 - **Sync** — splicing the subscribed UiUx component (Cyberspace) into `index.htm` during deploy.
 - **Stamp** — the automated `<!-- Last Updated: ... -->` UTC comment.
+- **Linked deploy** — `MindAttic.Deploy`'s 4-in-1 flow: deploying any of `MindAttic.UiUx`,
+  mindattic.com, ryandebraal.com or mindatticcares.com publishes the package and deploys all three sites.
 - **House rules** — the shared [`MindAttic.HouseRules.md`](../../MindAttic.HouseRules.md), inherited
   by [§5](#MAC-§5).
 
 ## Status index (user stories)
-- done: 10  partial: 0  planned: 2  cut: 12
-
-## Latest amendment
-- MAC-A7 — Meta description and link-preview tags (refines MAC-A6) {#MAC-A7} (amendment wins over the bible)
+- done: 10  partial: 0  planned: 1
 

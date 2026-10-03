@@ -1,4 +1,4 @@
-<!-- Last Updated: 2026-10-03T07:14:38Z -->
+<!-- Last Updated: 2026-10-03T07:57:20Z -->
 <!--
   ════════════════════════════════════════════════════════════════════════════
   ║  Hey. You opened View Source.  I see you, and I appreciate it.           ║
@@ -40,8 +40,7 @@
   ║  ─────────────────────────────────────────────────────────────────────   ║
   ║  § 1  Fonts ............... Two woff2 typefaces, served from the CDN     ║
   ║  § 2  Theme tokens ........ Dark-palette custom properties + logo URLs   ║
-  ║  § 3  Background .......... Retired — backdrop now comes from the        ║
-  ║                              CYBERSPACE bundle (§ 12)                    ║
+  ║  § 3  Background .......... Painted by the CYBERSPACE bundle (§ 12)      ║
   ║  § 4  Accessibility ....... Focus rings                                  ║
   ║  § 5  Reset ............... Box-sizing + minimal normalization           ║
   ║  § 6  Wordmark ............ The "MindAttic" logotype, set in Attic       ║
@@ -213,12 +212,11 @@ html, body { font-family: 'Outfit', system-ui, sans-serif; }
 }
 
 /* ──────────────────────────────────────────────────────────────────────
-   §  3   BACKGROUND  (retired)
+   §  3   BACKGROUND
    ──────────────────────────────────────────────────────────────────────
-   Historical note: this slot used to hold two fixed-position painting
-   layers that crossfaded on theme switch.  The current backdrop is the
-   parallax circuit board painted by the CYBERSPACE bundle further
-   down in this file (§ 12).  Edit the bundle (not this file) to change it.
+   No rules here: the backdrop is the parallax circuit board painted by
+   the CYBERSPACE bundle further down in this file (§ 12).  Edit the
+   bundle in MindAttic.UiUx (not this file) to change it.
    ──────────────────────────────────────────────────────────────────── */
 
 /* ──────────────────────────────────────────────────────────────────────
@@ -1874,8 +1872,8 @@ window.homeBg = (function () {
      console-bg.js (loaded above in the CYBERSPACE block) exposes its spawn
      functions on window.consoleBg._demo.  Underscore-prefixed means "dev
      handle, not a stable API", but it's the only public way to fire a single
-     effect on demand, and every function used here exists in every release
-     from V4 through V7.  The effects that accept a position (CRASH, TREMOR,
+     effect on demand, and every function used here exists in the pinned
+     release.  The effects that accept a position (CRASH, TREMOR,
      TERMINAL) appear where you tapped; the rest place themselves using
      Cyberspace's own placement rules (which avoid the .lockup keepout).
      Taps on a link are ignored so the buttons just open their sites.  If the

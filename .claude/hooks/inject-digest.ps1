@@ -16,9 +16,8 @@ if ([string]::IsNullOrWhiteSpace($content)) { Write-Output '{}'; exit 0 }
 
 $preamble = @"
 [mindattic.com / Codex] The following is the AUTHORITATIVE project digest, generated from
-docs/BIBLE.md (the single source of truth) and docs/AMENDMENTS.md. Treat it as ground truth for
-what mindattic.com is, what it is NOT, and its laws. An amendment always wins over the bible.
-For full detail, read docs/BIBLE.md, docs/USER_STORIES.md, and docs/AMENDMENTS.md.
+docs/BIBLE.md (the single source of truth). Treat it as ground truth for what mindattic.com
+is, what it is NOT, and its laws. For full detail, read docs/BIBLE.md and docs/USER_STORIES.md.
 
 "@
 
