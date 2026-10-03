@@ -47,8 +47,9 @@ tag-pinned jsDelivr package instead of being embedded in the page.
 - **NOT a portfolio browser any more.** The Classic catalog browser (Portfolio / Software / Hardware /
   Writing / Visual Arts), the presentation-mode picker and the `data/*.json` runtime fetch were removed
   ([MAC-A6](AMENDMENTS.md#MAC-A6)). The page is a wordmark, three buttons and a backdrop.
-- **NOT a multi-page site.** It is one `index.htm`. Per-project landing pages (`<slug>.htm`) ship via
-  the external deploy catalog, not from hand-authored sub-pages here.
+- **NOT a multi-page site.** It is one `index.htm`. There are no per-project sub-pages: the old
+  `<slug>.htm` catalog landing pages were retired (MindAttic.Deploy DEP-A6), and each project's page
+  is its GitHub README (`https://github.com/mindattic/<Repo>`).
 - **NOT a light/dark toggle site.** The site is locked to the dark Cyberspace palette
   ([MAC-A1](AMENDMENTS.md#MAC-A1)).
 - **NOT the home of its own assets.** Fonts, logos, textures and the effects engine live in the

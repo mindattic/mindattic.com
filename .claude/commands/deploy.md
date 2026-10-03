@@ -23,5 +23,5 @@ After running, summarize the release tag, the pins that changed, the CDN gate re
 
 Notes:
 - FTP credentials are centralized in `MindAttic.Deploy/secrets/ftp.json` (gitignored). The per-site `settings.json` is no longer read.
-- Per-project landing pages (`mindattic.com/<slug>.htm`) ship via the catalog half of the same pipeline (`npm run deploy -- --only <slug>`), not via this command.
+- The per-project landing pages (`mindattic.com/<slug>.htm`) and MindAttic.Deploy's catalog mode (`--only <slug>`) are retired (DEP-A6, 2026-10-03). Each repo's GitHub README (`https://github.com/mindattic/<Repo>`) is its project page.
 - Rules and rationale: `MindAttic.Deploy/docs/AMENDMENTS.md` (DEP-A3).
