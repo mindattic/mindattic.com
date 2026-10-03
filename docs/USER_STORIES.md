@@ -50,12 +50,22 @@ updated: 2026-10-03
   rules and the three `<a class="link-btn" target="_blank">` anchors in `index.htm`; the button row was
   measured within 0.02 px of the wordmark's width, with no scroll, in headless Chrome at viewports from
   120×600 to 5120×2880 in an earlier session — reported, not re-run here.)*
-- **MAC-US-A7 ✅** As a visitor, I can tap or left-click anywhere (except on a button) and a random
-  Cyberspace effect appears, so the page feels alive. *Given* the engine has loaded, *when* I press on the
-  page, *then* one effect is spawned, positioned at the tap for the effects that accept a position.
-  *(verified by: the `pointerdown` handler calling `window.consoleBg._demo.*` in `index.htm`, every called
-  function present in `console-bg.js` at tag `V10`; simulated taps added elements in headless Chrome in an
-  earlier session — reported, not re-run here.)*
+- **MAC-US-A7 ✅** As a visitor, I can tap or left-click anywhere around the lockup and a random
+  Cyberspace effect starts right where I tapped, so the page feels alive. *Given* the engine has loaded,
+  *when* I press outside the keepout buffer zone (the `.lockup` plus the engine's 16px margin), *then* one
+  effect spawns with my tap as its origin: popups and memos centred on it, console windows opening from it,
+  fragments typing out of it, traces, pulsars, cascades and predator swarms spreading from it, always kept
+  on screen and out of the buffer zone. A press inside the zone, or on a link, spawns nothing.
+  *(verified by: `MindAttic.UiUx/tests` `mindattic.spec.mjs` — `a tap outside the keepout spawns an effect
+  that starts at the tap point`, `every spawn function honours an origin…`, `a tap inside the keepout buffer
+  zone spawns nothing…`, `tapping a link … spawns no effect and no sparks`.)*
+- **MAC-US-A10 ✅** As a visitor, every qualifying tap gives a quick power-surge of sparks at my finger,
+  so the press feels physical. *Given* a tap outside the buffer zone, *when* it lands, *then* sparks fly
+  out under gravity with short trails, cool from white through cyan and blue to orange-red and burn out
+  within ~0.3–0.7s, around a brief flash ring; with reduced motion requested I get only a brief flash.
+  The sparks draw on one click-through canvas that stops animating when idle. *(verified by:
+  `mindattic.spec.mjs` — `the tap spark burst draws on one pooled click-through canvas, animates, then goes
+  idle`, `prefers-reduced-motion: a tap gives only a brief flash…`.)*
 - **MAC-US-A8 ✅** As someone sharing or searching for the site, I see a proper title, description and
   M-monogram preview card, so links to mindattic.com look intentional. *Given* a crawler or chat app,
   *when* it reads `<head>`, *then* it finds `meta description`, a canonical `https://mindattic.com/`,

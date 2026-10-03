@@ -42,7 +42,8 @@ tag-pinned jsDelivr package instead of being embedded in the page.
   for anyone who reads the markup; the code is meant to be a conversation, not a puzzle.
 - **Cyberpunk house style, and it reacts.** The shared Cyberspace look (circuit-board backdrop,
   scanlines, floating console windows) is spliced in from `MindAttic.UiUx`; tapping or left-clicking
-  anywhere (except on a button) spawns one random Cyberspace effect. Locked to a dark palette.
+  anywhere around the lockup sets off a short spark surge and spawns one random Cyberspace effect that
+  starts at the tap point. Locked to a dark palette.
 
 ## 3. What it is NOT {#MAC-§3}
 
@@ -82,7 +83,7 @@ tag-pinned jsDelivr package instead of being embedded in the page.
   meta/link-preview tags and `preconnect`/`preload` hints, the font `@font-face` rules, the page CSS, the
   Cyberspace block (sync-owned), and a `<div id="content" role="main">` holding
   `.lockup.cyberspace-keepout` (the `#site-name` wordmark and the `.link-row` of three `.link-btn`
-  anchors), a fixed `#site-footer`, and a small tap-to-spawn script. It is a `<div role="main">`, not a
+  anchors), a fixed `#site-footer`, the motto fitter and a small tap-to-spawn script. It is a `<div role="main">`, not a
   `<main>`, because Cyberspace treats every `<main>` as a keepout zone and a full-screen one would block
   every effect. Its sections are numbered in the file's own table of contents (§ 1 Fonts … § 12
   Cyberspace).
@@ -104,6 +105,11 @@ tag-pinned jsDelivr package instead of being embedded in the page.
 
 - **Lockup** — the wordmark plus the three buttons, shrink-wrapped to the wordmark's width and
   centered both ways (`.lockup`). It is the only keepout (`.cyberspace-keepout`).
+- **Buffer zone** — the lockup's rect grown by the engine's `KEEPOUT_BUFFER` (16px) on every side.
+  Taps inside it do nothing; effects spawned at a tap are kept out of it.
+- **Spark surge** — the engine's `spawnSparkBurst`: a white-hot flash ring and a shower of
+  gravity-bound sparks that cool and burn out within ~0.3–0.7s, drawn on one pooled
+  `canvas.cyberspace-surge` (fixed, click-through, z-index 1, below `#content`'s 1000).
 - **Unit (`--u`)** — 1% of the smaller visible viewport side (`dvmin`), capped at 0.7273 rem. The
   wordmark is `--wm` = 11 × `--u`; the buttons are sized from `--btn-u` = 0.15 × `--wm`.
 - **Link button (`.link-btn`)** — one of the three equal-width anchors (`target="_blank"`,
@@ -126,10 +132,13 @@ tag-pinned jsDelivr package instead of being embedded in the page.
 - **deploy** (`/deploy` → `MindAttic.Deploy`) — the linked 4-in-1 deploy: publish the UiUx tag, pin it in
   all three sites, run this site's hooks (`uiux-pull`, then the sync above), verify the CDN, stamp, then
   FTPS-upload `index.htm` only. Assets need no upload: they are already on the CDN.
-- **tap-to-spawn** — in-page script: on a primary-button `pointerdown` anywhere except a link, call one
-  random spawn function from `window.consoleBg._demo` (an underscore-prefixed "dev handle" of the engine —
-  the only public way to fire a single effect on demand). If the CDN script failed to load it silently
-  does nothing.
+- **tap-to-spawn** — in-page script: on a primary-button `pointerdown` that is not on a link and not in
+  the keepout buffer zone (`consoleBg.inKeepout(x, y)`: the `.lockup` rect grown by the engine's 16px
+  `KEEPOUT_BUFFER`), it fires `consoleBg.spawnSparkBurst(x, y)` at the tap and then calls the spawn
+  functions of `window.consoleBg._demo` (an underscore-prefixed "dev handle" of the engine, the only
+  public way to fire a single effect on demand) in a shuffled order, each with the tap as its origin
+  `{ x, y }` in viewport %, until one returns something other than `false`. If the CDN script failed to
+  load it silently does nothing.
 
 ### 4.4 Hosting {#MAC-§4.4}
 
@@ -198,6 +207,10 @@ disk on 2026-10-03 unless stated otherwise.
   transparent tap highlight) with a `position: fixed` footer. *(Evidence: CSS in `index.htm`; button-row
   width and no-scroll were measured in headless Chrome across viewports from 120×600 to 5120×2880 in an
   earlier session — reported, not re-run here.)*
+- ✅ **Tap response.** A tap outside the buffer zone starts an effect within 30px of the tap point and
+  bursts sparks that animate and then go idle; taps in the zone or on a link spawn nothing; reduced
+  motion gets a flash only. *(Evidence: `MindAttic.UiUx/tests/specs/sites/mindattic.spec.mjs`, run with
+  `npm run test:local` on 2026-10-03.)*
 - ✅ **Last-updated stamp automated.** PostToolUse hook stamps `<!-- Last Updated: ... -->`; the
   current stamp is line 1 of `index.htm`. *(Evidence: hook in `.claude/settings.json`; stamp on line 1.)*
 - ✅ **Codex tooling.** `tools/codex.ps1 doctor` passes. *(Evidence: run at the end of this doc pass.)*

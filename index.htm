@@ -1,4 +1,4 @@
-<!-- Last Updated: 2026-10-03T20:08:31Z -->
+<!-- Last Updated: 2026-10-03T20:22:58Z -->
 <!--
   ════════════════════════════════════════════════════════════════════════════
   ║  Hey. You opened View Source.  I see you, and I appreciate it.           ║
@@ -250,7 +250,7 @@ html, body { font-family: 'Outfit', system-ui, sans-serif; }
    screen that scales to fit, so there is never a scrollbar.
 
    Nothing on the page is selectable: it is a logo and three buttons, and
-   every tap spawns a Cyberspace effect, so a drag or long-press should
+   a tap around it spawns a Cyberspace effect, so a drag or long-press should
    never paint a highlight.  user-select stops text selection,
    -webkit-touch-callout stops the iOS long-press copy/lookup bubble, and a
    transparent tap-highlight stops the grey flash on each tap.  Links still
@@ -382,9 +382,10 @@ a:hover {
 
 #content {
   padding: 0;
-  /* Sits above every Cyberspace backdrop layer (cyberspace-sl-fine/coarse
-     and console-bg-host, all z-index 0). position:relative is required for
-     z-index to take effect on a non-positioned element. */
+  /* Sits above every Cyberspace layer (cyberspace-sl-fine/coarse and
+     console-bg-host, all z-index 0, and the tap-spark canvas, z-index 1).
+     position:relative is required for z-index to take effect on a
+     non-positioned element. */
   position: relative;
   z-index: 1000;
   max-width: 100%;
@@ -1863,7 +1864,8 @@ window.homeBg = (function () {
                             link buttons beneath them.
        <footer>           — Copyright, fixed to the bottom edge.
        <script>           — fits the motto to the wordmark's width.
-       <script>           — tap anywhere to spawn a random Cyberspace effect.
+       <script>           — tap outside the lockup: a spark surge and a
+                            random Cyberspace effect, both at the tap.
 
      The three links are plain <a> elements — no script builds them, so
      they render even if JavaScript is off.  Each opens in a new window
@@ -2021,47 +2023,71 @@ window.homeBg = (function () {
 })();
 </script>
 
-<!-- Tap / click anywhere → spawn one random Cyberspace effect.
-     console-bg.js (loaded above in the CYBERSPACE block) exposes its spawn
-     functions on window.consoleBg._demo.  Underscore-prefixed means "dev
-     handle, not a stable API", but it's the only public way to fire a single
-     effect on demand, and every function used here exists in the pinned
-     release.  The effects that accept a position (CRASH, TREMOR,
-     TERMINAL) appear where you tapped; the rest place themselves using
-     Cyberspace's own placement rules (which avoid the .lockup keepout).
-     Taps on a link are ignored so the buttons just open their sites.  If the
-     CDN script failed to load, window.consoleBg is undefined and this does
-     nothing. -->
+<!-- Tap / click around the lockup → a spark surge and one random Cyberspace
+     effect, both starting where you tapped.
+     console-bg.js (loaded above in the CYBERSPACE block) exposes:
+       consoleBg.inKeepout(x, y)        — is this point in the buffer zone
+                                          (the .lockup keepout plus a small
+                                          margin)?
+       consoleBg.spawnSparkBurst(x, y)  — a short shower of sparks that
+                                          cool from white to cyan to
+                                          orange-red and burn out, with a
+                                          flash ring (only a brief flash if
+                                          you prefer reduced motion).
+       consoleBg._demo.spawn*(origin)   — one effect each.  Underscore-
+                                          prefixed means "dev handle, not a
+                                          stable API", but it's the only
+                                          public way to fire a single effect
+                                          on demand.
+     Points are viewport percentages.  Given an origin { x, y }, every effect
+     starts there: windows and popups open on it, fragments type out from
+     it, glyph clusters gather around it, and traces, pulsars, cascades and
+     predator swarms spread out from it.
+     The engine keeps each effect on screen and out of the buffer zone.  An
+     effect that has nothing to do (a trace already running, say) returns
+     false, and the next one in the shuffled list is tried instead.
+     Taps on a link, or inside the buffer zone, do nothing, so the buttons
+     just open their sites.  If the CDN script failed to load,
+     window.consoleBg is undefined and this does nothing. -->
 <script>
 // The engine scripts are `defer`red, so they run after parsing and before
 // DOMContentLoaded; look the engine up then, not at parse time.
 document.addEventListener('DOMContentLoaded', function () {
-  var fx = window.consoleBg && window.consoleBg._demo;
+  var cb = window.consoleBg;
+  var fx = cb && cb._demo;
   if (!fx) return;
 
   var effects = [
-    function (x, y) { fx.spawnError(x, y); },        // CRASH  — fatal-error popup
-    function (x, y) { fx.spawnWarning(x, y); },      // TREMOR — warning popup
-    function (x, y) { fx.spawnWindow(0, x, y); },    // TERMINAL — console window
-    function () { fx.spawnMemo(); },                 // LEAK
-    function () { fx.spawnFrag(); },                 // FRAGMENT
-    function () { fx.spawnArtifact(); },             // ARTIFACT (random variant)
-    function () { fx.spawnGeoWindow(); },            // SCHEMATIC
-    function () { fx.spawnNetConnect(); },           // TRACE
-    function () { fx.spawnMorseDot(); },             // PULSAR
-    function () { fx.spawnFolderRip(); },            // HEIST
-    function () { fx.spawnCascade(); },              // CASCADE
-    function () { fx.spawnArtifactPredator(); }      // PREDATOR
+    function (o) { return fx.spawnError(o); },            // CRASH     — fatal-error popup
+    function (o) { return fx.spawnWarning(o); },          // TREMOR    — warning popup
+    function (o) { return fx.spawnWindow(o); },           // TERMINAL  — console window
+    function (o) { return fx.spawnMemo(o); },             // LEAK      — leaked memo
+    function (o) { return fx.spawnFrag(o); },             // FRAGMENT  — code fragment
+    function (o) { return fx.spawnArtifact(o); },         // ARTIFACT  — glyph cluster
+    function (o) { return fx.spawnGeoWindow(o); },        // SCHEMATIC — geometry window
+    function (o) { return fx.spawnNetConnect(o); },       // TRACE     — network wire
+    function (o) { return fx.spawnMorseDot(o); },         // PULSAR    — Morse dot
+    function (o) { return fx.spawnFolderRip(o); },        // HEIST     — folder rip
+    function (o) { return fx.spawnCascade(o); },          // CASCADE   — window burst
+    function (o) { return fx.spawnArtifactPredator(o); }  // PREDATOR  — wasp swarm
   ];
 
   document.addEventListener('pointerdown', function (e) {
     if (e.button > 0) return;   // right/middle click: leave the context menu alone
     if (e.target.closest && e.target.closest('a')) return;
-    // Tap point as a viewport %, nudged so the popup lands around the tap
-    // and clamped so it stays fully on screen.
-    var x = Math.min(Math.max(e.clientX / window.innerWidth  * 100 - 8, 0), 78);
-    var y = Math.min(Math.max(e.clientY / window.innerHeight * 100 - 5, 0), 85);
-    try { effects[Math.floor(Math.random() * effects.length)](x, y); } catch (err) {}
+    var o = { x: e.clientX / window.innerWidth  * 100,
+              y: e.clientY / window.innerHeight * 100 };
+    if (cb.inKeepout && cb.inKeepout(o.x, o.y)) return;
+    try { if (cb.spawnSparkBurst) cb.spawnSparkBurst(o.x, o.y); } catch (err) {}
+    // Try the effects in a random order until one spawns.
+    var order = effects.slice();
+    for (var i = order.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1)), t = order[i];
+      order[i] = order[j]; order[j] = t;
+    }
+    for (var k = 0; k < order.length; k++) {
+      try { if (order[k](o) !== false) break; } catch (err) {}
+    }
   });
 });
 </script>

@@ -26,7 +26,7 @@ Try it: [mindattic.com](https://mindattic.com)
 | `#site-footer` | Copyright line fixed to the bottom edge. The page never scrolls |
 | No selection | Text can't be highlighted (`user-select: none`), long-press shows no iOS copy bubble and taps don't flash a highlight box. Links and keyboard focus still work |
 | Cyberspace block | The backdrop (circuit-board parallax, scanlines, console windows), spliced in by the UiUx sync |
-| Tap script | Tap or left-click anywhere off the buttons to spawn one random Cyberspace effect. Right and middle clicks are ignored |
+| Tap script | Tap or left-click anywhere around the lockup: a short spark surge bursts from the tap and one random Cyberspace effect starts right there (kept on screen and clear of the lockup). Taps on the lockup or within 16px of it, on a link, or with the right or middle button do nothing. With reduced motion requested the surge is a brief flash |
 | Link preview | Meta description, canonical URL, `theme-color` and Open Graph / Twitter card tags, so shared links show the M monogram and a one-line summary |
 
 Everything on the page is a multiple of one viewport-relative unit (`--u`, 1% of the smaller visible viewport side), so it keeps the same shape on every screen and aspect ratio.
@@ -46,7 +46,7 @@ python -m http.server 3457
 start http://localhost:3457/index.htm
 ```
 
-You should see the wordmark and three buttons over the dark Cyberspace backdrop. Tap the background to spawn an effect. The `/run` Claude Code skill does the same thing.
+You should see the wordmark and three buttons over the dark Cyberspace backdrop. Tap the background to set off a spark surge and an effect at that spot. The `/run` Claude Code skill does the same thing.
 
 The page fetches no local data, so opening `index.htm` directly works too.
 

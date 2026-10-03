@@ -77,5 +77,5 @@ rules, which are **inherited** here, not restated:
   by [§5](#MAC-§5).
 
 ## Status index (user stories)
-- done: 11  partial: 0  planned: 1
+- done: 12  partial: 0  planned: 1
 
